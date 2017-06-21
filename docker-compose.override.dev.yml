@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    environment:
+      DJANGO_SECRET_KEY: (Replace with your secret key)
+      DJANGO_DEBUG: 'True'
+      DJANGO_ALLOWED_HOSTS: '*'
+    volumes:
+      - ./src:/code
+    ports:
+      - "8000:8000"

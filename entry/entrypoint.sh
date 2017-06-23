@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-python manage.py makemigrations
-python manage.py migrate
+python manage.py migrate --noinput
 
 if [ "${DJANGO_DEBUG,,}" = "true" ]; then
     echo "Django debug is on"

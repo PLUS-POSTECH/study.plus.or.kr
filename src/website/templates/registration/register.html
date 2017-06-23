@@ -1,0 +1,82 @@
+{% extends 'registration/login_base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function() {
+            $('.ui.form').form({
+                fields: {
+                    username: 'empty',
+                    password: ['minLength[8]', 'empty'],
+                    confirm: 'match[password]',
+                    email: 'email'
+                }
+            })
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            {% if form.errors %}
+                <h2 class="ui red header">가입 실패: {% for k, v in form.errors.items %}
+                    {% if forloop.first %}
+                        {{ v|first }}
+                    {% endif %}
+                {% endfor %}</h2>
+            {% else %}
+                <h2 class="ui teal header">회원가입</h2>
+            {% endif %}
+            <form class="ui form" action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="ui raised {% if form.errors %}red{% endif %} left aligned segment">
+                    <h4 class="ui dividing header">Username</h4>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="username"
+                                   placeholder="Username" value="{{ form.username.data|default_if_none:"" }}">
+                        </div>
+                    </div>
+                    <h4 class="ui dividing header">Password</h4>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password"
+                                   placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="confirm"
+                                   placeholder="Password Confirm">
+                        </div>
+                    </div>
+                    <h4 class="ui dividing header">Information</h4>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="mail icon"></i>
+                            <input type="text" name="email"
+                                   placeholder="Email Address" value="{{ form.email.data|default_if_none:"" }}">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="at icon"></i>
+                            <input type="text" name="povis_id"
+                                   placeholder="Povis ID (optional)" value="{{ form.povis_id.data|default_if_none:"" }}">
+                        </div>
+                    </div>
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ next }}">
+                    <div class="ui fluid large teal submit button">Register</div>
+                </div>
+
+                <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

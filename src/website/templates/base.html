@@ -4,32 +4,21 @@
 <html lang="ko-kr">
 <head>
     <meta charset="UTF-8">
-    <title>PLUS Study</title>
+    <title>PLUS Study - {% block title %}{% endblock %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'css/semantic.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
     <script
             src="https://code.jquery.com/jquery-3.1.1.min.js"
             integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
             crossorigin="anonymous"></script>
-    <script src="{% static 'js/semantic.min.js' %}"></script>
+    <script src="{% static 'semantic/semantic.min.js' %}"></script>
 
-    <style>
-        .main.container {
-            padding-top: 6em;
-        }
-    </style>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
-<div class="ui huge fixed menu">
-    <div class="ui container">
-    <a class="header item">PLUS Study</a>
-    <a class="item active">Home</a>
-    </div>
-</div>
-
-<div class="ui main container">
-    {% block content %}
-    {% endblock %}
-</div>
+{% block body %}
+{% endblock %}
 </body>
 </html>

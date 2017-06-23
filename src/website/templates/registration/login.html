@@ -1,0 +1,56 @@
+{% extends 'registration/login_base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function() {
+            $('.ui.form').form({
+                fields: {
+                    username: 'empty',
+                    password: 'empty'
+                }
+            })
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            {% if form.errors %}
+                <h2 class="ui red header">로그인에 실패했습니다</h2>
+            {% else %}
+                <h2 class="ui teal header">로그인</h2>
+            {% endif %}
+            <form class="ui form" action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="ui raised {% if form.errors %}red{% endif %} segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="username"
+                                   placeholder="Username" value="{{ form.username.data|default_if_none:"" }}">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password"
+                                   placeholder="Password">
+                        </div>
+                    </div>
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ next }}">
+                    <div class="ui fluid large teal submit button">Login</div>
+                </div>
+
+                <div class="ui error message"></div>
+            </form>
+
+            <div class="ui message">
+                새로 오셨나요? <a href="{% url 'register' %}">가입하기</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

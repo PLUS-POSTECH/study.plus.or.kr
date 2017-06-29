@@ -1,3 +1,32 @@
+# IDE Workspaces
 .idea/
+.vscode/
+
+# Docker compose configuration
 docker-compose.override.yml
-**/*.pyc
+
+# Appended https://www.gitignore.io/api/python with some modifications
+
+# Compiled Python Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# End of https://www.gitignore.io/api/python

@@ -21,19 +21,19 @@ class ProblemAttachment(models.Model):
 class Problem(models.Model):
     # TODO: Do Later
     number = models.IntField(unique=True)
-    category = models.ManyToManyField(Category)
+    categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     description = models.TextField()
     key = models.TextField()
     last_modified = models.DateTimeField()
     points = models.IntField()
     distributed_points = models.IntField()
-    attachment = models.ManyToManyField(ProblemAttachment)
+    attachments = models.ManyToManyField(ProblemAttachment)
     hidden = models.BooleanField()
 
 
 class Session(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    title = models.CharField(max_length=50, unique=True)
     description = models.TextField
 
 
@@ -42,13 +42,13 @@ class SeminarAttachment(models.Model):
 
 
 class Seminar(models.Model):
-    # TODO: Implement this
-    name = models.CharField(max_length=50)
-    category = models.ManyToManyField(Category)
+    title = models.CharField(max_length=50)
+    categories = models.ManyToManyField(Category)
+    author = models.ForeignKey(User)
     session = models.ForeignKey(Session)
     date = models.DateField()
     description = models.TextField()
-    attachment = models.ManyToManyField(SeminarAttachment)
+    attachments = models.ManyToManyField(SeminarAttachment)
 
 
 admin.site.register(User)

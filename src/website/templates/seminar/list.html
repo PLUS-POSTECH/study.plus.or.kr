@@ -4,9 +4,8 @@
 {% block seminar_active %}active{% endblock %}
 
 {% block content %}
-    {% for session in sessions %}
     <div class="ui cards">
-        {% for seminar in filter(lambda x -> x.session == session, seminars) %}
+        {% for seminar in seminars %}
         <div class="card">
             <div class="content">
                 <div class="header">{{ seminar.title }}</div>
@@ -14,17 +13,14 @@
                 <div class="description">{{ seminar.description }}</div>
             </div>
             {% for attachment in seminar.attachments.all %}
-            <a href="{{ attachment.url }}">
-                <div class="ui bottom attached button">
-                    <i class="download icon"/>
-                    Download
-                </div>
+            <a class="ui bottom attached button" href="{{ attachment.url }}">
+                <i class="download icon"/>
+                Download
             </a>
             {% endfor %}
         </div>
         {% endfor %}
     </div>
-    {% endfor %}
 {% endblock %}
 
 <!-- Sort cards by session -->

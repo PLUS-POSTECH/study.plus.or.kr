@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
 
-from .models import User
+from .models import User, Session, Seminar
 
 
 # Create your views here.
@@ -51,7 +51,20 @@ class RegisterView(View):
             })
 
 
+class SeminarListForm(forms.Form):
+    s = forms.CharField(required=False)
+
+
 class SeminarListView(View):
     def get(self, request):
         # TODO: Add seminar list template
-        return render(request, 'seminar/list.html', {})
+        # form = SeminarListForm(request.GET)
+        # session_filter = form.cleaned_data['s']
+        # sessions = Session.objects.order_by('title')
+        seminars = Seminar.objects.order_by('-date')
+        # if session_filter != '':
+        #     seminars = seminars.filter(session=session_filter)
+        return render(request, 'seminar/list.html', {
+            # 'sessions': sessions,
+            'seminars': seminars
+        })

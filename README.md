@@ -6,7 +6,7 @@ This repository contains the source code of the [https://study.plus.or.kr](https
 $ git clone https://github.com/PLUS-POSTECH/study.plus.or.kr.git
 $ cd study.plus.or.kr
 $ cp docker-compose.override.dev.yml docker-compose.override.yml
-$ nano docker-compose.override.yml  # set your django secret key 
+$ `your_favorite_editor` docker-compose.override.yml  # set your django secret key
 $ docker-compose up -d
 ```
 
@@ -16,11 +16,11 @@ $ git clone https://github.com/PLUS-POSTECH/study.plus.or.kr.git
 $ mkdir static
 $ cd study.plus.or.kr
 $ cp docker-compose.override.production.yml docker-compose.override.yml
-$ nano docker-compose.override.yml  # set your django secret key and hosts 
+$ `your_favorite_editor` docker-compose.override.yml  # set your django secret key and hosts
 $ docker-compose up -d
 ```
 
-The server is running at `localhost:8000`. Use nginx or other proxy to your server. 
+The server is running at `localhost:8000`. Use nginx or other proxy to your server.
 
 
 ## Update

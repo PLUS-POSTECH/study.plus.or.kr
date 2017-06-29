@@ -26,8 +26,8 @@ class Problem(models.Model):
     description = models.TextField()
     key = models.TextField()
     last_modified = models.DateTimeField()
-    points = models.IntField()
-    distributed_points = models.IntField()
+    points = models.IntegerField()
+    distributed_points = models.IntegerField()
     attachments = models.ManyToManyField(ProblemAttachment)
     hidden = models.BooleanField()
 

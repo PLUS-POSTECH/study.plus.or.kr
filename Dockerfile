@@ -14,6 +14,6 @@ RUN mkdir /code
 ADD ./src /code/
 WORKDIR /code
 
-CMD ["/entry/entrypoint.sh"]
+CMD ["/entry/wait-for-it.sh", "db:5432", "--", "/entry/entrypoint.sh"]
 
-EXPOSE 80, 8000
+EXPOSE 80 8000

@@ -12,6 +12,7 @@ from .models import User
 def home(request):
     return render(request, 'index.html')
 
+
 def validate_unique_username(value):
     if User.objects.filter(username__iexact=value).count() > 0:
         raise ValidationError(
@@ -48,3 +49,9 @@ class RegisterView(View):
             return render(request, 'registration/register.html', {
                 'form': form
             })
+
+
+class SeminarListView(View):
+    def get(self, request):
+        # TODO: Add seminar list template
+        return render(request, 'seminar/list.html', {})

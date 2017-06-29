@@ -4,7 +4,8 @@
     <div class="ui huge fixed menu">
         <div class="ui container">
             <a class="header item">PLUS Study</a>
-            <a class="item active">Home</a>
+            <a class="item active" href="/">Home</a>
+            <a class="item" href="/seminar">Seminar</a>
             <div class="item right">
                 {% if user.is_authenticated %}
                     <a href="{% url 'logout' %}" class="ui primary basic secondary button">

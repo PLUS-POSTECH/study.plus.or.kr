@@ -1,0 +1,23 @@
+{% extends 'menu.html' %}
+
+{% block title %}Seminar{% endblock %}
+
+{% block content %}
+    <div class="ui cards">
+        {% for seminar in seminars %}
+        <div class="card">
+            <div class="content">
+                <div class="header">Title</div>
+                <div class="meta">Session - Category - Date</div>
+                <div class="description">Description</div>
+            </div>
+            {% for attachment in attachments %}
+            <div class="ui bottom attached button">
+                <i class="download icon"/>
+                Download
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

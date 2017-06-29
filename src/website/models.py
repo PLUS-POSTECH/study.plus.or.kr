@@ -8,23 +8,53 @@ class User(AbstractUser):
     is_plus_member = models.BooleanField(default=False)
 
 
-class ProblemCategory(models.Model):
+class Category(models.Model):
     # TODO: Do Later
     name = models.CharField(max_length=30, unique=True)
     description = models.TextField()
 
 
+class ProblemAttachment(models.Model):
+    file = models.FileField(upload_to='problem_attachments')
+
+
 class Problem(models.Model):
     # TODO: Do Later
     number = models.IntField(unique=True)
-    category = models.ForeignKey(ProblemCategory)
+    category = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     description = models.TextField()
     key = models.TextField()
     last_modified = models.DateTimeField()
     points = models.IntField()
     distributed_points = models.IntField()
-    attachment = models.FileField(upload_to='problem', null=True, blank=True)
+    attachment = models.ManyToManyField(ProblemAttachment)
     hidden = models.BooleanField()
 
+
+class Session(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField
+
+
+class SeminarAttachment(models.Model):
+    file = models.FileField(upload_to='seminar_attachments')
+
+
+class Seminar(models.Model):
+    # TODO: Implement this
+    name = models.CharField(max_length=50)
+    category = models.ManyToManyField(Category)
+    session = models.ForeignKey(Session)
+    date = models.DateField()
+    description = models.TextField()
+    attachment = models.ManyToManyField(SeminarAttachment)
+
+
 admin.site.register(User)
+admin.site.register(Category)
+admin.site.register(Problem)
+admin.site.register(ProblemAttachment)
+admin.site.register(Session)
+admin.site.register(Seminar)
+admin.site.register(SeminarAttachment)

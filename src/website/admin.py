@@ -6,34 +6,34 @@ from .models import *
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    fields = ('username', 'email')
+    list_display = ('username', 'email')
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    fields = ('name', 'description')
+    list_display = ('name', 'description')
 
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    fields = ('title', 'categories', 'author', 'description')
+    list_display = ('title', 'categories_name', 'author', 'description')
 
 
 @admin.register(ProblemAttachment)
 class ProblemAttachmentAdmin(admin.ModelAdmin):
-    fields = 'filename'
+    list_display = ('filename', )
 
 
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
-    fields = ('title', 'description')
+    list_display = ('title', 'description')
 
 
 @admin.register(Seminar)
 class SeminarAdmin(admin.ModelAdmin):
-    fields = ('title', 'categories', 'author', 'description')
+    list_display = ('title', 'categories_name', 'author', 'description')
 
 
 @admin.register(SeminarAttachment)
 class SeminarAttachmentAdmin(admin.ModelAdmin):
-    fields = 'filename'
+    list_display = ('filename', )

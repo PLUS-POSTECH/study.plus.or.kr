@@ -13,7 +13,3 @@ RUN mkdir /static
 RUN mkdir /code
 ADD ./src /code/
 WORKDIR /code
-
-CMD ["/entry/wait-for-it.sh", "db:5432", "--", "/entry/entrypoint.sh"]
-
-EXPOSE 80 8000

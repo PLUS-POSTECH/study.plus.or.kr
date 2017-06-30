@@ -13,8 +13,8 @@
                 <div class="description">{{ seminar.description }}</div>
             </div>
             {% for attachment in seminar.attachments.all %}
-            <a class="ui bottom attached button" href="{{ attachment.url }}">
-                <i class="download icon"/>
+            <a class="ui bottom attached button" href="{{ attachment.file.url }}">
+                <i class="download icon"></i>
                 Download
             </a>
             {% endfor %}

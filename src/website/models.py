@@ -13,7 +13,7 @@ class User(AbstractUser):
 class Category(models.Model):
     # TODO: Do Later
     name = models.CharField(max_length=30, unique=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return '%s' % self.name
@@ -22,11 +22,11 @@ class Category(models.Model):
 class ProblemAttachment(models.Model):
     file = models.FileField(upload_to='problem_attachments')
 
-    def filename(self, obj):
-        return os.path.basename(obj.file.name)
+    def filename(self):
+        return os.path.basename(self.file.name)
 
     def __str__(self):
-        return '%s' % self.filename(self)
+        return '%s' % self.filename()
 
 
 class Problem(models.Model):
@@ -35,7 +35,7 @@ class Problem(models.Model):
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     key = models.TextField()
     last_modified = models.DateTimeField()
     points = models.IntegerField()
@@ -43,10 +43,13 @@ class Problem(models.Model):
     attachments = models.ManyToManyField(ProblemAttachment)
     hidden = models.BooleanField()
 
+    def categories_name(self):
+        return ','.join(map(lambda x: x.name, self.categories.all()))
+
 
 class Session(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    description = models.TextField
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return '%s' % self.title
@@ -55,11 +58,11 @@ class Session(models.Model):
 class SeminarAttachment(models.Model):
     file = models.FileField(upload_to='seminar_attachments')
 
-    def filename(self, obj):
-        return os.path.basename(obj.file.name)
+    def filename(self):
+        return os.path.basename(self.file.name)
 
     def __str__(self):
-        return '%s' % self.filename(self)
+        return '%s' % self.filename()
 
 
 class Seminar(models.Model):
@@ -70,6 +73,9 @@ class Seminar(models.Model):
     date = models.DateField()
     description = models.TextField()
     attachments = models.ManyToManyField(SeminarAttachment)
+
+    def categories_name(self):
+        return ','.join(map(lambda x: x.name, self.categories.all()))
 
     def __str__(self):
         return '%s' % self.title

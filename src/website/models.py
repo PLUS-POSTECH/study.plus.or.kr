@@ -22,11 +22,11 @@ class Category(models.Model):
 class ProblemAttachment(models.Model):
     file = models.FileField(upload_to='problem_attachments')
 
-    def filename(self):
-        return os.path.basename(self.file.name)
+    def filename(self, obj):
+        return os.path.basename(obj.file.name)
 
     def __str__(self):
-        return '%s' % self.filename()
+        return '%s' % self.filename(self)
 
 
 class Problem(models.Model):
@@ -55,11 +55,11 @@ class Session(models.Model):
 class SeminarAttachment(models.Model):
     file = models.FileField(upload_to='seminar_attachments')
 
-    def filename(self):
-        return os.path.basename(self.file.name)
+    def filename(self, obj):
+        return os.path.basename(obj.file.name)
 
     def __str__(self):
-        return '%s' % self.filename()
+        return '%s' % self.filename(self)
 
 
 class Seminar(models.Model):
@@ -73,11 +73,3 @@ class Seminar(models.Model):
 
     def __str__(self):
         return '%s' % self.title
-
-admin.site.register(User)
-admin.site.register(Category)
-admin.site.register(Problem)
-admin.site.register(ProblemAttachment)
-admin.site.register(Session)
-admin.site.register(Seminar)
-admin.site.register(SeminarAttachment)

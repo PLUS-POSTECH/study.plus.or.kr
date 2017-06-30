@@ -9,11 +9,11 @@
         <div class="card">
             <div class="content">
                 <div class="header">{{ seminar.title }}</div>
-                <div class="meta">{% for category in seminar.categories.all %}{{ category }}&nbsp;{% endfor %} - {{ seminar.author }} - {{ seminar.date }}</div>
+                <div class="meta">{{ seminar.categories_name }} - {{ seminar.author }} - {{ seminar.date }}</div>
                 <div class="description">{{ seminar.description }}</div>
             </div>
             {% for attachment in seminar.attachments.all %}
-            <a class="ui bottom attached button" href="/download?filename={{ "seminar_attachments/" + attachment | urlencode }}">
+            <a class="ui bottom attached button" href="/download?filename={{ "seminar_attachments/" | urlencode }}{{ attachment | urlencode }}">
                 <i class="download icon"></i>
                 {{ attachment }}
             </a>

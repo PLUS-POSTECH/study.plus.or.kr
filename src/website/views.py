@@ -3,9 +3,10 @@ from pathlib import Path
 
 from django import forms
 from django.contrib.auth import login
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
+from django.utils.encoding import smart_str
 from django.utils.translation import gettext as _
 from django.views import View
 from django.http import FileResponse, Http404
@@ -60,12 +61,13 @@ class SeminarListForm(forms.Form):
     s = forms.CharField(required=False)
 
 
-def plus_member_check(user):
-    return user.is_plus_member
+class PLUSMemberCheck(UserPassesTestMixin):
+    def test_func(self):
+        return not self.request.user.is_anonymous() and self.request.user.is_plus_member
+    login_url = '/login'
 
 
-class SeminarListView(View):
-    @user_passes_test(plus_member_check, login_url='/login')
+class SeminarListView(PLUSMemberCheck, View):
     def get(self, request):
         # TODO: Add seminar list template
         # form = SeminarListForm(request.GET)
@@ -84,26 +86,30 @@ class DownloadForm(forms.Form):
     filename = forms.CharField(required=False)
 
 
-class DownloadView(View):
-    @user_passes_test(plus_member_check, login_url='/login')
+class DownloadView(PLUSMemberCheck, View):
     def get(self, request):
         form = DownloadForm(request.GET)
+        if not form.is_valid():
+            raise Http404("Download Request Not Valid")
         filename = form.cleaned_data['filename']
 
         if DownloadView.download_filter(filename):
-            raise Http404("File Not Found")
+            raise Http404("Download Request Not Valid")
 
-        return FileResponse(open(filename))
+        size = Path(filename).stat().st_size
+        response = FileResponse(open(filename, 'rb'))
+        response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.split(filename)[1]
+        response['Content-Length'] = str(size)
+        return response
 
     @staticmethod
     def download_filter(filename):
         split = os.path.split(filename)
-
-        if not split[0] != 'problem_attachments' \
-           and not split[0] != 'seminar_attachments':
+        download_path_whitelist = ['problem_attachments', 'seminar_attachments']
+        if split[0] not in download_path_whitelist:
             return True
 
-        _, _, filenames = os.walk(split[0])
+        _, _, filenames = next(os.walk(split[0]), (None, None, []))
         if split[1] not in filenames:
             return True
 

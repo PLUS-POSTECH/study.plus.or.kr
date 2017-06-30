@@ -40,7 +40,7 @@ class Problem(models.Model):
     last_modified = models.DateTimeField()
     points = models.IntegerField()
     distributed_points = models.IntegerField()
-    attachments = models.ManyToManyField(ProblemAttachment)
+    attachments = models.ManyToManyField(ProblemAttachment, blank=True)
     hidden = models.BooleanField()
 
     def categories_name(self):
@@ -71,8 +71,8 @@ class Seminar(models.Model):
     author = models.ForeignKey(User)
     session = models.ForeignKey(Session)
     date = models.DateField()
-    description = models.TextField()
-    attachments = models.ManyToManyField(SeminarAttachment)
+    description = models.TextField(blank=True)
+    attachments = models.ManyToManyField(SeminarAttachment, blank=True)
 
     def categories_name(self):
         return ','.join(map(lambda x: x.name, self.categories.all()))

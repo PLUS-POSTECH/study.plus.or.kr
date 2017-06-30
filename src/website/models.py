@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -14,7 +16,7 @@ class Category(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
 
 class ProblemAttachment(models.Model):
@@ -24,12 +26,13 @@ class ProblemAttachment(models.Model):
         return os.path.basename(self.file.name)
 
     def __str__(self):
-        return '%s' % (self.filename())
+        return '%s' % self.filename()
 
 
 class Problem(models.Model):
     # TODO: Do Later
     number = models.IntegerField(unique=True)
+    title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     description = models.TextField()
@@ -46,7 +49,7 @@ class Session(models.Model):
     description = models.TextField
 
     def __str__(self):
-        return '%s' % (self.title)
+        return '%s' % self.title
 
 
 class SeminarAttachment(models.Model):
@@ -56,7 +59,7 @@ class SeminarAttachment(models.Model):
         return os.path.basename(self.file.name)
 
     def __str__(self):
-        return '%s' % (self.filename())
+        return '%s' % self.filename()
 
 
 class Seminar(models.Model):
@@ -69,7 +72,7 @@ class Seminar(models.Model):
     attachments = models.ManyToManyField(SeminarAttachment)
 
     def __str__(self):
-        return '%s' % (self.title)
+        return '%s' % self.title
 
 admin.site.register(User)
 admin.site.register(Category)

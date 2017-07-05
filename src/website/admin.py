@@ -11,7 +11,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('title', 'description')
 
 
 @admin.register(Problem)
@@ -31,7 +31,7 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(Seminar)
 class SeminarAdmin(admin.ModelAdmin):
-    list_display = ('title', 'categories_name', 'author', 'description')
+    list_display = ('title', 'session', 'categories_title', 'author', 'description')
 
 
 @admin.register(SeminarAttachment)

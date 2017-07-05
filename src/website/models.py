@@ -9,18 +9,29 @@ class User(AbstractUser):
     povis_id = models.CharField(max_length=20, blank=True)
     is_plus_member = models.BooleanField(default=False)
 
+    class Meta:
+        verbose_name = '사용자'
+        verbose_name_plural = '사용자들'
+
 
 class Category(models.Model):
-    # TODO: Do Later
-    name = models.CharField(max_length=30, unique=True)
+    title = models.CharField(max_length=30, unique=True)
     description = models.TextField(blank=True)
 
+    class Meta:
+        verbose_name = '카테고리'
+        verbose_name_plural = '카테고리들'
+
     def __str__(self):
-        return '%s' % self.name
+        return '%s' % self.title
 
 
 class ProblemAttachment(models.Model):
     file = models.FileField(upload_to='problem_attachments')
+
+    class Meta:
+        verbose_name = '문제 첨부파일'
+        verbose_name_plural = '문제 첨부파일들'
 
     def filename(self):
         return os.path.basename(self.file.name)
@@ -30,7 +41,6 @@ class ProblemAttachment(models.Model):
 
 
 class Problem(models.Model):
-    # TODO: Do Later
     number = models.IntegerField(unique=True)
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
@@ -43,6 +53,10 @@ class Problem(models.Model):
     attachments = models.ManyToManyField(ProblemAttachment, blank=True)
     hidden = models.BooleanField()
 
+    class Meta:
+        verbose_name = '문제'
+        verbose_name_plural = '문제들'
+
     def categories_name(self):
         return ','.join(map(lambda x: x.name, self.categories.all()))
 
@@ -50,6 +64,11 @@ class Problem(models.Model):
 class Session(models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
+    isActive = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = '분기'
+        verbose_name_plural = '분기들'
 
     def __str__(self):
         return '%s' % self.title
@@ -57,6 +76,10 @@ class Session(models.Model):
 
 class SeminarAttachment(models.Model):
     file = models.FileField(upload_to='seminar_attachments')
+
+    class Meta:
+        verbose_name = '세미나 첨부파일'
+        verbose_name_plural = '세미나 첨부파일들'
 
     def filename(self):
         return os.path.basename(self.file.name)
@@ -74,8 +97,12 @@ class Seminar(models.Model):
     description = models.TextField(blank=True)
     attachments = models.ManyToManyField(SeminarAttachment, blank=True)
 
-    def categories_name(self):
-        return ','.join(map(lambda x: x.name, self.categories.all()))
+    class Meta:
+        verbose_name = '세미나'
+        verbose_name_plural = '세미나들'
+
+    def categories_title(self):
+        return ', '.join(map(lambda x: x.title, self.categories.all()))
 
     def __str__(self):
         return '%s' % self.title

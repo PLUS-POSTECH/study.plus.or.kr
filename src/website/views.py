@@ -57,28 +57,30 @@ class RegisterView(View):
             })
 
 
-class SeminarListForm(forms.Form):
-    s = forms.CharField(required=False)
-
-
 class PLUSMemberCheck(UserPassesTestMixin):
     def test_func(self):
         return not self.request.user.is_anonymous() and self.request.user.is_plus_member
     login_url = '/login'
 
 
+class SeminarListForm(forms.Form):
+    session = forms.CharField(required=False)
+
+
 class SeminarListView(PLUSMemberCheck, View):
     def get(self, request):
-        # TODO: Add seminar list template
-        # form = SeminarListForm(request.GET)
-        # session_filter = form.cleaned_data['s']
-        # sessions = Session.objects.order_by('title')
-        seminars = Seminar.objects.order_by('-date')
-        # if session_filter != '':
-        #     seminars = seminars.filter(session=session_filter)
+        form = SeminarListForm(request.GET)
+        sessions = Session.objects.filter(isActive=True).order_by('title')
+        if form.is_valid() and form.cleaned_data['session']:
+            # TODO: Add escape on delimiter or use the format on semantic ui.
+            # Possible Security Concerns
+            session_filter = form.cleaned_data['session'].split("|")
+            sessions = Session.objects.filter(title__in=session_filter).order_by('title')
+
+        seminar_dict = {session: Seminar.objects.filter(session=session).order_by('-date') for session in sessions}
+
         return render(request, 'seminar/list.html', {
-            # 'sessions': sessions,
-            'seminars': seminars
+            'seminar_dict': seminar_dict
         })
 
 
@@ -91,7 +93,7 @@ class DownloadView(PLUSMemberCheck, View):
         form = DownloadForm(request.GET)
         if not form.is_valid():
             raise Http404("Download Request Not Valid")
-        filename = form.cleaned_data['filename']
+        filename = smart_str(form.cleaned_data['filename'])
 
         if DownloadView.download_filter(filename):
             raise Http404("Download Request Not Valid")
@@ -114,4 +116,3 @@ class DownloadView(PLUSMemberCheck, View):
             return True
 
         return False
-

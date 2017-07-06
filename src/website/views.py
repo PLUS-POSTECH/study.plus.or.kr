@@ -64,23 +64,48 @@ class PLUSMemberCheck(UserPassesTestMixin):
 
 
 class SeminarListForm(forms.Form):
-    session = forms.CharField(required=False)
+    q = forms.CharField(required=False)
+    search_by = forms.ChoiceField(required=False, choices=[
+        ('', 'seminar'),
+        ('seminar', 'seminar'),
+        ('session', 'session')
+    ])
 
 
 class SeminarListView(PLUSMemberCheck, View):
     def get(self, request):
+        # TODO: Add Category Filter
         form = SeminarListForm(request.GET)
-        sessions = Session.objects.filter(isActive=True).order_by('title')
-        if form.is_valid() and form.cleaned_data['session']:
-            # TODO: Add escape on delimiter or use the format on semantic ui.
-            # Possible Security Concerns
-            session_filter = form.cleaned_data['session'].split("|")
-            sessions = Session.objects.filter(title__in=session_filter).order_by('title')
+        if not form.is_valid():
+            raise Http404("Invalid Seminar Request")
 
-        seminar_dict = {session: Seminar.objects.filter(session=session).order_by('-date') for session in sessions}
+        all_sessions = Session.objects.order_by('title')
+        all_seminars = Seminar.objects.order_by('title')
+        sessions = all_sessions
+        seminars = Seminar.objects.order_by('session', '-date')
+        q = ''
+        search_by = 'seminar'
+        if form.cleaned_data['q']:
+            if form.cleaned_data['search_by']:
+                search_by = form.cleaned_data['search_by']
+            q = form.cleaned_data['q']
+
+            if search_by == "seminar":
+                seminars = seminars.filter(title__search=q)
+                sessions = sessions.filter(pk__in=seminars.values_list('session', flat=True).distinct())
+            elif search_by == "session":
+                sessions = sessions.filter(title__search=q)
+        else:
+            sessions = sessions.filter(isActive=True)
+
+        seminar_dict = {session: seminars.filter(session=session) for session in sessions}
 
         return render(request, 'seminar/list.html', {
-            'seminar_dict': seminar_dict
+            'sessions': all_sessions,
+            'seminars': all_seminars,
+            'seminar_dict': seminar_dict,
+            'search_by': search_by,
+            'q': q
         })
 
 

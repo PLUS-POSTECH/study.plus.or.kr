@@ -4,6 +4,32 @@
 {% block seminar_active %}active{% endblock %}
 
 {% block content %}
+    <form class="ui form" method="get" action="/seminar">
+        <div class="inline fields">
+            <div class="field">
+                Search by
+                <div class="ui inline dropdown">
+                    <input name="search_by" value="{{ search_by }}" type="hidden">
+                    <div class="text">{{ search_by }}</div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <div class="header">Select search field</div>
+                        <div class="item" data-text="seminar">Seminar</div>
+                        <div class="item" data-text="session">Session</div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input name="q" class="prompt" placeholder="Search..." value="{{ q }}" type="text">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+        </div>
+    </form>
     {% if not seminar_dict %}
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
@@ -11,7 +37,7 @@
         <h2 class="first">{{ session.title }}</h2>
         <div class="ui cards">
             {% for seminar in seminars %}
-                <div class="card">
+                <div class="ui card">
                     <div class="content">
                         <div class="header">{{ seminar.title }}</div>
                         <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
@@ -27,6 +53,51 @@
             {% endfor %}
         </div>
     {% endfor %}
+    <script>
+        $(document).ready(function () {
+            var $_ui_dropdown = $('.ui.dropdown');
+            var $_ui_search = $('.ui.search');
+
+            var session_list = [
+                {% for session in sessions %}
+                    { title: '{{ session.title }}', href: '/seminar?search_by=session&q={{ session.title | urlencode }}' },
+                {% endfor %}
+            ];
+            var seminar_list = [
+                {% for seminar in seminars %}
+                    { title: '{{ seminar.title }}', href: '/seminar?search_by=seminar&q={{ seminar.title | urlencode }}' },
+                {% endfor %}
+            ];
+            $_ui_search
+                .search({
+                    onSelect: function (result, response) {
+                        window.location.href = result.href;
+                    }
+                });
+            $_ui_dropdown
+                .dropdown({
+                    onChange: function (val) {
+                        switch (val) {
+                            case 'seminar':
+                                $_ui_search.search('setting', 'source', seminar_list);
+                                break;
+                            case 'session':
+                                $_ui_search.search('setting', 'source', session_list);
+                                break;
+                        }
+                        $_ui_search.search('clear cache');
+                    }
+                });
+            switch ($_ui_dropdown.dropdown('get value')) {
+                case 'seminar':
+                    $_ui_search.search('setting', 'source', seminar_list);
+                    break;
+                case 'session':
+                    $_ui_search.search('setting', 'source', session_list);
+                    break;
+            }
+        });
+    </script>
 {% endblock %}
 
 <!-- Sort cards by session -->

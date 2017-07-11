@@ -5,6 +5,7 @@
         <div class="ui container">
             <a class="header item" href="/">PLUS Study</a>
             <a class="item {% block home_active %}{% endblock %}" href="/">Home</a>
+            <a class="item {% block problem_active %}{% endblock %}" href="/problem">Problem</a>
             <a class="item {% block seminar_active %}{% endblock %}" href="/seminar">Seminar</a>
             <div class="item right">
                 {% if user.is_authenticated %}

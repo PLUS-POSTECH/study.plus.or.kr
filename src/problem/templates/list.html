@@ -1,0 +1,21 @@
+{% extends 'menu.html' %}
+
+{% block title %}Problem{% endblock %}
+{% block problem_active %}active{% endblock %}
+
+{% block content %}
+    <div class="ui grid">
+        {% for row in rows %}
+        <div class="one wide column"></div>
+    </div>
+    <div class="ui modal">
+        <i class="close icon"></i>
+        <div id="modal_content">
+            <div class="ui text loader active">Loading</div>
+        </div>
+    </div>
+
+    <script>
+        var _ui_modal = $('.ui.modal')
+    </script>
+{% endblock %}

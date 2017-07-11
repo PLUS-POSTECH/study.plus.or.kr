@@ -44,7 +44,7 @@
                         <div class="description">{{ seminar.description }}</div>
                     </div>
                     {% for attachment in seminar.attachments.all %}
-                        <a class="ui bottom attached button" href="/download?filename={{ "seminar_attachments/" | urlencode }}{{ attachment | urlencode }}">
+                        <a class="ui bottom attached button" href="/seminar/download?filename={{ attachment | urlencode }}">
                             <i class="download icon"></i>
                             {{ attachment }}
                         </a>

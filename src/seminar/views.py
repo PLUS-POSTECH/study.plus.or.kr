@@ -50,7 +50,7 @@ class SeminarListView(PlusMemberCheck, View):
 
         seminar_dict = {session: seminars.filter(session=session) for session in sessions}
 
-        return render(request, 'list.html', {
+        return render(request, 'seminar/list.html', {
             'sessions': all_sessions,
             'seminars': all_seminars,
             'seminar_dict': seminar_dict,
@@ -73,7 +73,7 @@ class DownloadView(PlusMemberCheck, View):
         if DownloadView.download_filter(filename):
             raise Http404("Download Request Not Valid")
 
-        file_path = 'seminar_attachments' + os.path.sep + filename
+        file_path = 'seminar' + os.path.sep + 'attachment' + os.path.sep + filename
 
         size = Path(file_path).stat().st_size
         response = FileResponse(open(file_path, 'rb'))

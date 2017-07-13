@@ -3,37 +3,14 @@ import os
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from website.models import Category, Session
+
 
 User = get_user_model()
 
 
-class Session(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
-    isActive = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = '분기'
-        verbose_name_plural = '분기들'
-
-    def __str__(self):
-        return '%s' % self.title
-
-
-class SeminarCategory(models.Model):
-    title = models.CharField(max_length=30, unique=True)
-    description = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name = '세미나 카테고리'
-        verbose_name_plural = '세미나 카테고리들'
-
-    def __str__(self):
-        return '%s' % self.title
-
-
 class SeminarAttachment(models.Model):
-    file = models.FileField(upload_to='seminar_attachments')
+    file = models.FileField(upload_to='seminar/attachments')
 
     class Meta:
         verbose_name = '세미나 첨부파일'
@@ -48,7 +25,7 @@ class SeminarAttachment(models.Model):
 
 class Seminar(models.Model):
     title = models.CharField(max_length=50)
-    categories = models.ManyToManyField(SeminarCategory)
+    categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     session = models.ForeignKey(Session)
     date = models.DateField()

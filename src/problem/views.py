@@ -40,7 +40,7 @@ class DownloadView(PlusMemberCheck, View):
         if DownloadView.download_filter(filename):
             raise Http404("Download Request Not Valid")
 
-        file_path = 'problem_attachments' + os.path.sep + filename
+        file_path = 'problem' + os.path.sep + 'attachment' + os.path.sep + filename
 
         size = Path(file_path).stat().st_size
         response = FileResponse(open(file_path, 'rb'))

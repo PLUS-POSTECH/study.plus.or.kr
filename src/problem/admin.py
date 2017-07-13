@@ -10,3 +10,13 @@ class ProblemAdmin(admin.ModelAdmin):
 @admin.register(ProblemAttachment)
 class ProblemAttachmentAdmin(admin.ModelAdmin):
     list_display = ('filename', )
+
+
+@admin.register(ProblemInstance)
+class ProblemInstanceAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'problem')
+
+
+@admin.register(ProblemList)
+class ProblemListAdmin(admin.ModelAdmin):
+    list_display = ('title', 'session', 'description')

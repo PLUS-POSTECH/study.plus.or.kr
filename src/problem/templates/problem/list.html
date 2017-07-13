@@ -4,18 +4,120 @@
 {% block problem_active %}active{% endblock %}
 
 {% block content %}
-    <div class="ui grid">
-        {% for row in rows %}
-        <div class="one wide column"></div>
-    </div>
-    <div class="ui modal">
-        <i class="close icon"></i>
-        <div id="modal_content">
-            <div class="ui text loader active">Loading</div>
+    <form class="ui form" method="get" action="/seminar">
+        <div class="inline fields">
+            <div class="field">
+                Search by
+                <div class="ui inline dropdown">
+                    <input name="search_by" value="{{ search_by }}" type="hidden">
+                    <div class="text">{{ search_by }}</div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <div class="header">Select search field</div>
+                        <div class="item" data-text="list_title">List Title</div>
+                        <div class="item" data-text="session">Session</div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input name="q" class="prompt" placeholder="Search..." value="{{ q }}" type="text">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
+    {% for session, problem_list, problems in queried_problem_lists %}
+        <h2 class="header">{{ session.title }}: {{ problem_list.title }}</h2>
+        <div class="ui stackable four column grid">
+            {% for problem, authed in problems %}
+                {% if not problem.hidden or is_staff %}
+                    <div class="column">
+                        <a class="ui {% if problem.hidden %}grey inverted{% elif authed %}olive inverted{% endif %} center aligned padded segment" href="#" onclick="request_problem({{ problem.pk }})">
+                            <div class="ui blue ribbon label">{{ problem.problem.categories_name }}</div>
+                            <h3 class="ui header">{{ problem }}</h3>
+                            <h3 class="ui sub header">{{ problem.points }}</h3>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <div class="ui modal" id="modal_content"></div>
 
     <script>
-        var _ui_modal = $('.ui.modal')
+        var request_problem = function () {};
+        $(document).ready(function () {
+            var $_ui_dropdown = $('.ui.dropdown');
+            var $_ui_search = $('.ui.search');
+            var $_ui_modal = $('.ui.modal');
+
+            var session_list = [
+                {% for session in sessions %}
+                    { title: '{{ session.title }}', href: '/problem?search_by=session&q={{ session.title | urlencode }}' },
+                {% endfor %}
+            ];
+            var list_title_list = [
+                {% for problem_list in problem_lists %}
+                    { title: '{{ problem_list.title }}', href: '/problem?search_by=list_title&q={{ problem_list.title | urlencode }}' },
+                {% endfor %}
+            ];
+            $_ui_search
+                .search({
+                    onSelect: function (result) {
+                        window.location.href = result.href;
+                    }
+                });
+            $_ui_dropdown
+                .dropdown({
+                    onChange: function (val) {
+                        switch (val) {
+                            case 'list_title':
+                                $_ui_search.search('setting', 'source', list_title_list);
+                                break;
+                            case 'session':
+                                $_ui_search.search('setting', 'source', session_list);
+                                break;
+                        }
+                        $_ui_search.search('clear cache');
+                    }
+                });
+            switch ($_ui_dropdown.dropdown('get value')) {
+                case 'list_title':
+                    $_ui_search.search('setting', 'source', list_title_list);
+                    break;
+                case 'session':
+                    $_ui_search.search('setting', 'source', session_list);
+                    break;
+            }
+
+            request_problem = function (prob_id) {
+                $_ui_modal.html('<div class="ui text loader active">Loading</div>');
+                $_ui_modal.show();
+                $.ajax({
+                    url: 'problem/get',
+                    type: 'GET',
+                    data: { prob_id: prob_id },
+                    dataType: 'html',
+                    success: function(data) {
+                        $_ui_modal.html(data)
+                    },
+                    error: function() {
+                        $_ui_modal.html('' +
+                            '<div class="ui negative message">' +
+                            '<i class="close icon"></i>' +
+                            '<div class="header">' +
+                            'Error' +
+                            '</div>' +
+                            '<p>Failed to retreive problem</p>' +
+                            '</div>' +
+                            '');
+                    }
+                });
+            }
+        });
     </script>
 {% endblock %}

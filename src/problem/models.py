@@ -24,15 +24,15 @@ class ProblemAttachment(models.Model):
 
 
 class Problem(models.Model):
-    number = models.IntegerField(unique=True)
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     description = models.TextField(blank=True)
-    key = models.TextField()
+    auth_key = models.TextField()
     last_modified = models.DateTimeField()
     points = models.IntegerField()
     distributed_points = models.IntegerField()
+    breakthrough_points = models.IntegerField()
     attachments = models.ManyToManyField(ProblemAttachment, blank=True)
     hidden = models.BooleanField()
 

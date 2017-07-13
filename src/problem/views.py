@@ -10,20 +10,77 @@ from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
+from website.models import Session
+from .models import ProblemList, ProblemInstance
 
 
 class ProblemListForm(forms.Form):
-    sort_by = forms.ChoiceField(required=False, choices=[
-        ('', 'number'),
-        ('number', 'number'),
-        ('category', 'category')
+    q = forms.CharField(required=False)
+    search_by = forms.ChoiceField(required=False, choices=[
+        ('list_title', 'list title'),
+        ('session', 'session')
     ])
 
 
 class ProblemListView(PlusMemberCheck, View):
     def get(self, request):
-        # TODO: Implement this
-        raise Http404('Not Implemented')
+        form = ProblemListForm(request.GET)
+        if not form.is_valid():
+            raise Http404("Invalid Problem Request")
+
+        all_sessions = Session.objects.order_by('title')
+        all_problem_lists = ProblemList.objects.order_by('title')
+        sessions = all_sessions.filter(isActive=True)
+        problem_lists = all_problem_lists
+        q = ''
+        search_by = 'list_title'
+        if form.cleaned_data['q']:
+            if form.cleaned_data['search_by']:
+                search_by = form.cleaned_data['search_by']
+            q = form.cleaned_data['q']
+
+            if search_by == "list_title":
+                problem_lists = problem_lists.filter(title__search=q)
+            elif search_by == "session":
+                sessions = sessions.filter(title__search=q)
+                problem_lists = problem_lists.filter(session_in=sessions)
+        else:
+            problem_lists = problem_lists.filter(session_in=sessions)
+
+        problem_response = [(
+            Session.objects.get(pk=problem_list.session),
+            [
+                (problem, request.user in problem.solved_users.all())
+                for problem in problem_list.problem_instances.all()
+            ]) for problem_list in problem_lists
+        ]
+
+        return render(request, 'seminar/list.html', {
+            'sessions': all_sessions,
+            'problem_lists': all_problem_lists,
+            'queried_problem_lists': problem_response,
+            'search_by': search_by,
+            'q': q
+        })
+
+
+class ProblemGetForm(forms.Form):
+    prob_id = forms.IntegerField(required=True)
+
+
+class ProblemGetView(PlusMemberCheck, View):
+    def get(self, request):
+        form = ProblemGetForm(request.GET)
+        if not form.is_valid():
+            raise Http404("Invalid Problem Request")
+
+        problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
+        authed = request.user in problem_response.solved_users.all()
+
+        return render(request, 'seminar/list.html', {
+            'problem': problem_response,
+            'authed': authed
+        })
 
 
 class DownloadForm(forms.Form):

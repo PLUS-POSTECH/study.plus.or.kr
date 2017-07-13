@@ -3,24 +3,14 @@ import os
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from website.models import Category
+
 
 User = get_user_model()
 
 
-class ProblemCategory(models.Model):
-    title = models.CharField(max_length=30, unique=True)
-    description = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name = '문제 카테고리'
-        verbose_name_plural = '문제 카테고리들'
-
-    def __str__(self):
-        return '%s' % self.title
-
-
 class ProblemAttachment(models.Model):
-    file = models.FileField(upload_to='problem_attachments')
+    file = models.FileField(upload_to='problem/attachment')
 
     class Meta:
         verbose_name = '문제 첨부파일'
@@ -36,7 +26,7 @@ class ProblemAttachment(models.Model):
 class Problem(models.Model):
     number = models.IntegerField(unique=True)
     title = models.CharField(max_length=50)
-    categories = models.ManyToManyField(ProblemCategory)
+    categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User)
     description = models.TextField(blank=True)
     key = models.TextField()

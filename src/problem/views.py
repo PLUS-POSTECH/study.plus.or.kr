@@ -3,7 +3,7 @@ import mimetypes
 from pathlib import Path
 
 from django import forms
-from django.http import Http404, FileResponse, JsonResponse
+from django.http import HttpResponseBadRequest, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.encoding import smart_str
 from django.utils.http import urlquote
@@ -26,7 +26,7 @@ class ProblemListView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemListForm(request.GET)
         if not form.is_valid():
-            raise Http404('Invalid Problem Request')
+            return HttpResponseBadRequest()
 
         all_sessions = Session.objects.order_by('title')
         all_problem_lists = ProblemList.objects.order_by('title')
@@ -74,7 +74,7 @@ class ProblemGetView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemGetForm(request.GET)
         if not form.is_valid():
-            raise Http404('Invalid Problem Request')
+            return HttpResponseBadRequest()
 
         problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
         authed = request.user in problem_response.solved_users.all()
@@ -94,7 +94,7 @@ class ProblemAuthView(PlusMemberCheck, View):
     def post(self, request):
         form = ProblemAuthForm(request.POST)
         if not form.is_valid():
-            raise Http404('Invalid Problem Request')
+            return HttpResponseBadRequest()
 
         return_obj = {}
         prob_id = form.cleaned_data['prob_id']
@@ -125,11 +125,11 @@ class DownloadView(PlusMemberCheck, View):
     def get(self, request):
         form = DownloadForm(request.GET)
         if not form.is_valid():
-            raise Http404('Download Request Not Valid')
+            return HttpResponseBadRequest()
         filename = smart_str(form.cleaned_data['filename'])
 
         if DownloadView.download_filter(filename):
-            raise Http404('Download Request Not Valid')
+            return HttpResponseBadRequest()
 
         file_path = 'problem' + os.path.sep + 'attachments' + os.path.sep + filename
 
@@ -147,7 +147,7 @@ class DownloadView(PlusMemberCheck, View):
 
     @staticmethod
     def download_filter(filename):
-        _, _, filenames = next(os.walk('problem/attachments'), (None, None, []))
+        _, _, filenames = next(os.walk('problem' + os.path.sep + 'attachments'), (None, None, []))
 
         return filename not in filenames
 

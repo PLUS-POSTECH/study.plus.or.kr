@@ -12,7 +12,7 @@
         <form class="ui form" id="auth_form" method="post" action="/problem/auth">
             <div class="inline fields">
                 <div class="field">
-                    <input type="hidden" name="problem_no" value="{{ problem.pk }}">
+                    <input type="hidden" name="prob_id" value="{{ problem.pk }}">
                 </div>
                 <div class="field">
                     <input class="ui input" id="auth_input_field" type="text" name="auth_key" placeholder="Input Flag">
@@ -46,7 +46,7 @@
                         _auth_input_field.removeClass('error');
                     },
                     success: function(data) {
-                        if (data['success'] === true) {
+                        if (data['result'] === true) {
                             _action_field.html('' +
                                 '<p>Accepted!</p>' +
                                 '<div class="ui positive button">OK</div>' +

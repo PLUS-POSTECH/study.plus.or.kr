@@ -3,7 +3,7 @@ import mimetypes
 from pathlib import Path
 
 from django import forms
-from django.http import Http404, FileResponse
+from django.http import Http404, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.encoding import smart_str
 from django.utils.http import urlquote
@@ -26,7 +26,7 @@ class ProblemListView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemListForm(request.GET)
         if not form.is_valid():
-            raise Http404("Invalid Problem Request")
+            raise Http404('Invalid Problem Request')
 
         all_sessions = Session.objects.order_by('title')
         all_problem_lists = ProblemList.objects.order_by('title')
@@ -72,7 +72,7 @@ class ProblemGetView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemGetForm(request.GET)
         if not form.is_valid():
-            raise Http404("Invalid Problem Request")
+            raise Http404('Invalid Problem Request')
 
         problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
         authed = request.user in problem_response.solved_users.all()
@@ -83,6 +83,38 @@ class ProblemGetView(PlusMemberCheck, View):
         })
 
 
+class ProblemAuthForm(forms.Form):
+    prob_id = forms.IntegerField(required=True)
+    auth_key = forms.CharField(required=True)
+
+
+class ProblemAuthView(PlusMemberCheck, View):
+    def post(self, request):
+        form = ProblemAuthForm(request.POST)
+        if not form.is_valid():
+            raise Http404('Invalid Problem Request')
+
+        return_obj = {}
+        prob_id = form.cleaned_data['prob_id']
+        auth_key = form.cleaned_data['auth_key']
+        problem_instance = ProblemInstance.objects.get(pk=prob_id)
+        if problem_instance.problem.auth_key == auth_key:
+            if request.user not in problem_instance.solved_users.all():
+                if not problem_instance.first_blood:
+                    setattr(problem_instance, 'first_blood', request.user.username)
+                problem_instance.solved_users.add(request.user)
+                problem = problem_instance.problem
+                fixed_point = problem.points
+                distributed_point = problem.distributed_points / len(problem_instance.solved_users.all())
+                setattr(problem_instance, 'points', fixed_point + distributed_point)
+                problem_instance.save()
+            return_obj['result'] = True
+        else:
+            return_obj['result'] = False
+
+        return JsonResponse(return_obj)
+
+
 class DownloadForm(forms.Form):
     filename = forms.CharField(required=True)
 
@@ -91,11 +123,11 @@ class DownloadView(PlusMemberCheck, View):
     def get(self, request):
         form = DownloadForm(request.GET)
         if not form.is_valid():
-            raise Http404("Download Request Not Valid")
+            raise Http404('Download Request Not Valid')
         filename = smart_str(form.cleaned_data['filename'])
 
         if DownloadView.download_filter(filename):
-            raise Http404("Download Request Not Valid")
+            raise Http404('Download Request Not Valid')
 
         file_path = 'problem' + os.path.sep + 'attachment' + os.path.sep + filename
 

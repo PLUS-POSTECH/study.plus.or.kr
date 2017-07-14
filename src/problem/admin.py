@@ -4,7 +4,7 @@ from .models import *
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    list_display = ('title', 'categories_name', 'author', 'description')
+    list_display = ('title', 'categories_title', 'author', 'description')
 
 
 @admin.register(ProblemAttachment)

@@ -43,19 +43,21 @@ class ProblemListView(PlusMemberCheck, View):
                 problem_lists = problem_lists.filter(title__search=q)
             elif search_by == "session":
                 sessions = sessions.filter(title__search=q)
-                problem_lists = problem_lists.filter(session_in=sessions)
+                problem_lists = problem_lists.filter(session__in=sessions)
         else:
-            problem_lists = problem_lists.filter(session_in=sessions)
+            problem_lists = problem_lists.filter(session__in=sessions)
 
         problem_response = [(
-            Session.objects.get(pk=problem_list.session),
+            problem_list,
             [
-                (problem, request.user in problem.solved_users.all())
+                (problem,
+                 request.user in problem.solved_users.all(),
+                 request.user.username == problem.first_blood)
                 for problem in problem_list.problem_instances.all()
             ]) for problem_list in problem_lists
         ]
 
-        return render(request, 'seminar/list.html', {
+        return render(request, 'problem/list.html', {
             'sessions': all_sessions,
             'problem_lists': all_problem_lists,
             'queried_problem_lists': problem_response,
@@ -77,7 +79,7 @@ class ProblemGetView(PlusMemberCheck, View):
         problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
         authed = request.user in problem_response.solved_users.all()
 
-        return render(request, 'seminar/list.html', {
+        return render(request, 'problem/get.html', {
             'problem': problem_response,
             'authed': authed
         })
@@ -139,12 +141,13 @@ class DownloadView(PlusMemberCheck, View):
         if encoding is not None:
             response['Content-Encoding'] = encoding
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename*="UTF-8\'\'%s"' % urlquote(filename)
+        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(filename)
         response['Content-Length'] = str(size)
         return response
 
     @staticmethod
     def download_filter(filename):
-        _, _, filenames = next(os.walk('problem_attachments'), (None, None, []))
+        _, _, filenames = next(os.walk('problem/attachment'), (None, None, []))
 
         return filename not in filenames
+

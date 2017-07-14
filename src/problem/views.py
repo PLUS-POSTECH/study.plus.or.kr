@@ -47,14 +47,21 @@ class ProblemListView(PlusMemberCheck, View):
         else:
             problem_lists = problem_lists.filter(session__in=sessions)
 
+        def problems_gen(problems):
+            for problem in problems:
+                first_blood = not problem.first_blood or request.user.username == problem.first_blood
+                solved_users = problem.solved_users.all()
+                authed = request.user in solved_users
+                solved_count = len(solved_users)
+                points = problem.points
+                points += problem.distributed_points / (solved_count + (0 if authed else 1))
+                points += problem.breakthrough_points if first_blood else 0
+                yield (problem, points, authed, first_blood)
+
         problem_response = [(
-            problem_list,
-            [
-                (problem,
-                 request.user in problem.solved_users.all(),
-                 request.user.username == problem.first_blood)
-                for problem in problem_list.problem_instances.all()
-            ]) for problem_list in problem_lists
+                problem_list,
+                problems_gen(problem_list.problem_instances.all())
+            ) for problem_list in problem_lists
         ]
 
         return render(request, 'problem/list.html', {
@@ -105,10 +112,6 @@ class ProblemAuthView(PlusMemberCheck, View):
                 if not problem_instance.first_blood:
                     setattr(problem_instance, 'first_blood', request.user.username)
                 problem_instance.solved_users.add(request.user)
-                problem = problem_instance.problem
-                fixed_point = problem.points
-                distributed_point = problem.distributed_points / len(problem_instance.solved_users.all())
-                setattr(problem_instance, 'points', fixed_point + distributed_point)
                 problem_instance.save()
             return_obj['result'] = True
         else:

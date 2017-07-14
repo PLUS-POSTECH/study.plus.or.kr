@@ -30,9 +30,6 @@ class Problem(models.Model):
     description = models.TextField(blank=True)
     auth_key = models.TextField()
     last_modified = models.DateTimeField()
-    points = models.IntegerField()
-    distributed_points = models.IntegerField()
-    breakthrough_points = models.IntegerField()
     attachments = models.ManyToManyField(ProblemAttachment, blank=True)
 
     class Meta:
@@ -49,6 +46,8 @@ class Problem(models.Model):
 class ProblemInstance(models.Model):
     problem = models.ForeignKey(Problem)
     points = models.IntegerField()
+    distributed_points = models.IntegerField()
+    breakthrough_points = models.IntegerField()
     first_blood = models.CharField(max_length=150, blank=True)
     solved_users = models.ManyToManyField(User, blank=True)
     hidden = models.BooleanField()

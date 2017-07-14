@@ -36,14 +36,14 @@
     {% for problem_list, problems in queried_problem_lists %}
         <h2 class="header">{{ problem_list.session.title }}: {{ problem_list.title }}</h2>
         <div class="ui stackable four column grid">
-            {% for problem, authed, got_first_blood in problems %}
+            {% for problem, points, authed, first_blood in problems %}
                 {% if not problem.hidden or is_staff %}
                     <a class="center aligned column" href="#" onclick="request_problem({{ problem.pk }})">
                         <div class="ui {% if problem.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid padded segment">
-                            <div class="ui top attached {% if not problem.first_blood or got_first_blood %}yellow{% endif %} label">{{ problem.problem.categories_title }}</div>
+                            <div class="ui top attached {% if first_blood %}yellow{% endif %} label">{{ problem.problem.categories_title }}</div>
                             <h3 class="ui header">
                                 {{ problem }}
-                                <div class="ui sub header">{{ problem.points }}</div>
+                                <div class="ui sub header">{{ points }}</div>
                             </h3>
                             {% if authed %}
                                 <div class="ui blue label">Solved</div>

@@ -10,7 +10,7 @@ User = get_user_model()
 
 
 class SeminarAttachment(models.Model):
-    file = models.FileField(upload_to='seminar/attachments')
+    file = models.FileField(upload_to='seminar' + os.path.sep + 'attachments')
 
     class Meta:
         verbose_name = '세미나 첨부파일'

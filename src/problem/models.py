@@ -10,7 +10,7 @@ User = get_user_model()
 
 
 class ProblemAttachment(models.Model):
-    file = models.FileField(upload_to='problem/attachment')
+    file = models.FileField(upload_to='problem/attachments')
 
     class Meta:
         verbose_name = '문제 첨부파일'

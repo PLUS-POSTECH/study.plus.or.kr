@@ -131,7 +131,7 @@ class DownloadView(PlusMemberCheck, View):
         if DownloadView.download_filter(filename):
             raise Http404('Download Request Not Valid')
 
-        file_path = 'problem' + os.path.sep + 'attachment' + os.path.sep + filename
+        file_path = 'problem' + os.path.sep + 'attachments' + os.path.sep + filename
 
         size = Path(file_path).stat().st_size
         response = FileResponse(open(file_path, 'rb'))
@@ -147,7 +147,7 @@ class DownloadView(PlusMemberCheck, View):
 
     @staticmethod
     def download_filter(filename):
-        _, _, filenames = next(os.walk('problem/attachment'), (None, None, []))
+        _, _, filenames = next(os.walk('problem/attachments'), (None, None, []))
 
         return filename not in filenames
 

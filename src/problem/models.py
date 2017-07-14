@@ -39,8 +39,8 @@ class Problem(models.Model):
         verbose_name = '문제'
         verbose_name_plural = '문제들'
 
-    def categories_name(self):
-        return ','.join(map(lambda x: x.name, self.categories.all()))
+    def categories_title(self):
+        return ','.join(map(lambda x: x.title, self.categories.all()))
 
     def __str__(self):
         return '%s' % self.title

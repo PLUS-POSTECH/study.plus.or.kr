@@ -4,7 +4,7 @@
 {% block problem_active %}active{% endblock %}
 
 {% block content %}
-    <form class="ui form" method="get" action="/seminar">
+    <form class="ui form" method="get" action="/problem">
         <div class="inline fields">
             <div class="field">
                 Search by
@@ -30,18 +30,28 @@
             </div>
         </div>
     </form>
-    {% for session, problem_list, problems in queried_problem_lists %}
-        <h2 class="header">{{ session.title }}: {{ problem_list.title }}</h2>
+    {% if not queried_problem_lists %}
+        <h2 class="header">No active session or queried problem list exists.</h2>
+    {% endif %}
+    {% for problem_list, problems in queried_problem_lists %}
+        <h2 class="header">{{ problem_list.session.title }}: {{ problem_list.title }}</h2>
         <div class="ui stackable four column grid">
-            {% for problem, authed in problems %}
+            {% for problem, authed, got_first_blood in problems %}
                 {% if not problem.hidden or is_staff %}
-                    <div class="column">
-                        <a class="ui {% if problem.hidden %}grey inverted{% elif authed %}olive inverted{% endif %} center aligned padded segment" href="#" onclick="request_problem({{ problem.pk }})">
-                            <div class="ui blue ribbon label">{{ problem.problem.categories_name }}</div>
-                            <h3 class="ui header">{{ problem }}</h3>
-                            <h3 class="ui sub header">{{ problem.points }}</h3>
-                        </a>
-                    </div>
+                    <a class="center aligned column" href="#" onclick="request_problem({{ problem.pk }})">
+                        <div class="ui {% if problem.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid padded segment">
+                            <div class="ui top attached {% if not problem.first_blood or got_first_blood %}yellow{% endif %} label">{{ problem.problem.categories_title }}</div>
+                            <h3 class="ui header">
+                                {{ problem }}
+                                <div class="ui sub header">{{ problem.points }}</div>
+                            </h3>
+                            {% if authed %}
+                                <div class="ui blue label">Solved</div>
+                            {% else %}
+                                <div class="ui grey label">Unsolved</div>
+                            {% endif %}
+                        </div>
+                    </a>
                 {% endif %}
             {% endfor %}
         </div>
@@ -49,7 +59,7 @@
     <div class="ui modal" id="modal_content"></div>
 
     <script>
-        var request_problem = function () {};
+        var request_problem = function () {}
         $(document).ready(function () {
             var $_ui_dropdown = $('.ui.dropdown');
             var $_ui_search = $('.ui.search');
@@ -93,17 +103,53 @@
                     $_ui_search.search('setting', 'source', session_list);
                     break;
             }
+            $_ui_modal.modal({
+                onApprove: function () {
+                    location.reload();
+                }
+            });
+
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
 
             request_problem = function (prob_id) {
                 $_ui_modal.html('<div class="ui text loader active">Loading</div>');
-                $_ui_modal.show();
+                $_ui_modal.modal('refresh');
+                $_ui_modal.modal('show');
                 $.ajax({
-                    url: 'problem/get',
+                    url: 'get',
                     type: 'GET',
                     data: { prob_id: prob_id },
                     dataType: 'html',
                     success: function(data) {
-                        $_ui_modal.html(data)
+                        $_ui_modal.html(data);
+                        $_ui_modal.modal('refresh');
                     },
                     error: function() {
                         $_ui_modal.html('' +

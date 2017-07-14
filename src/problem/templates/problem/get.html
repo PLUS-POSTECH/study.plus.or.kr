@@ -1,40 +1,51 @@
 <i class="close icon"></i>
-<div class="header">{{ problem }} - {{ problem.problem.categories_name }}, {{ problem.points }}</div>
+<div class="header">{{ problem }} - {{ problem.problem.categories_title }}, {{ problem.points }}</div>
 <div class="content">
     <div class="description">
         <p>{{ problem.problem.description }}</p>
-        <h4 class="ui header">First Blood: {{ problem.first_blood }}</h4>
-        <div>Solved {{ problem.solved_count }} times.</div>
+        {% for attachment in problem.problem.attachments.all %}
+            <a class="ui button" href="download?filename={{ attachment | urlencode }}">
+                <i class="download icon"></i>
+                {{ attachment }}
+            </a>
+        {% endfor %}
+        {% if problem.first_blood %}
+            <h4 class="ui header">First Blood: {{ problem.first_blood }}</h4>
+            <div>Solved by {{ problem.solved_count }} user(s).</div>
+        {% else %}
+            <h4 class="ui header">Take the first blood!</h4>
+        {% endif %}
     </div>
 </div>
 <div class="actions" id="action_field">
     {% if not authed %}
-        <form class="ui form" id="auth_form" method="post" action="/problem/auth">
-            <div class="inline fields">
-                <div class="field">
-                    <input type="hidden" name="prob_id" value="{{ problem.pk }}">
-                </div>
-                <div class="field">
-                    <input class="ui input" id="auth_input_field" type="text" name="auth_key" placeholder="Input Flag">
-                </div>
-                <button type="submit" class="ui primary right labeled icon button">
-                    <i class="unlock icon"></i>
-                    Auth
-                </button>
+        <form class="ui form" id="auth_form" method="post" action="auth">{% csrf_token %}
+            <div class="field">
+                <input type="hidden" name="prob_id" value="{{ problem.pk }}">
             </div>
+            <div class="field" id="auth_field">
+                <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
+            </div>
+            <button type="submit" class="ui primary right labeled icon button">
+                <i class="unlock icon"></i>
+                Auth
+            </button>
+            <div class="ui cancel button">Close</div>
         </form>
     {% else %}
         <p>Already Solved!</p>
+        <div class="ui cancel button">Close</div>
     {% endif %}
-    <div class="ui button">Close</div>
 </div>
 
 {% if not already_authed %}
     <script>
         $(document).ready(function () {
             var _auth_form = $('#auth_form');
-            var _auth_input_field = $('#auth_input_field');
+            var _auth_field = $('#auth_field');
+            var _auth_input = $('#auth_input');
             var _action_field = $('#action_field');
+
             _auth_form.submit(function (e) {
                 e.preventDefault();
                 $.ajax({
@@ -43,7 +54,7 @@
                     data: _auth_form.serialize(),
                     dataType: 'json',
                     beforeSend: function() {
-                        _auth_input_field.removeClass('error');
+                        _auth_field.removeClass('error');
                     },
                     success: function(data) {
                         if (data['result'] === true) {
@@ -52,8 +63,8 @@
                                 '<div class="ui positive button">OK</div>' +
                                 '');
                         } else {
-                            _auth_input_field.addClass('error');
-                            _auth_input_field.val('');
+                            _auth_field.addClass('error');
+                            _auth_input.val('NO~!');
                         }
                     },
                     error: function() {

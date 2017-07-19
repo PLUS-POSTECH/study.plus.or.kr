@@ -33,7 +33,7 @@ class Problem(models.Model):
     author = models.ForeignKey(User)
     description = models.TextField(blank=True)
     auth_key = models.TextField()
-    last_modified = models.DateTimeField()
+    last_modified = models.DateTimeField(auto_now=True)
     attachments = models.ManyToManyField(ProblemAttachment, blank=True)
 
     class Meta:

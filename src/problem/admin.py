@@ -5,6 +5,7 @@ from .models import *
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
     list_display = ('title', 'categories_title', 'author', 'description')
+    readonly_fields = ('last_modified', )
 
 
 @admin.register(ProblemAttachment)

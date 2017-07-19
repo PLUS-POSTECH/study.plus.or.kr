@@ -20,3 +20,8 @@ class ProblemInstanceAdmin(admin.ModelAdmin):
 @admin.register(ProblemList)
 class ProblemListAdmin(admin.ModelAdmin):
     list_display = ('title', 'session', 'description')
+
+
+@admin.register(ProblemAuthLog)
+class ProblemAuthLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'problem_instance', 'auth_key', 'datetime')

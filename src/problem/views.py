@@ -3,6 +3,7 @@ import mimetypes
 from datetime import datetime
 
 from django import forms
+from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest, FileResponse, JsonResponse
 from django.shortcuts import render
@@ -52,8 +53,7 @@ class ProblemListView(PlusMemberCheck, View):
                 first_solved_log = None
                 solved_log = ProblemAuthLog.objects.filter(problem_instance=problem,
                                                            auth_key=problem.problem.auth_key) \
-                    .order_by('datetime') \
-                    .distinct('user')
+                                                   .order_by('datetime')
 
                 if solved_log.exists():
                     first_solved_log = solved_log.first()
@@ -63,11 +63,11 @@ class ProblemListView(PlusMemberCheck, View):
                 points = problem.points
                 points += problem.distributed_points / (solved_count + (0 if authed else 1))
                 points += problem.breakthrough_points if first_blood else 0
-                yield (problem, points, authed, first_blood)
+                yield (problem, int(points), authed, first_blood)
 
         problem_response = [(
                 problem_list,
-                problems_gen(problem_list.problem_instances.all())
+                problems_gen(ProblemInstance.objects.filter(problem_list=problem_list))
             ) for problem_list in problem_lists
         ]
 
@@ -94,21 +94,19 @@ class ProblemGetView(PlusMemberCheck, View):
         first_solved_log = None
         solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
                                                    auth_key=problem_response.problem.auth_key) \
-                                           .distinct() \
                                            .order_by('datetime')
         if solved_log.exists():
             first_solved_log = solved_log.first()
         authed = solved_log.filter(user=request.user).exists()
         solved_count = solved_log.count()
 
-        problem = problem_response.problem
-        points = problem.points
-        points += problem.distributed_points / (solved_count + (0 if authed else 1))
-        points += problem.breakthrough_points if first_solved_log.user == request.user else 0
+        points = problem_response.points
+        points += problem_response.distributed_points / (solved_count + (0 if authed else 1))
+        points += problem_response.breakthrough_points if not first_solved_log or first_solved_log.user == request.user else 0
 
         return render(request, 'problem/get.html', {
             'problem_instance': problem_response,
-            'points': points,
+            'points': int(points),
             'solved_count': solved_count,
             'first_solved_log': first_solved_log,
             'authed': authed
@@ -134,17 +132,20 @@ class ProblemAuthView(PlusMemberCheck, View):
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 
-        ProblemAuthLog.objects.create(user=request.user,
-                                      problem_instance=problem_instance,
-                                      auth_key=auth_key,
-                                      datetime=datetime.now())
-
-        if problem_instance.problem.auth_key == auth_key:
-            return_obj['result'] = True
-        else:
+        try:
+            ProblemAuthLog.objects.create(user=request.user,
+                                          problem_instance=problem_instance,
+                                          auth_key=auth_key,
+                                          datetime=datetime.now())
+            if problem_instance.problem.auth_key == auth_key:
+                return_obj['result'] = True
+            else:
+                return_obj['result'] = False
+        except IntegrityError:
             return_obj['result'] = False
 
-        return JsonResponse(return_obj)
+        finally:
+            return JsonResponse(return_obj)
 
 
 class DownloadForm(forms.Form):
@@ -159,14 +160,14 @@ class DownloadView(PlusMemberCheck, View):
         file_pk = form.cleaned_data['f']
 
         try:
-            file = ProblemAttachment.objects.get(pk=file_pk).file
+            file_obj = ProblemAttachment.objects.get(pk=file_pk).file
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 
-        file_name = os.path.basename(file.path)
-        file_size = file.size
+        file_name = os.path.basename(file_obj.path)
+        file_size = file_obj.size
 
-        response = FileResponse(file.open())
+        response = FileResponse(file_obj.path)
         content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None:
             content_type = 'application/octet-stream'

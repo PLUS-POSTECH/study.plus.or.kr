@@ -31,11 +31,11 @@
         </div>
     </form>
     {% if not queried_problem_lists %}
-        <h2 class="header">No active session or queried problem list exists.</h2>
+        <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problems, total_score in queried_problem_lists %}
-        <h2 class="header">{{ problem_list.session.title }}: {{ problem_list.title }}
-            <div class="ui sub header">Score: {{ total_score }}</div>
+        <h2 class="ui header">{{ problem_list.session.title }}: {{ problem_list.title }}
+            <div class="sub header">Score: {{ total_score }}</div>
         </h2>
         <div class="ui stackable four column grid">
             {% for problem_instance, points, authed, first_blood in problems %}
@@ -48,7 +48,7 @@
                             </div>
                             <h3 class="ui header">
                                 {{ problem_instance }}
-                                <div class="ui sub header">{{ points }} pts.</div>
+                                <div class="sub header">{{ points }} pts.</div>
                             </h3>
                             <div class="ui blue label">{{ problem_instance.problem.categories_title }}</div>
                         </div>

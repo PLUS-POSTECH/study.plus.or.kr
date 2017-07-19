@@ -1,8 +1,8 @@
 <i class="close icon"></i>
-<div class="header">{{ problem_instance }} - {{ problem_instance.problem.categories_title }}, {{ points }} pts.</div>
+<div class="header">{{ problem_instance }} - <small>{{ problem_instance.problem.categories_title }}, {{ points }} pts.</small></div>
 <div class="content">
     <div class="description">
-        <p>{{ problem_instance.problem.description }}</p>
+        <p>{{ problem_instance.problem.description | linebreaksbr }}</p>
         {% for attachment in problem_instance.problem.attachments.all %}
             <a class="ui button" href="download?f={{ attachment.pk }}">
                 <i class="download icon"></i>

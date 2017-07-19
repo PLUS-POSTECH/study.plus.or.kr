@@ -48,11 +48,14 @@ class ProblemListView(PlusMemberCheck, View):
         else:
             problem_lists = problem_lists.filter(session__in=sessions)
 
-        def problems_gen(problems):
-            for problem in problems:
+        def problem_list_info(problem_list):
+            problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
+            problem_info = []
+            total_score = 0
+            for problem_instance in problem_instances:
                 first_solved_log = None
-                solved_log = ProblemAuthLog.objects.filter(problem_instance=problem,
-                                                           auth_key=problem.problem.auth_key) \
+                solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_instance,
+                                                           auth_key=problem_instance.problem.auth_key) \
                                                    .order_by('datetime')
 
                 if solved_log.exists():
@@ -60,15 +63,18 @@ class ProblemListView(PlusMemberCheck, View):
                 authed = solved_log.filter(user=request.user).exists()
                 solved_count = solved_log.count()
                 first_blood = not first_solved_log or request.user == first_solved_log.user
-                points = problem.points
-                points += problem.distributed_points / (solved_count + (0 if authed else 1))
-                points += problem.breakthrough_points if first_blood else 0
-                yield (problem, int(points), authed, first_blood)
+                points = problem_instance.points
+                points += problem_instance.distributed_points / (solved_count + (0 if authed else 1))
+                points += problem_instance.breakthrough_points if first_blood else 0
+                if authed:
+                    total_score += points
+                problem_info.append((problem_instance, int(points), authed, first_blood))
 
-        problem_response = [(
-                problem_list,
-                problems_gen(ProblemInstance.objects.filter(problem_list=problem_list))
-            ) for problem_list in problem_lists
+            return problem_list, problem_info, int(total_score)
+
+        problem_response = [
+            problem_list_info(problem_list)
+            for problem_list in problem_lists
         ]
 
         return render(request, 'problem/list.html', {

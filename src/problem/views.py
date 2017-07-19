@@ -1,17 +1,17 @@
 import os
 import mimetypes
-from pathlib import Path
+from datetime import datetime
 
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest, FileResponse, JsonResponse
 from django.shortcuts import render
-from django.utils.encoding import smart_str
 from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
 from website.models import Session
-from .models import ProblemList, ProblemInstance
+from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
 
 
 class ProblemListForm(forms.Form):
@@ -49,10 +49,17 @@ class ProblemListView(PlusMemberCheck, View):
 
         def problems_gen(problems):
             for problem in problems:
-                first_blood = not problem.first_blood or request.user.username == problem.first_blood
-                solved_users = problem.solved_users.all()
-                authed = request.user in solved_users
-                solved_count = len(solved_users)
+                first_solved_log = None
+                solved_log = ProblemAuthLog.objects.filter(problem_instance=problem,
+                                                           auth_key=problem.problem.auth_key) \
+                    .order_by('datetime') \
+                    .distinct('user')
+
+                if solved_log.exists():
+                    first_solved_log = solved_log.first()
+                authed = solved_log.filter(user=request.user).exists()
+                solved_count = solved_log.count()
+                first_blood = not first_solved_log or request.user == first_solved_log.user
                 points = problem.points
                 points += problem.distributed_points / (solved_count + (0 if authed else 1))
                 points += problem.breakthrough_points if first_blood else 0
@@ -84,10 +91,26 @@ class ProblemGetView(PlusMemberCheck, View):
             return HttpResponseBadRequest()
 
         problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
-        authed = request.user in problem_response.solved_users.all()
+        first_solved_log = None
+        solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
+                                                   auth_key=problem_response.problem.auth_key) \
+                                           .distinct() \
+                                           .order_by('datetime')
+        if solved_log.exists():
+            first_solved_log = solved_log.first()
+        authed = solved_log.filter(user=request.user).exists()
+        solved_count = solved_log.count()
+
+        problem = problem_response.problem
+        points = problem.points
+        points += problem.distributed_points / (solved_count + (0 if authed else 1))
+        points += problem.breakthrough_points if first_solved_log.user == request.user else 0
 
         return render(request, 'problem/get.html', {
-            'problem': problem_response,
+            'problem_instance': problem_response,
+            'points': points,
+            'solved_count': solved_count,
+            'first_solved_log': first_solved_log,
             'authed': authed
         })
 
@@ -106,13 +129,17 @@ class ProblemAuthView(PlusMemberCheck, View):
         return_obj = {}
         prob_id = form.cleaned_data['prob_id']
         auth_key = form.cleaned_data['auth_key']
-        problem_instance = ProblemInstance.objects.get(pk=prob_id)
+        try:
+            problem_instance = ProblemInstance.objects.get(pk=prob_id)
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest()
+
+        ProblemAuthLog.objects.create(user=request.user,
+                                      problem_instance=problem_instance,
+                                      auth_key=auth_key,
+                                      datetime=datetime.now())
+
         if problem_instance.problem.auth_key == auth_key:
-            if request.user not in problem_instance.solved_users.all():
-                if not problem_instance.first_blood:
-                    setattr(problem_instance, 'first_blood', request.user.username)
-                problem_instance.solved_users.add(request.user)
-                problem_instance.save()
             return_obj['result'] = True
         else:
             return_obj['result'] = False
@@ -121,7 +148,7 @@ class ProblemAuthView(PlusMemberCheck, View):
 
 
 class DownloadForm(forms.Form):
-    filename = forms.CharField(required=True)
+    f = forms.IntegerField(required=True)
 
 
 class DownloadView(PlusMemberCheck, View):
@@ -129,28 +156,23 @@ class DownloadView(PlusMemberCheck, View):
         form = DownloadForm(request.GET)
         if not form.is_valid():
             return HttpResponseBadRequest()
-        filename = smart_str(form.cleaned_data['filename'])
+        file_pk = form.cleaned_data['f']
 
-        if DownloadView.download_filter(filename):
+        try:
+            file = ProblemAttachment.objects.get(pk=file_pk).file
+        except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 
-        file_path = 'problem' + os.path.sep + 'attachments' + os.path.sep + filename
+        file_name = os.path.basename(file.path)
+        file_size = file.size
 
-        size = Path(file_path).stat().st_size
-        response = FileResponse(open(file_path, 'rb'))
-        content_type, encoding = mimetypes.guess_type(filename)
+        response = FileResponse(file.open())
+        content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None:
             content_type = 'application/octet-stream'
         if encoding is not None:
             response['Content-Encoding'] = encoding
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(filename)
-        response['Content-Length'] = str(size)
+        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(file_name)
+        response['Content-Length'] = str(file_size)
         return response
-
-    @staticmethod
-    def download_filter(filename):
-        _, _, filenames = next(os.walk('problem' + os.path.sep + 'attachments'), (None, None, []))
-
-        return filename not in filenames
-

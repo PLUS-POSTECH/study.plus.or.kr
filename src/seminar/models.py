@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import get_user_model
 
 from website.models import Category, Session
@@ -9,8 +10,11 @@ from website.models import Category, Session
 User = get_user_model()
 
 
+SeminarAttachmentStorage = FileSystemStorage(location=os.path.join('seminar', 'attachments'))
+
+
 class SeminarAttachment(models.Model):
-    file = models.FileField(upload_to='seminar' + os.path.sep + 'attachments')
+    file = models.FileField(storage=SeminarAttachmentStorage)
 
     class Meta:
         verbose_name = '세미나 첨부파일'

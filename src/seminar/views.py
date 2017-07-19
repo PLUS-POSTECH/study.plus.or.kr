@@ -1,16 +1,15 @@
 import os
 import mimetypes
-from pathlib import Path
 
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest, FileResponse
 from django.shortcuts import render
-from django.utils.encoding import smart_str
 from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
-from .models import Session, Seminar
+from .models import Session, Seminar, SeminarAttachment
 
 
 class SeminarListForm(forms.Form):
@@ -60,7 +59,7 @@ class SeminarListView(PlusMemberCheck, View):
 
 
 class DownloadForm(forms.Form):
-    filename = forms.CharField(required=True)
+    f = forms.IntegerField(required=True)
 
 
 class DownloadView(PlusMemberCheck, View):
@@ -68,27 +67,23 @@ class DownloadView(PlusMemberCheck, View):
         form = DownloadForm(request.GET)
         if not form.is_valid():
             return HttpResponseBadRequest()
-        filename = smart_str(form.cleaned_data['filename'])
+        file_pk = form.cleaned_data['f']
 
-        if DownloadView.download_filter(filename):
+        try:
+            file_obj = SeminarAttachment.objects.get(pk=file_pk).file
+        except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 
-        file_path = 'seminar' + os.path.sep + 'attachments' + os.path.sep + filename
+        file_name = os.path.basename(file_obj.path)
+        file_size = file_obj.size
 
-        size = Path(file_path).stat().st_size
-        response = FileResponse(open(file_path, 'rb'))
-        content_type, encoding = mimetypes.guess_type(filename)
+        response = FileResponse(file_obj.path)
+        content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None:
             content_type = 'application/octet-stream'
         if encoding is not None:
             response['Content-Encoding'] = encoding
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(filename)
-        response['Content-Length'] = str(size)
+        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(file_name)
+        response['Content-Length'] = str(file_size)
         return response
-
-    @staticmethod
-    def download_filter(filename):
-        _, _, filenames = next(os.walk('seminar' + os.path.sep + 'attachments'), (None, None, []))
-
-        return filename not in filenames

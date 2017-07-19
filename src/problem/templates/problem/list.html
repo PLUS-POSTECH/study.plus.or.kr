@@ -39,17 +39,16 @@
             {% for problem, points, authed, first_blood in problems %}
                 {% if not problem.hidden or is_staff %}
                     <a class="center aligned column" href="#" onclick="request_problem({{ problem.pk }})">
-                        <div class="ui {% if problem.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid padded segment">
-                            <div class="ui top attached {% if first_blood %}yellow{% endif %} label">{{ problem.problem.categories_title }}</div>
+                        <div class="ui {% if problem.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
+                            <div class="ui left corner orange label"
+                                 {% if not first_blood %}style="visibility:hidden;"{% endif %}>
+                                <i class="trophy icon"></i>
+                            </div>
                             <h3 class="ui header">
                                 {{ problem }}
                                 <div class="ui sub header">{{ points }} pts.</div>
                             </h3>
-                            {% if authed %}
-                                <div class="ui blue label">Solved</div>
-                            {% else %}
-                                <div class="ui grey label">Unsolved</div>
-                            {% endif %}
+                            <div class="ui blue label">{{ problem.problem.categories_title }}</div>
                         </div>
                     </a>
                 {% endif %}

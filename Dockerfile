@@ -9,7 +9,6 @@ RUN mkdir /entry
 ADD ./entry /entry/
 ADD requirements.txt /entry/
 RUN pip install -r /entry/requirements.txt
-RUN mkdir /static
-RUN mkdir /code
+RUN mkdir /static && mkdir /upload && mkdir /code
 ADD ./src /code/
 WORKDIR /code

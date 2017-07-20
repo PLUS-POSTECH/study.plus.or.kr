@@ -7,5 +7,6 @@ services:
       DJANGO_ALLOWED_HOSTS: (Replace with your allowed hosts / ex: example1.com:example2.com)
     volumes:
       - ../static:/static
+      - ../upload:/upload
     ports:
       - "127.0.0.1:8000:8000"

@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import get_user_model
 
@@ -10,7 +11,7 @@ from website.models import Category, Session
 User = get_user_model()
 
 
-ProblemAttachmentStorage = FileSystemStorage(location=os.path.join('problem', 'attachments'))
+ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'problem'))
 
 
 class ProblemAttachment(models.Model):

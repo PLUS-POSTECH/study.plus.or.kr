@@ -173,7 +173,7 @@ class DownloadView(PlusMemberCheck, View):
         file_name = os.path.basename(file_obj.path)
         file_size = file_obj.size
 
-        response = FileResponse(file_obj.path)
+        response = FileResponse(file_obj)
         content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None:
             content_type = 'application/octet-stream'

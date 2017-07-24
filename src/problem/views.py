@@ -173,3 +173,34 @@ class DownloadView(PlusMemberCheck, View):
         response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(file_name)
         response['Content-Length'] = str(file_size)
         return response
+
+
+class ProblemRankView(PlusMemberCheck, View):
+    def get(self, request, pk=-1):
+        problem_list_id = int(pk)
+
+        problem_lists = ProblemList.objects
+        if problem_list_id == -1:
+            sessions = Session.objects.filter(isActive=True).order_by('title')
+            problem_lists = problem_lists.filter(session__in=sessions)
+        else:
+            problem_lists = problem_lists.filter(pk=problem_list_id)
+            if not problem_lists.exists():
+                return HttpResponseBadRequest()
+
+        def problem_list_rank(problem_list):
+            return problem_list
+
+        ranking = [
+            problem_list_rank(problem_list)
+            for problem_list in problem_lists
+        ]
+
+        return render(request, 'problem/rank.html', {
+            'ranking': ranking,
+        })
+
+
+class ProblemQuestionView(PlusMemberCheck, View):
+    def get(self, request):
+        return render(request, 'problem/question.html')

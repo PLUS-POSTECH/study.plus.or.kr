@@ -1,0 +1,14 @@
+{% extends 'menu.html' %}
+
+{% block problem_active %}active{% endblock %}
+
+{% block content %}
+    <div class="ui three item menu">
+        <a class="{% block problem_list_active %}{% endblock %} item" href="{% url 'problem:list' %}">Problem Lists</a>
+        <a class="{% block problem_rank_active %}{% endblock %} item" href="{% url 'problem:rank' %}">Ranking</a>
+        <a class="{% block problem_qna_active %}{% endblock %} item" href="{% url 'problem:question' %}">QnA</a>
+    </div>
+    <div class="ui divider"></div>
+    {% block problem_content %}
+    {% endblock %}
+{% endblock %}

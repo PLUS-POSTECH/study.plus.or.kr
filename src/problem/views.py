@@ -88,7 +88,11 @@ class ProblemListView(PlusMemberCheck, View):
 
 class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
-        problem_response = ProblemInstance.objects.get(pk=int(pk))
+        try:
+            problem_response = ProblemInstance.objects.get(pk=int(pk))
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest()
+
         first_solved_log = None
         solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
                                                    auth_key=problem_response.problem.auth_key) \

@@ -4,7 +4,7 @@
     <div class="description">
         <p>{{ problem_instance.problem.description | linebreaksbr }}</p>
         {% for attachment in problem_instance.problem.attachments.all %}
-            <a class="ui button" href="download?f={{ attachment.pk }}">
+            <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
                 {{ attachment }}
             </a>
@@ -19,10 +19,7 @@
 </div>
 <div class="actions" id="action_field">
     {% if not authed %}
-        <form class="ui form" id="auth_form" method="post" action="auth">{% csrf_token %}
-            <div class="field">
-                <input type="hidden" name="prob_id" value="{{ problem_instance.pk }}">
-            </div>
+        <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=problem_instance.pk %}">{% csrf_token %}
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>

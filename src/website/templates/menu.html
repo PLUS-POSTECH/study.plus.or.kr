@@ -5,15 +5,15 @@
         <div class="ui container">
             <a class="header item" href="/">PLUS Study</a>
             <a class="item {% block home_active %}{% endblock %}" href="/">Home</a>
-            <a class="item {% block problem_active %}{% endblock %}" href="/problem">Problem</a>
-            <a class="item {% block seminar_active %}{% endblock %}" href="/seminar">Seminar</a>
+            <a class="item {% block problem_active %}{% endblock %}" href="{% url 'problem:list' %}">Problem</a>
+            <a class="item {% block seminar_active %}{% endblock %}" href="{% url 'seminar:list' %}">Seminar</a>
             <div class="item right">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="ui primary basic secondary button">
+                    <a href="{% url 'website:logout' %}" class="ui primary basic secondary button">
                         Logout
                     </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="ui primary button">
+                    <a href="{% url 'website:login' %}" class="ui primary button">
                         Login
                     </a>
                 {% endif %}

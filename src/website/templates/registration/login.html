@@ -24,7 +24,7 @@
             {% else %}
                 <h2 class="ui teal header">로그인</h2>
             {% endif %}
-            <form class="ui form" action="{% url 'login' %}" method="post">
+            <form class="ui form" action="{% url 'website:login' %}" method="post">
                 {% csrf_token %}
                 <div class="ui raised {% if form.errors %}red{% endif %} segment">
                     <div class="field">
@@ -49,7 +49,7 @@
             </form>
 
             <div class="ui message">
-                새로 오셨나요? <a href="{% url 'register' %}">가입하기</a>
+                새로 오셨나요? <a href="{% url 'website:register' %}">가입하기</a>
             </div>
         </div>
     </div>

@@ -30,7 +30,7 @@
             {% else %}
                 <h2 class="ui teal header">회원가입</h2>
             {% endif %}
-            <form class="ui form" action="{% url 'register' %}" method="post">
+            <form class="ui form" action="{% url 'website:register' %}" method="post">
                 {% csrf_token %}
                 <div class="ui raised {% if form.errors %}red{% endif %} left aligned segment">
                     <h4 class="ui dividing header">Username</h4>

@@ -44,7 +44,7 @@
                         <div class="description">{{ seminar.description }}</div>
                     </div>
                     {% for attachment in seminar.attachments.all %}
-                        <a class="ui bottom attached button" href="download?f={{ attachment.pk }}">
+                        <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
                             <i class="download icon"></i>
                             {{ attachment }}
                         </a>
@@ -60,12 +60,12 @@
 
             var session_list = [
                 {% for session in sessions %}
-                    { title: '{{ session.title }}', href: '/seminar?search_by=session&q={{ session.title | urlencode }}' },
+                    { title: '{{ session.title }}', href: '{% url 'seminar:list' %}?search_by=session&q={{ session.title | urlencode }}' },
                 {% endfor %}
             ];
             var seminar_list = [
                 {% for seminar in seminars %}
-                    { title: '{{ seminar.title }}', href: '/seminar?search_by=seminar&q={{ seminar.title | urlencode }}' },
+                    { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
             $_ui_search

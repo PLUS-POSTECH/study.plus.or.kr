@@ -40,7 +40,7 @@
         <div class="ui stackable four column grid">
             {% for problem_instance, points, authed, first_blood in problems %}
                 {% if not problem_instance.hidden or is_staff %}
-                    <a class="center aligned column" href="#" onclick="request_problem({{ problem_instance.pk }})">
+                    <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
                         <div class="ui {% if problem_instance.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
                             <div class="ui left corner orange label"
                                  {% if not first_blood %}style="visibility:hidden;"{% endif %}>
@@ -68,12 +68,12 @@
 
             var session_list = [
                 {% for session in sessions %}
-                    { title: '{{ session.title }}', href: '/problem?search_by=session&q={{ session.title | urlencode }}' },
+                    { title: '{{ session.title }}', href: '{% url 'problem:list' %}?search_by=session&q={{ session.title | urlencode }}' },
                 {% endfor %}
             ];
             var list_title_list = [
                 {% for problem_list in problem_lists %}
-                    { title: '{{ problem_list.title }}', href: '/problem?search_by=list_title&q={{ problem_list.title | urlencode }}' },
+                    { title: '{{ problem_list.title }}', href: '{% url 'problem:list' %}?search_by=list_title&q={{ problem_list.title | urlencode }}' },
                 {% endfor %}
             ];
             $_ui_search
@@ -139,14 +139,13 @@
                 }
             });
 
-            request_problem = function (prob_id) {
+            request_problem = function (prob_url) {
                 $_ui_modal.html('<div class="ui text loader active">Loading</div>');
                 $_ui_modal.modal('refresh');
                 $_ui_modal.modal('show');
                 $.ajax({
-                    url: 'get',
+                    url: prob_url,
                     type: 'GET',
-                    data: { prob_id: prob_id },
                     dataType: 'html',
                     success: function(data) {
                         $_ui_modal.html(data);

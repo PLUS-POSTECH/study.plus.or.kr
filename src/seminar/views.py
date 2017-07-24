@@ -58,19 +58,10 @@ class SeminarListView(PlusMemberCheck, View):
         })
 
 
-class DownloadForm(forms.Form):
-    f = forms.IntegerField(required=True)
-
-
 class DownloadView(PlusMemberCheck, View):
-    def get(self, request):
-        form = DownloadForm(request.GET)
-        if not form.is_valid():
-            return HttpResponseBadRequest()
-        file_pk = form.cleaned_data['f']
-
+    def get(self, request, pk):
         try:
-            file_obj = SeminarAttachment.objects.get(pk=file_pk).file
+            file_obj = SeminarAttachment.objects.get(pk=int(pk)).file
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 

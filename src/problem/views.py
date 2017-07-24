@@ -86,17 +86,9 @@ class ProblemListView(PlusMemberCheck, View):
         })
 
 
-class ProblemGetForm(forms.Form):
-    prob_id = forms.IntegerField(required=True)
-
-
 class ProblemGetView(PlusMemberCheck, View):
-    def get(self, request):
-        form = ProblemGetForm(request.GET)
-        if not form.is_valid():
-            return HttpResponseBadRequest()
-
-        problem_response = ProblemInstance.objects.get(pk=form.cleaned_data['prob_id'])
+    def get(self, request, pk):
+        problem_response = ProblemInstance.objects.get(pk=int(pk))
         first_solved_log = None
         solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
                                                    auth_key=problem_response.problem.auth_key) \
@@ -120,18 +112,17 @@ class ProblemGetView(PlusMemberCheck, View):
 
 
 class ProblemAuthForm(forms.Form):
-    prob_id = forms.IntegerField(required=True)
     auth_key = forms.CharField(required=True)
 
 
 class ProblemAuthView(PlusMemberCheck, View):
-    def post(self, request):
+    def post(self, request, pk):
         form = ProblemAuthForm(request.POST)
         if not form.is_valid():
             return HttpResponseBadRequest()
 
         return_obj = {}
-        prob_id = form.cleaned_data['prob_id']
+        prob_id = int(pk)
         auth_key = form.cleaned_data['auth_key']
         try:
             problem_instance = ProblemInstance.objects.get(pk=prob_id)
@@ -159,14 +150,9 @@ class DownloadForm(forms.Form):
 
 
 class DownloadView(PlusMemberCheck, View):
-    def get(self, request):
-        form = DownloadForm(request.GET)
-        if not form.is_valid():
-            return HttpResponseBadRequest()
-        file_pk = form.cleaned_data['f']
-
+    def get(self, request, pk):
         try:
-            file_obj = ProblemAttachment.objects.get(pk=file_pk).file
+            file_obj = ProblemAttachment.objects.get(pk=int(pk)).file
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 

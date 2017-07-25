@@ -14,6 +14,74 @@
 {% endblock %}
 
 {% block problem_content %}
-    {% for problem_list in problem_lists %}
+    {% for problem_list, top_ranking in rank_info %}
+        <h2 class="ui header">{{ problem_list.session }}: {{ problem_list }}</h2>
+        <canvas id="chart_{{ problem_list.pk }}"></canvas>
+        <table class="ui celled padded table">
+            <thead>
+            <tr><th class="right aligned">#</th>
+                <th>User</th>
+                <th>Score</th>
+                <th>Last Auth</th>
+            </tr></thead>
+            <tbody>
+            {% for user, score, last_auth in top_ranking %}
+                <tr>
+                    <td><h4 class="ui right aligned header">{{ forloop.counter }}</h4></td>
+                    <td class="single line">{{ user }}</td>
+                    <td>{{ score }}</td>
+                    <td>{{ last_auth }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% endfor %}
+    <script>
+        $(document).ready(function () {
+            {% for problem_list_id, chart_data in chart_info %}
+                var ctx_{{ problem_list_id }} = $("#chart_{{ problem_list_id }}");
+                var chart_{{ problem_list_id }} = new Chart(ctx_{{ problem_list_id }}, {
+                    type: 'line',
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Score chart'
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Score'
+                                },
+                                ticks: {
+                                    suggestedMin: 0
+                                }
+                            }]
+                        }
+                    },
+                    data: {
+                        datasets: [
+                            {% for user, chart_points in chart_data %}
+                                {
+                                    label: '{{ user }}',
+                                    fill: false,
+                                    data: JSON.parse('{{ chart_points | escapejs }}')
+                                },
+                            {% endfor %}
+                        ]
+                    }
+                });
+            {% endfor %}
+        });
+    </script>
 {% endblock %}

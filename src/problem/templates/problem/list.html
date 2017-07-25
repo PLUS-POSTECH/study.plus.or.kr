@@ -34,9 +34,13 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problems, total_score in queried_problem_lists %}
-        <h2 class="ui header">{{ problem_list.session.title }}: {{ problem_list.title }}
-            <div class="sub header">Score: {{ total_score }}</div>
-        </h2>
+        <div class="ui basic clearing segment">
+            <h2 class="ui left floated header">
+                {{ problem_list.session.title }}: {{ problem_list.title }}
+                <div class="sub header">Score: {{ total_score }}</div>
+            </h2>
+            <a class="ui inline button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
+        </div>
         <div class="ui stackable four column grid">
             {% for problem_instance, points, authed, first_blood in problems %}
                 {% if not problem_instance.hidden or is_staff %}

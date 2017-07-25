@@ -34,31 +34,33 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problems, total_score in queried_problem_lists %}
-        <div class="ui basic clearing segment">
+        <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
-            <a class="ui inline button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
+            <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
         </div>
-        <div class="ui stackable four column grid">
-            {% for problem_instance, points, authed, first_blood in problems %}
-                {% if not problem_instance.hidden or is_staff %}
-                    <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
-                        <div class="ui {% if problem_instance.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
-                            <div class="ui left corner orange label"
-                                 {% if not first_blood %}style="visibility:hidden;"{% endif %}>
-                                <i class="trophy icon"></i>
+        <div class="ui bottom attached segment">
+            <div class="ui stackable four column grid">
+                {% for problem_instance, points, authed, first_blood in problems %}
+                    {% if not problem_instance.hidden or is_staff %}
+                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
+                            <div class="ui {% if problem_instance.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
+                                <div class="ui left corner orange label"
+                                     {% if not first_blood %}style="visibility:hidden;"{% endif %}>
+                                    <i class="trophy icon"></i>
+                                </div>
+                                <h3 class="ui header">
+                                    {{ problem_instance }}
+                                    <div class="sub header">{{ points }} pts.</div>
+                                </h3>
+                                <div class="ui blue label">{{ problem_instance.problem.categories_title }}</div>
                             </div>
-                            <h3 class="ui header">
-                                {{ problem_instance }}
-                                <div class="sub header">{{ points }} pts.</div>
-                            </h3>
-                            <div class="ui blue label">{{ problem_instance.problem.categories_title }}</div>
-                        </div>
-                    </a>
-                {% endif %}
-            {% endfor %}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     {% endfor %}
     <div class="ui modal" id="modal_content"></div>

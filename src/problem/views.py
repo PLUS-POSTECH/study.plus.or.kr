@@ -254,7 +254,7 @@ class ProblemRankView(PlusMemberCheck, View):
         chart_info = []
         rank_raw = []
         for problem_list in problem_lists:
-            replay_data = auth_replay(problem_list)
+            replay_data = list(auth_replay(problem_list))
 
             chart_data = {}
             for cur_datetime, user_data, problem_data in replay_data:
@@ -275,13 +275,13 @@ class ProblemRankView(PlusMemberCheck, View):
                     entry.append({'x': cur_datetime.isoformat(), 'y': score})
                     chart_data[username] = entry
 
-            rank_sorted = sorted(rank_raw, key=lambda x: (x[1], x[2]))[:10]
-            rankers = map(lambda x: x[0], rank_sorted)
+            rank_sorted = sorted(rank_raw, key=lambda x: (-x[1], x[2]))[:10]
+            rankers = list(map(lambda x: x[0], rank_sorted))
             chart_entry = filter(lambda x: x[0] in rankers,
                                  map(lambda x: (x[0], json.dumps(x[1])),
                                      chart_data.items()))
-            rank_info.append((problem_list, rank_sorted))
-            chart_info.append((problem_list.pk, chart_entry))
+            rank_info.append((problem_list, list(rank_sorted)))
+            chart_info.append((problem_list.pk, list(chart_entry)))
 
         return render(request, 'problem/rank.html', {
             'rank_info': rank_info,

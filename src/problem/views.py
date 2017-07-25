@@ -1,12 +1,15 @@
 import os
+import json
 import mimetypes
-from datetime import datetime
+from datetime import timedelta
+from functools import reduce
 
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest, FileResponse, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.http import urlquote
 from django.views import View
 
@@ -137,7 +140,7 @@ class ProblemAuthView(PlusMemberCheck, View):
             ProblemAuthLog.objects.create(user=request.user,
                                           problem_instance=problem_instance,
                                           auth_key=auth_key,
-                                          datetime=datetime.now())
+                                          datetime=timezone.now())
             if problem_instance.problem.auth_key == auth_key:
                 return_obj['result'] = True
             else:
@@ -188,16 +191,101 @@ class ProblemRankView(PlusMemberCheck, View):
             if not problem_lists.exists():
                 return HttpResponseBadRequest()
 
-        def problem_list_rank(problem_list):
-            return problem_list
+        def auth_replay(problems):
+            user_info = {}
+            problem_info = {}
+            problem_instances = ProblemInstance.objects.filter(problem_list=problems)
+            datetime_std = timezone.now() - timedelta(days=7)
+            for problem_instance in problem_instances:
+                problem_key = problem_instance.pk
+                first_solved_log = None
+                solved_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance,
+                                                            auth_key=problem_instance.problem.auth_key,
+                                                            datetime__lt=datetime_std) \
+                    .order_by('datetime')
 
-        ranking = [
-            problem_list_rank(problem_list)
-            for problem_list in problem_lists
-        ]
+                if solved_logs.exists():
+                    first_solved_log = solved_logs.first()
+                solved_count = solved_logs.count()
+
+                first_blood = None if not first_solved_log else first_solved_log.user
+                problem = ((problem_instance.points,
+                            problem_instance.distributed_points,
+                            problem_instance.breakthrough_points),
+                           solved_count,
+                           first_blood)
+                problem_info[problem_key] = problem
+
+                for solved_log in solved_logs:
+                    user_object = solved_log.user
+                    solved_problems, last_auth = user_info.get(user_object, ([], None))
+                    solved_problems = solved_problems + [problem_key]
+                    if not last_auth or last_auth < solved_log.datetime:
+                        last_auth = solved_log.datetime
+                    user_info[user_object] = solved_problems, last_auth
+
+            logs_to_play = [] if not problem_instances else \
+                reduce(lambda x, y: x | y,
+                       [ProblemAuthLog.objects.filter(problem_instance=problem_instance,
+                                                      auth_key=problem_instance.problem.auth_key,
+                                                      datetime__gte=datetime_std)
+                        for problem_instance in problem_instances]).order_by('datetime')
+
+            yield datetime_std, user_info.copy(), problem_info.copy()
+
+            for log in logs_to_play:
+                user_object = log.user
+                problem_key = log.problem_instance.pk
+                points, solved_count, first_blood = problem_info[problem_key]
+                solved_count += 1
+                if first_blood is None:
+                    first_blood = user_object
+
+                solved_problems, last_auth = user_info.get(user_object, ([], None))
+                solved_problems = solved_problems + [problem_key]
+                last_auth = log.datetime
+                user_info[user_object] = solved_problems, last_auth
+
+                problem_info[problem_key] = points, solved_count, first_blood
+
+                yield log.datetime, user_info.copy(), problem_info.copy()
+
+        rank_info = []
+        chart_info = []
+        rank_raw = []
+        for problem_list in problem_lists:
+            replay_data = auth_replay(problem_list)
+
+            chart_data = {}
+            for cur_datetime, user_data, problem_data in replay_data:
+                def process_user_data(user_entry):
+                    user_object, (solved_problems, last_auth) = user_entry
+
+                    def calc_point(problem_key):
+                        points, solved_count, first_blood = problem_data[problem_key]
+                        user_first_blood = 0 if not first_blood or first_blood != user_entry[0] else 1
+                        return int(points[0] + (points[1] / solved_count) + (points[2] * user_first_blood))
+
+                    user_points = map(calc_point, solved_problems)
+                    return user_object.username, sum(user_points), last_auth
+
+                rank_raw = list(map(process_user_data, user_data.items()))
+                for username, score, _ in rank_raw:
+                    entry = chart_data.get(username, [])
+                    entry.append({'x': cur_datetime.isoformat(), 'y': score})
+                    chart_data[username] = entry
+
+            rank_sorted = sorted(rank_raw, key=lambda x: (x[1], x[2]))[:10]
+            rankers = map(lambda x: x[0], rank_sorted)
+            chart_entry = filter(lambda x: x[0] in rankers,
+                                 map(lambda x: (x[0], json.dumps(x[1])),
+                                     chart_data.items()))
+            rank_info.append((problem_list, rank_sorted))
+            chart_info.append((problem_list.pk, chart_entry))
 
         return render(request, 'problem/rank.html', {
-            'ranking': ranking,
+            'rank_info': rank_info,
+            'chart_info': chart_info
         })
 
 

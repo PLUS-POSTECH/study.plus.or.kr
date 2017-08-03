@@ -7,7 +7,7 @@ from functools import reduce
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseBadRequest, FileResponse, JsonResponse
+from django.http import Http404, HttpResponseBadRequest, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.http import urlquote
@@ -94,7 +94,7 @@ class ProblemGetView(PlusMemberCheck, View):
         try:
             problem_response = ProblemInstance.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
-            return HttpResponseBadRequest()
+            raise Http404
 
         first_solved_log = None
         solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
@@ -119,7 +119,7 @@ class ProblemGetView(PlusMemberCheck, View):
 
 
 class ProblemAuthForm(forms.Form):
-    auth_key = forms.CharField(required=True)
+    auth_key = forms.CharField(required=False)
 
 
 class ProblemAuthView(PlusMemberCheck, View):
@@ -134,7 +134,7 @@ class ProblemAuthView(PlusMemberCheck, View):
         try:
             problem_instance = ProblemInstance.objects.get(pk=prob_id)
         except ObjectDoesNotExist:
-            return HttpResponseBadRequest()
+            raise Http404
 
         try:
             ProblemAuthLog.objects.create(user=request.user,
@@ -145,6 +145,7 @@ class ProblemAuthView(PlusMemberCheck, View):
                 return_obj['result'] = True
             else:
                 return_obj['result'] = False
+
         except IntegrityError:
             return_obj['result'] = False
 
@@ -152,16 +153,12 @@ class ProblemAuthView(PlusMemberCheck, View):
             return JsonResponse(return_obj)
 
 
-class DownloadForm(forms.Form):
-    f = forms.IntegerField(required=True)
-
-
-class DownloadView(PlusMemberCheck, View):
+class ProblemDownloadView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
             file_obj = ProblemAttachment.objects.get(pk=int(pk)).file
         except ObjectDoesNotExist:
-            return HttpResponseBadRequest()
+            raise Http404
 
         file_name = os.path.basename(file_obj.path)
         file_size = file_obj.size
@@ -189,7 +186,7 @@ class ProblemRankView(PlusMemberCheck, View):
         else:
             problem_lists = problem_lists.filter(pk=problem_list_id)
             if not problem_lists.exists():
-                return HttpResponseBadRequest()
+                raise Http404
 
         def auth_replay(problems):
             user_info = {}

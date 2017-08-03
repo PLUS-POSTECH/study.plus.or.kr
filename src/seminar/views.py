@@ -58,7 +58,7 @@ class SeminarListView(PlusMemberCheck, View):
         })
 
 
-class DownloadView(PlusMemberCheck, View):
+class SeminarDownloadView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
             file_obj = SeminarAttachment.objects.get(pk=int(pk)).file

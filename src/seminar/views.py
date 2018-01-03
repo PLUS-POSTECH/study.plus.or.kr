@@ -78,3 +78,14 @@ class SeminarDownloadView(PlusMemberCheck, View):
         response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(file_name)
         response['Content-Length'] = str(file_size)
         return response
+
+
+class SeminarEditView(PlusMemberCheck, View):
+    def get(self, request, pk):
+        pass
+
+    def post(self, request):
+        pass
+
+    def put(self, request):
+        pass

@@ -4,4 +4,42 @@
 {% block seminar_active %}active{% endblock %}
 
 {% block content %}
+    <h2 class="ui top attached header">세미나 관리</h2>
+    <div class="ui bottom attached segment">
+        {% if form.errors %}
+            <div class="ui negative message">
+                <div class="header">세미나 수정 중 오류가 발생했습니다.</div>
+                <p>다시 시도해주세요</p>
+            </div>
+        {% endif %}
+        <form class="ui form" action="{% url 'seminar:edit' %}" method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label>Title</label>
+                <input name="seminar[title]" type="text" placeholder="Title">
+            </div>
+            <div class="field">
+                <label>Categories</label>
+                <input name="seminar[categories]" type="text" placeholder="Categories">
+            </div>
+            <div class="field">
+                <label>Session</label>
+                <input name="seminar[session]" type="text" placeholder="Session">
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <input name="seminar[date]" type="text" placeholder="Date">
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <input name="seminar[description]" type="text" placeholder="Description">
+            </div>
+            <div class="field">
+                <label>Attachments</label>
+                <input name="seminar[attachments]" type="text" placeholder="Attachments">
+            </div>
+
+            <div class="ui fluid large submit button">제출</div>
+        </form>
+    </div>
 {% endblock %}

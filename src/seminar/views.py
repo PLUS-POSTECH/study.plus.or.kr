@@ -82,7 +82,13 @@ class SeminarDownloadView(PlusMemberCheck, View):
 
 class SeminarEditView(PlusMemberCheck, View):
     def get(self, request, pk):
-        pass
+        if pk is None:
+            pass
+        else:
+            pass
+
+        return render(request, 'seminar/edit.html', {
+        })
 
     def post(self, request):
         pass

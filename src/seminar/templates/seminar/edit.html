@@ -12,7 +12,12 @@
                 <p>다시 시도해주세요</p>
             </div>
         {% endif %}
-        <form class="ui form" action="{% url 'seminar:edit' %}" method="post">
+        <form class="ui form"
+                {% if edit_mode %}
+                    action="{% url 'seminar:edit' pk=seminar_id %}" method="post"
+                {% else %}
+                    action="{% url 'seminar:create' %}" method="post"
+                {% endif %}>
             {% csrf_token %}
             <div class="field">
                 <label for="seminar_title">Title</label>
@@ -37,16 +42,28 @@
                 </select>
             </div>
             <div class="field">
-                <label>Date</label>
-                <input name="date" type="text" placeholder="Date">
-            </div>
-            <div class="field">
                 <label for="seminar_description">Description</label>
                 <textarea id="seminar_description" name="description" placeholder="Description">
             </div>
-            <div class="field">
-                <label>Attachments</label>
-                <input name="attachments" type="text" placeholder="Attachments">
+            <div class="fields">
+                <div class="field">
+                    <label for="attachment_1" class="ui icon button">
+                        <i class="file icon"></i>
+                        Open File</label>
+                    <input type="file" id="attachment_1" style="display:none">
+                </div>
+                <div class="field">
+                    <label for="attachment_2" class="ui icon button">
+                        <i class="file icon"></i>
+                        Open File</label>
+                    <input type="file" id="attachment_2" style="display:none">
+                </div>
+                <div class="field">
+                    <label for="attachment_3" class="ui icon button">
+                        <i class="file icon"></i>
+                        Open File</label>
+                    <input type="file" id="attachment_3" style="display:none">
+                </div>
             </div>
 
             <div class="ui fluid large submit button">제출</div>

@@ -15,31 +15,48 @@
         <form class="ui form" action="{% url 'seminar:edit' %}" method="post">
             {% csrf_token %}
             <div class="field">
-                <label>Title</label>
-                <input name="seminar[title]" type="text" placeholder="Title">
+                <label for="seminar_title">Title</label>
+                <input id="seminar_title" name="title" type="text" placeholder="Title">
             </div>
             <div class="field">
-                <label>Categories</label>
-                <input name="seminar[categories]" type="text" placeholder="Categories">
+                <label for="seminar_categories">Categories</label>
+                <select id="seminar_categories" name="categories" class="ui dropdown" multiple="">
+                    <option selected disabled>카테고리 선택</option>
+                    {% for category in categories %}
+                        <option value="{{ category.pk }}">{{ category.title }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="field">
-                <label>Session</label>
-                <input name="seminar[session]" type="text" placeholder="Session">
+                <label for="seminar_session">Session</label>
+                <select id="seminar_session" name="session" class="ui dropdown">
+                    <option selected disabled>세션 선택</option>
+                    {% for session in sessions %}
+                        <option value="{{ session.pk }}">{{ session.title }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="field">
                 <label>Date</label>
-                <input name="seminar[date]" type="text" placeholder="Date">
+                <input name="date" type="text" placeholder="Date">
             </div>
             <div class="field">
-                <label>Description</label>
-                <input name="seminar[description]" type="text" placeholder="Description">
+                <label for="seminar_description">Description</label>
+                <textarea id="seminar_description" name="description" placeholder="Description">
             </div>
             <div class="field">
                 <label>Attachments</label>
-                <input name="seminar[attachments]" type="text" placeholder="Attachments">
+                <input name="attachments" type="text" placeholder="Attachments">
             </div>
 
             <div class="ui fluid large submit button">제출</div>
         </form>
     </div>
+    <script>
+        $(document).ready(function () {
+            var $_ui_dropdown = $('.ui.dropdown');
+            $_ui_dropdown
+                .dropdown();
+        });
+    </script>
 {% endblock %}

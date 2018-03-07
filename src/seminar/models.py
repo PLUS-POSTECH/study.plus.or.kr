@@ -31,8 +31,8 @@ class SeminarAttachment(models.Model):
 class Seminar(models.Model):
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
-    author = models.ForeignKey(User)
-    session = models.ForeignKey(Session)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
     date = models.DateField()
     description = models.TextField(blank=True)
     attachments = models.ManyToManyField(SeminarAttachment, blank=True)

@@ -31,7 +31,7 @@ class ProblemAttachment(models.Model):
 class Problem(models.Model):
     title = models.CharField(max_length=50, unique=True)
     categories = models.ManyToManyField(Category)
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
     description = models.TextField(blank=True)
     auth_key = models.TextField()
     last_modified = models.DateTimeField(auto_now=True)
@@ -51,7 +51,7 @@ class Problem(models.Model):
 class ProblemList(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
-    session = models.ForeignKey(Session)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = '문제 리스트'
@@ -62,8 +62,8 @@ class ProblemList(models.Model):
 
 
 class ProblemInstance(models.Model):
-    problem = models.ForeignKey(Problem)
-    problem_list = models.ForeignKey(ProblemList)
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
+    problem_list = models.ForeignKey(ProblemList, on_delete=models.PROTECT)
     points = models.IntegerField()
     distributed_points = models.IntegerField()
     breakthrough_points = models.IntegerField()
@@ -78,8 +78,8 @@ class ProblemInstance(models.Model):
 
 
 class ProblemAuthLog(models.Model):
-    user = models.ForeignKey(User)
-    problem_instance = models.ForeignKey(ProblemInstance)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
     auth_key = models.TextField()
     datetime = models.DateTimeField()
 

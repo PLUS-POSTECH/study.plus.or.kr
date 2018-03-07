@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views import View
 
 from website.views import PlusMemberCheck
@@ -62,7 +63,8 @@ class ShopPurchaseView(PlusMemberCheck, View):
         try:
             ShopPurchaseLog.objects.create( \
                 user=request.user, shop=shop_to_visit, \
-                item=item_to_buy, succeed=succeed_purchase)
+                item=item_to_buy, succeed=succeed_purchase, \
+                purchase_time=timezone.now())
 
             response['result'] = succeed_purchase
             if not enough_point:

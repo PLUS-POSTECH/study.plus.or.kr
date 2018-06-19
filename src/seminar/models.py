@@ -11,10 +11,12 @@ from website.models import Category, Session
 User = get_user_model()
 
 
+# TODO: Use seminar_attachments or attachments/seminar
 SeminarAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'seminar'))
 
 
 class SeminarAttachment(models.Model):
+    # TODO: Use upload_to to generate storage folder (to remove name collision)
     file = models.FileField(storage=SeminarAttachmentStorage)
 
     class Meta:

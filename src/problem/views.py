@@ -26,6 +26,7 @@ class ProblemListForm(forms.Form):
     ])
 
 
+# TODO: Refactor problem point calculation: export method
 class ProblemListView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemListForm(request.GET)
@@ -89,6 +90,7 @@ class ProblemListView(PlusMemberCheck, View):
         })
 
 
+# TODO: Refactor variable names
 class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
@@ -175,6 +177,7 @@ class ProblemDownloadView(PlusMemberCheck, View):
         return response
 
 
+# TODO: FIX latency using Django cache. Refactor rank printing algorithm.
 class ProblemRankView(PlusMemberCheck, View):
     def get(self, request, pk=-1):
         problem_list_id = int(pk)
@@ -221,6 +224,7 @@ class ProblemRankView(PlusMemberCheck, View):
                         last_auth = solved_log.datetime
                     user_info[user_object] = solved_problems, last_auth
 
+            # TODO: Use problem_instance__pk__in
             logs_to_play = [] if not problem_instances else \
                 reduce(lambda x, y: x | y,
                        [ProblemAuthLog.objects.filter(problem_instance=problem_instance,

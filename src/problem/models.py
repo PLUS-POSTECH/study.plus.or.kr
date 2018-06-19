@@ -11,10 +11,12 @@ from website.models import Category, Session
 User = get_user_model()
 
 
+# TODO: Use problem_attachments or attachments/problem
 ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'problem'))
 
 
 class ProblemAttachment(models.Model):
+    # TODO: Use upload_to to generate storage folder (to remove name collision)
     file = models.FileField(storage=ProblemAttachmentStorage)
 
     class Meta:
@@ -29,6 +31,7 @@ class ProblemAttachment(models.Model):
 
 
 class Problem(models.Model):
+    # TODO: Title may not be unique
     title = models.CharField(max_length=50, unique=True)
     categories = models.ManyToManyField(Category)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -41,6 +44,7 @@ class Problem(models.Model):
         verbose_name = '문제'
         verbose_name_plural = '문제들'
 
+    # TODO: Add spaces after comma
     def categories_title(self):
         return ','.join(map(lambda x: x.title, self.categories.all()))
 
@@ -48,6 +52,7 @@ class Problem(models.Model):
         return '%s' % self.title
 
 
+# TODO: Add allow_question field
 class ProblemList(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
@@ -87,3 +92,5 @@ class ProblemAuthLog(models.Model):
         unique_together = (('user', 'problem_instance', 'auth_key'),)
         verbose_name = '문제 인증 로그'
         verbose_name_plural = '문제 인증 로그들'
+
+# TODO: Add ProblemQuestion model

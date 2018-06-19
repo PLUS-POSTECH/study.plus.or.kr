@@ -16,6 +16,7 @@ from django.views import View
 from website.views import PlusMemberCheck
 from website.models import Session
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
+from .helpers.score import get_problem_list_info
 
 
 class ProblemListForm(forms.Form):
@@ -26,7 +27,6 @@ class ProblemListForm(forms.Form):
     ])
 
 
-# TODO: Refactor problem point calculation: export method
 class ProblemListView(PlusMemberCheck, View):
     def get(self, request):
         form = ProblemListForm(request.GET)
@@ -52,39 +52,17 @@ class ProblemListView(PlusMemberCheck, View):
         else:
             problem_lists = problem_lists.filter(session__in=sessions)
 
-        def problem_list_info(problem_list):
-            problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
-            problem_info = []
-            total_score = 0
-            for problem_instance in problem_instances:
-                first_solved_log = None
-                solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_instance,
-                                                           auth_key=problem_instance.problem.auth_key) \
-                                                   .order_by('datetime')
+        def construct_response():
+            for problem_list in problem_lists:
+                problem_info, user_score = get_problem_list_info(problem_list, request.user)
+                yield problem_list, problem_info, user_score
 
-                if solved_log.exists():
-                    first_solved_log = solved_log.first()
-                authed = solved_log.filter(user=request.user).exists()
-                solved_count = solved_log.count()
-                first_blood = not first_solved_log or request.user == first_solved_log.user
-                points = problem_instance.points
-                points += problem_instance.distributed_points / (solved_count + (0 if authed else 1))
-                points += problem_instance.breakthrough_points if first_blood else 0
-                if authed:
-                    total_score += points
-                problem_info.append((problem_instance, int(points), authed, first_blood))
-
-            return problem_list, problem_info, int(total_score)
-
-        problem_response = [
-            problem_list_info(problem_list)
-            for problem_list in problem_lists
-        ]
+        queried_problem_lists = construct_response()
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,
             'problem_lists': all_problem_lists,
-            'queried_problem_lists': problem_response,
+            'queried_problem_lists': queried_problem_lists,
             'search_by': search_by,
             'q': q
         })

@@ -43,10 +43,10 @@
         </div>
         <div class="ui bottom attached segment">
             <div class="ui stackable four column grid">
-                {% for problem_instance, points, authed, first_blood in problems %}
+                {% for problem_instance, points, solved, first_blood in problems %}
                     {% if not problem_instance.hidden or is_staff %}
                         <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
-                            <div class="ui {% if problem_instance.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
+                            <div class="ui {% if problem_instance.hidden %}grey inverted{% elif solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not first_blood %}style="visibility:hidden;"{% endif %}>
                                     <i class="trophy icon"></i>
@@ -66,19 +66,19 @@
     <div class="ui modal" id="modal_content"></div>
 
     <script>
-        var request_problem = function () {}
+        let request_problem;
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.dropdown');
-            var $_ui_search = $('.ui.search');
-            var $_ui_modal = $('.ui.modal');
+            let $_ui_dropdown = $('.ui.dropdown');
+            let $_ui_search = $('.ui.search');
+            let $_ui_modal = $('.ui.modal');
 
             // TODO: Use remote search suggestions
-            var session_list = [
+            let session_list = [
                 {% for session in sessions %}
                     { title: '{{ session.title }}', href: '{% url 'problem:list' %}?search_by=session&q={{ session.title | urlencode }}' },
                 {% endfor %}
             ];
-            var list_title_list = [
+            let list_title_list = [
                 {% for problem_list in problem_lists %}
                     { title: '{{ problem_list.title }}', href: '{% url 'problem:list' %}?search_by=list_title&q={{ problem_list.title | urlencode }}' },
                 {% endfor %}
@@ -118,11 +118,11 @@
             });
 
             function getCookie(name) {
-                var cookieValue = null;
+                let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
+                    let cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = jQuery.trim(cookies[i]);
                         // Does this cookie string begin with the name we want?
                         if (cookie.substring(0, name.length + 1) === (name + '=')) {
                             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -132,7 +132,6 @@
                 }
                 return cookieValue;
             }
-            var csrftoken = getCookie('csrftoken');
 
             function csrfSafeMethod(method) {
                 // these HTTP methods do not require CSRF protection
@@ -141,7 +140,7 @@
             $.ajaxSetup({
                 beforeSend: function(xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                     }
                 }
             });

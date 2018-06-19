@@ -52,7 +52,7 @@ class ProblemAttachment(models.Model):
     def target_folder(self):
         return str(self.problem.id)
 
-    file = models.FileField(storage=ProblemAttachmentStorage)
+    file = models.FileField(storage=ProblemAttachmentStorage, upload_to=target_folder())
     problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
 
     class Meta:

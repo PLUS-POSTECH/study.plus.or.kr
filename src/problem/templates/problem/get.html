@@ -3,7 +3,7 @@
 <div class="content">
     <div class="description">
         <p>{{ problem_instance.problem.description | linebreaksbr }}</p>
-        {% for attachment in problem_instance.problem.attachments.all %}
+        {% for attachment in problem_attachments.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
                 {{ attachment }}
@@ -38,10 +38,10 @@
 {% if not solved %}
     <script>
         $(document).ready(function () {
-            var _auth_form = $('#auth_form');
-            var _auth_field = $('#auth_field');
-            var _auth_input = $('#auth_input');
-            var _action_field = $('#action_field');
+            let _auth_form = $('#auth_form');
+            let _auth_field = $('#auth_field');
+            let _auth_input = $('#auth_input');
+            let _action_field = $('#action_field');
 
             _auth_form.submit(function (e) {
                 e.preventDefault();

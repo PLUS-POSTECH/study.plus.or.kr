@@ -112,8 +112,11 @@ class ProblemGetView(PlusMemberCheck, View):
         points += effective_distributed_points
         points += problem_instance.breakthrough_points if breakthrough_relevant else 0
 
+        problem_attachments = ProblemAttachment.objects.filter(problem=problem_instance.problem)
+
         return render(request, 'problem/get.html', {
             'problem_instance': problem_instance,
+            'problem_attachments': problem_attachments,
             'points': int(points),
             'solved_count': solved_count,
             'first_solved_log': first_solved_log,

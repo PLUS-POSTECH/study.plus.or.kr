@@ -11,13 +11,50 @@ from website.models import Category, Session
 User = get_user_model()
 
 
-# TODO: Use problem_attachments or attachments/problem
-ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'problem'))
+ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem'))
+
+
+
+# TODO: Manual migration required
+class Problem(models.Model):
+    title = models.CharField(max_length=50)
+    categories = models.ManyToManyField(Category)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    description = models.TextField(blank=True)
+    auth_key = models.TextField()
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = '문제'
+        verbose_name_plural = '문제들'
+
+    def categories_title(self):
+        return ', '.join(map(lambda x: x.title, self.categories.all()))
+
+    def __str__(self):
+        return '%s' % self.title
+
+
+class ProblemList(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
+    allow_question = models.BooleanField()
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = '문제 리스트'
+        verbose_name_plural = '문제 리스트들'
+
+    def __str__(self):
+        return '%s' % self.title
 
 
 class ProblemAttachment(models.Model):
-    # TODO: Use upload_to to generate storage folder (to remove name collision)
+    def target_folder(self):
+        return str(self.problem.id)
+
     file = models.FileField(storage=ProblemAttachmentStorage)
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = '문제 첨부파일'
@@ -28,42 +65,6 @@ class ProblemAttachment(models.Model):
 
     def __str__(self):
         return '%s' % self.filename()
-
-
-class Problem(models.Model):
-    # TODO: Title may not be unique
-    title = models.CharField(max_length=50, unique=True)
-    categories = models.ManyToManyField(Category)
-    author = models.ForeignKey(User, on_delete=models.PROTECT)
-    description = models.TextField(blank=True)
-    auth_key = models.TextField()
-    last_modified = models.DateTimeField(auto_now=True)
-    attachments = models.ManyToManyField(ProblemAttachment, blank=True)
-
-    class Meta:
-        verbose_name = '문제'
-        verbose_name_plural = '문제들'
-
-    # TODO: Add spaces after comma
-    def categories_title(self):
-        return ','.join(map(lambda x: x.title, self.categories.all()))
-
-    def __str__(self):
-        return '%s' % self.title
-
-
-# TODO: Add allow_question field
-class ProblemList(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.TextField(blank=True)
-    session = models.ForeignKey(Session, on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = '문제 리스트'
-        verbose_name_plural = '문제 리스트들'
-
-    def __str__(self):
-        return '%s' % self.title
 
 
 class ProblemInstance(models.Model):

@@ -14,7 +14,6 @@ User = get_user_model()
 ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem'))
 
 
-
 # TODO: Manual migration required
 class Problem(models.Model):
     title = models.CharField(max_length=50)

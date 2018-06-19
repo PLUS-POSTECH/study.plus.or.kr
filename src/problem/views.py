@@ -90,33 +90,34 @@ class ProblemListView(PlusMemberCheck, View):
         })
 
 
-# TODO: Refactor variable names
 class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
-            problem_response = ProblemInstance.objects.get(pk=int(pk))
+            problem_instance = ProblemInstance.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
             raise Http404
 
-        first_solved_log = None
-        solved_log = ProblemAuthLog.objects.filter(problem_instance=problem_response,
-                                                   auth_key=problem_response.problem.auth_key) \
-                                           .order_by('datetime')
-        if solved_log.exists():
-            first_solved_log = solved_log.first()
-        authed = solved_log.filter(user=request.user).exists()
+        solved_log = ProblemAuthLog.objects \
+            .filter(problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key) \
+            .order_by('datetime')
+
+        first_solved_log = solved_log.first() if solved_log.exists() else None
+        solved = solved_log.filter(user=request.user).exists()
         solved_count = solved_log.count()
 
-        points = problem_response.points
-        points += problem_response.distributed_points / (solved_count + (0 if authed else 1))
-        points += problem_response.breakthrough_points if not first_solved_log or first_solved_log.user == request.user else 0
+        effective_solved_count = solved_count + (0 if solved else 1)
+        effective_distributed_points = problem_instance.distributed_points / effective_solved_count
+        breakthrough_relevant = first_solved_log is None or first_solved_log.user == request.user
+        points = problem_instance.points
+        points += effective_distributed_points
+        points += problem_instance.breakthrough_points if breakthrough_relevant else 0
 
         return render(request, 'problem/get.html', {
-            'problem_instance': problem_response,
+            'problem_instance': problem_instance,
             'points': int(points),
             'solved_count': solved_count,
             'first_solved_log': first_solved_log,
-            'authed': authed
+            'solved': solved
         })
 
 

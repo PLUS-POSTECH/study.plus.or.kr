@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="actions" id="action_field">
-    {% if not authed %}
+    {% if not solved %}
         <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=problem_instance.pk %}">{% csrf_token %}
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
@@ -35,7 +35,7 @@
     {% endif %}
 </div>
 
-{% if not already_authed %}
+{% if not solved %}
     <script>
         $(document).ready(function () {
             var _auth_form = $('#auth_form');

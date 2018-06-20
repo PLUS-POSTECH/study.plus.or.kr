@@ -76,7 +76,7 @@ class AuthReplay:
             previous_state = user_states.get(user, UserState([], None))
             user_solve_logs = solve_logs.filter(user=user)
             solved_problems = user_solve_logs.values_list('problem_instance', flat=True)
-            last_auth = user_solve_logs.last()
+            last_auth = user_solve_logs.last().datetime
 
             user_states[user] = UserState(
                 solved_problems=previous_state.solved_problems + solved_problems,

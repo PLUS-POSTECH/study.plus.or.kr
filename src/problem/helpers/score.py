@@ -45,7 +45,7 @@ class UserState(NamedTuple):
 
 class ReplayState(NamedTuple):
     datetime: Optional[timezone.datetime]
-    user_states: Dict[ProblemInstance, UserState]
+    user_states: Dict[User, UserState]
     problem_states: Dict[ProblemInstance, ProblemState]
 
 

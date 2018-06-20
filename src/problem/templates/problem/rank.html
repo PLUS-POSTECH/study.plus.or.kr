@@ -57,9 +57,9 @@
                 var colorName = colorNames[index % colorNames.length];
                 return chartColors[colorName];
             }
-            {% for problem_list_id, chart_data in chart_info %}
-                var ctx_{{ problem_list_id }} = $("#chart_{{ problem_list_id }}");
-                var chart_{{ problem_list_id }} = new Chart(ctx_{{ problem_list_id }}, {
+            {% for problem_list, chart_data in chart_info %}
+                var ctx_{{ problem_list.id }} = $("#chart_{{ problem_list.id }}");
+                var chart_{{ problem_list.id }} = new Chart(ctx_{{ problem_list.id }}, {
                     type: 'line',
                     options: {
                         responsive: true,

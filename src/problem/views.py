@@ -178,7 +178,7 @@ class ProblemRankView(PlusMemberCheck, View):
             replay.crunch()
             top10_chart_data, top10_rank = replay.get_statistic_data()
             rank_info.append((problem_list, top10_rank))
-            chart_info.append((problem_list.pk, top10_chart_data))
+            chart_info.append((problem_list, top10_chart_data))
 
         return render(request, 'problem/rank.html', {
             'rank_info': rank_info,

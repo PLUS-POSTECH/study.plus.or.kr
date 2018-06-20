@@ -1,10 +1,13 @@
-from collections import namedtuple
 from functools import reduce
 import json
+from typing import Dict, List, NamedTuple, Optional
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from problem.models import ProblemInstance, ProblemAuthLog
+
+User = get_user_model()
 
 
 def get_problem_list_info(problem_list, user):
@@ -30,9 +33,20 @@ def get_problem_list_info(problem_list, user):
     return problem_info, int(user_score)
 
 
-ProblemState = namedtuple('ProblemState', ['solve_count', 'first_solve'])
-UserState = namedtuple('UserInfo', ['solved_problems', 'last_auth'])
-ReplayState = namedtuple('ReplayState', ['datetime', 'user_states', 'problem_states'])
+class ProblemState(NamedTuple):
+    solve_count: int
+    first_solve: Optional[User]
+
+
+class UserState(NamedTuple):
+    solved_problems: List[ProblemInstance]
+    last_auth: Optional[timezone.datetime]
+
+
+class ReplayState(NamedTuple):
+    datetime: Optional[timezone.datetime]
+    user_states: Dict[ProblemInstance, UserState]
+    problem_states: Dict[ProblemInstance, ProblemState]
 
 
 class AuthReplay:
@@ -40,7 +54,7 @@ class AuthReplay:
         self.problem_list = problem_list
         self.problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
         self.state = ReplayState(
-            datetime=timezone.ZERO,
+            datetime=None,
             user_states={},
             problem_states={}
         )
@@ -129,6 +143,9 @@ class AuthReplay:
         return (basic + breakthrough) if (user == first_solver) else basic
 
     def get_statistic_data(self):
+        if self.state.datetime is None:
+            return [], []
+
         problem_state_diffs = {}
         user_state_diffs = {}
 
@@ -144,7 +161,7 @@ class AuthReplay:
                     lambda x: self.calc_user_problem_points(user, x, problem_points, user_state_diffs),
                     state.solved_problems))
 
-        crunched_datetime = self.state.datetime
+        crunched_datetime: timezone.datetime = self.state.datetime
         logs_to_replay = ProblemAuthLog.objects \
             .filter(
                 problem_instance__in=self.problem_instances.all(),

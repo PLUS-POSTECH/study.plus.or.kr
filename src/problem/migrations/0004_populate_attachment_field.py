@@ -3,8 +3,8 @@
 from django.db import migrations
 
 
-def populate_attachment_field(apps, schema_editor):
-    Problem = apps.get_model('problem', 'Problem')
+def populate_attachment_field(apps, _):
+    # noinspection PyPep8Naming
     ProblemAttachment = apps.get_model('problem', 'ProblemAttachment')
 
     delete_list = []
@@ -22,7 +22,8 @@ def populate_attachment_field(apps, schema_editor):
         item.delete()
 
 
-def reverse_populate_attachment_field(apps, schema_editor):
+def reverse_populate_attachment_field(apps, _):
+    # noinspection PyPep8Naming
     ProblemAttachment = apps.get_model('problem', 'ProblemAttachment')
 
     for problem_attachment in ProblemAttachment.objects.all():

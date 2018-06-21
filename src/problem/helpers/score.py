@@ -135,7 +135,9 @@ class AuthReplay:
         return default_points + int(distributed_points), (first_solver, breakthrough_points)
 
     def calc_user_problem_points(self, user, problem_instance, problem_points, state_diffs):
-        all_solved_problems = self.state.user_states[user].solved_problems + state_diffs[user].solved_problems
+        user_state = self.state.user_states.get(user, UserState([], None))
+        user_state_diff = state_diffs.get(user, UserState([], None))
+        all_solved_problems = user_state.solved_problems + user_state_diff.solved_problems
         if problem_instance not in all_solved_problems:
             return 0
 

@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from problem import views
 
+app_name = 'problem'
+
 urlpatterns = [
     url(r'^download/(?P<pk>\d+)$', views.ProblemDownloadView.as_view(), name='download'),
     url(r'^auth/(?P<pk>\d+)$', views.ProblemAuthView.as_view(), name='auth'),

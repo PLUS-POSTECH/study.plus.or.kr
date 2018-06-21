@@ -3,6 +3,8 @@ from django.contrib.auth import views as auth_views
 
 from website import views
 
+app_name = 'website'
+
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^login/$', auth_views.LoginView.as_view(), name='login'),

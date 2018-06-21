@@ -49,7 +49,7 @@ class ProblemList(models.Model):
 
 
 def upload_target(problem_attachment, filename):
-    return os.path.join(str(problem_attachment.problem.id), filename)
+    return os.path.join(str(problem_attachment.problem.pk), filename)
 
 
 class ProblemAttachment(models.Model):

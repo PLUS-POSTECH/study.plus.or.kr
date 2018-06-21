@@ -35,7 +35,7 @@ class Seminar(models.Model):
 
 
 def upload_target(seminar_attachment, filename):
-    return os.path.join(str(seminar_attachment.seminar.id), filename)
+    return os.path.join(str(seminar_attachment.seminar.pk), filename)
 
 
 class SeminarAttachment(models.Model):

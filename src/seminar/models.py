@@ -34,11 +34,12 @@ class Seminar(models.Model):
         return '%s' % self.title
 
 
-class SeminarAttachment(models.Model):
-    def target_folder(self):
-        return str(self.seminar.id)
+def upload_target(seminar_attachment, filename):
+    return os.path.join(str(seminar_attachment.seminar.id), filename)
 
-    file = models.FileField(storage=SeminarAttachmentStorage, upload_to=target_folder())
+
+class SeminarAttachment(models.Model):
+    file = models.FileField(storage=SeminarAttachmentStorage, upload_to=upload_target)
     seminar = models.ForeignKey(Seminar, on_delete=models.PROTECT)
 
     class Meta:

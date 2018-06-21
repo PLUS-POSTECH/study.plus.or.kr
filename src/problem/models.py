@@ -48,11 +48,12 @@ class ProblemList(models.Model):
         return '%s' % self.title
 
 
-class ProblemAttachment(models.Model):
-    def target_folder(self):
-        return str(self.problem.id)
+def upload_target(problem_attachment, filename):
+    return os.path.join(str(problem_attachment.problem.id), filename)
 
-    file = models.FileField(storage=ProblemAttachmentStorage, upload_to=target_folder())
+
+class ProblemAttachment(models.Model):
+    file = models.FileField(storage=ProblemAttachmentStorage, upload_to=upload_target)
     problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
 
     class Meta:

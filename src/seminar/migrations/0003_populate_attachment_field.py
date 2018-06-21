@@ -23,10 +23,7 @@ def populate_attachment_field(apps, schema_editor):
 
 
 def reverse_populate_attachment_field(apps, schema_editor):
-    Seminar = apps.get_model('Seminar')
     SeminarAttachment = apps.get_model('SeminarAttachment')
-
-    delete_list = []
 
     for seminar_attachment in SeminarAttachment.objects.all():
         seminar_attachment.seminar.attachments.add(seminar_attachment)

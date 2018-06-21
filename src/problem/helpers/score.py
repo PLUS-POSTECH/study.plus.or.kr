@@ -106,7 +106,7 @@ class AuthReplay:
     def crunch(self):
         datetime_std = timezone.now() - self.crunch_timedelta
         logs = ProblemAuthLog.objects \
-            .filter(problem_instance__in=self.problem_instances.all(), datetime_lte=datetime_std) \
+            .filter(problem_instance__in=self.problem_instances.all(), datetime__lte=datetime_std) \
             .order_by('datetime')
 
         if self.state.datetime is not None:

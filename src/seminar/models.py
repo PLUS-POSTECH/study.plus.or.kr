@@ -14,7 +14,6 @@ User = get_user_model()
 SeminarAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'seminar'))
 
 
-# TODO: Create manual migration on attachment
 class Seminar(models.Model):
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)

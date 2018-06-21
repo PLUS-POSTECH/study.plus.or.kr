@@ -45,7 +45,7 @@
                                 <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
                                 <div class="description">{{ seminar.description }}</div>
                             </div>
-                            {% for attachment in seminar.attachments.all %}
+                            {% for attachment in seminar.seminarattachment_set.all %}
                                 <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
                                     <i class="download icon"></i>
                                     {{ attachment }}

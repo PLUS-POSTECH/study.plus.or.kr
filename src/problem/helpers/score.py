@@ -163,7 +163,7 @@ class AuthReplay:
                     lambda x: self.calc_user_problem_points(user, x, problem_points, user_state_diffs),
                     state.solved_problems))
 
-        crunched_datetime: timezone.datetime = self.state.datetime
+        crunched_datetime = self.state.datetime
         logs_to_replay = ProblemAuthLog.objects \
             .filter(
                 problem_instance__in=self.problem_instances.all(),

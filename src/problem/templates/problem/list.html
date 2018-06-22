@@ -72,7 +72,6 @@
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
 
-            // TODO: Use remote search suggestions
             let session_list = [
                 {% for session in sessions %}
                     { title: '{{ session.title }}', href: '{% url 'problem:list' %}?search_by=session&q={{ session.title | urlencode }}' },

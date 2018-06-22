@@ -92,5 +92,3 @@ class ProblemAuthLog(models.Model):
         unique_together = (('user', 'problem_instance', 'auth_key'),)
         verbose_name = '문제 인증 로그'
         verbose_name_plural = '문제 인증 로그들'
-
-# TODO: Add ProblemQuestion model

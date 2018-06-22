@@ -154,7 +154,6 @@ class ProblemDownloadView(PlusMemberCheck, View):
         return response
 
 
-# TODO: FIX latency using Django cache.
 class ProblemRankView(PlusMemberCheck, View):
     def get(self, request, pk=None):
         problem_list_id = int(pk)

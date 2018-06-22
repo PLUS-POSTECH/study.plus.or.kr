@@ -62,7 +62,6 @@
             var $_ui_dropdown = $('.ui.dropdown');
             var $_ui_search = $('.ui.search');
 
-            // TODO: Use remote search suggestions
             var session_list = [
                 {% for session in sessions %}
                     { title: '{{ session.title }}', href: '{% url 'seminar:list' %}?search_by=session&q={{ session.title | urlencode }}' },

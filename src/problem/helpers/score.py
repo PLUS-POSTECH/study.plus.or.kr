@@ -80,7 +80,7 @@ class AuthReplay:
             last_auth = user_solve_logs.last().datetime
 
             user_states[user] = UserState(
-                solved_problems=previous_state.solved_problems + solved_problems,
+                solved_problems=previous_state.solved_problems + list(solved_problems),
                 last_auth=last_auth
             )
 

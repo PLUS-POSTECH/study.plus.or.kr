@@ -156,14 +156,13 @@ class ProblemDownloadView(PlusMemberCheck, View):
 
 class ProblemRankView(PlusMemberCheck, View):
     def get(self, request, pk=None):
-        problem_list_id = int(pk)
-
         problem_lists = ProblemList.objects
-        if problem_list_id is None:
+        if pk is None:
             sessions = Session.objects.filter(isActive=True).order_by('title')
             problem_lists = problem_lists.filter(session__in=sessions)
         else:
-            problem_lists = problem_lists.filter(pk=problem_list_id)
+            problem_list_pk = int(pk)
+            problem_lists = problem_lists.filter(pk=problem_list_pk)
             if not problem_lists.exists():
                 raise Http404
 

@@ -60,7 +60,7 @@ class AuthReplay:
 
             first_solve_user = first_solve_log.user if first_solve_log is not None else None
 
-            previous_state = problem_states.get(problem_instance, default=ProblemState(0, None))
+            previous_state = problem_states.get(problem_instance, ProblemState(0, None))
             new_state = \
                 ProblemState(
                     solve_count=previous_state.solve_count + solve_count,
@@ -74,7 +74,7 @@ class AuthReplay:
 
         # Update user state per user who has a correct auth logs for problem list
         for user in users_with_logs:
-            previous_state = user_states.get(user, default=UserState([], None))
+            previous_state = user_states.get(user, UserState([], None))
             user_solve_logs = solve_logs.filter(user=user)
             solved_problems = user_solve_logs.values_list('problem_instance', flat=True)
             last_auth = user_solve_logs.last().datetime
@@ -103,7 +103,7 @@ class AuthReplay:
 
     def update_points_function(self, points_functions, problem_instance, state_diffs):
         problem_state = self.state.problem_states[problem_instance]
-        problem_state_diff = state_diffs.get(problem_instance, default=None)
+        problem_state_diff = state_diffs.get(problem_instance, None)
         solve_count = problem_state.solve_count
         first_solver = problem_state.first_solve
 
@@ -119,8 +119,8 @@ class AuthReplay:
             lambda user: calculate_problem_score(problem_instance, solve_count, user == first_solver)
 
     def calc_user_points(self, user, problem_instance, points_functions, state_diffs):
-        user_state = self.state.user_states.get(user, default=UserState([], None))
-        user_state_diff = state_diffs.get(user, default=UserState([], None))
+        user_state = self.state.user_states.get(user, UserState([], None))
+        user_state_diff = state_diffs.get(user, UserState([], None))
         all_solved_problems = user_state.solved_problems + user_state_diff.solved_problems
         if problem_instance not in all_solved_problems:
             return 0
@@ -155,7 +155,7 @@ class AuthReplay:
 
         def append_chart(timestamp):
             for chart_user, points in user_points.items():
-                entry = chart_data.get(chart_user.username, default=[])
+                entry = chart_data.get(chart_user.username, [])
                 entry.append({'x': timestamp.isoformat(), 'y': points})
                 chart_data[chart_user.username] = entry
 
@@ -167,7 +167,7 @@ class AuthReplay:
                 user_points[user] -= self.calc_user_points(
                     user, log.problem_instance, points_functions, user_state_diffs)
 
-            prev_problem_state = problem_state_diffs.get(log.problem_instance, default=ProblemState(0, None))
+            prev_problem_state = problem_state_diffs.get(log.problem_instance, ProblemState(0, None))
             problem_state_diffs[log.problem_instance] = \
                 ProblemState(
                     solve_count=prev_problem_state.solve_count + 1,
@@ -181,13 +181,13 @@ class AuthReplay:
                 user_points[user] += self.calc_user_points(
                     user, log.problem_instance, points_functions, user_state_diffs)
 
-            prev_user_state = user_state_diffs.get(log.user, default=UserState([], None))
+            prev_user_state = user_state_diffs.get(log.user, UserState([], None))
             user_state_diffs[log.user] = \
                 UserState(
                     solved_problems=prev_user_state.solved_problems + [log.problem_instance],
                     last_auth=log.datetime
                 )
-            prev_point = user_points.get(log.user, default=0)
+            prev_point = user_points.get(log.user, 0)
             user_points[log.user] = prev_point + self.calc_user_points(
                 log.user, log.problem_instance, points_functions, user_state_diffs)
 
@@ -196,7 +196,7 @@ class AuthReplay:
         append_chart(timezone.now())
 
         def get_user_last_auth(rank_user):
-            user_state_diff = user_state_diffs.get(rank_user, default=None)
+            user_state_diff = user_state_diffs.get(rank_user, None)
             return self.state.user_states[rank_user].last_auth \
                 if user_state_diff is None else \
                 user_state_diff.last_auth

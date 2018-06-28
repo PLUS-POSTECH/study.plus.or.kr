@@ -82,7 +82,7 @@ class ProblemGetView(PlusMemberCheck, View):
         solved_count = solved_log.count()
 
         effective_solved_count = solved_count + (0 if solved else 1)
-        effective_distributed_points = problem_instance.distributed_points / effective_solved_count
+        effective_distributed_points = problem_instance.distributed_points // effective_solved_count
         breakthrough_relevant = first_solved_log is None or first_solved_log.user == request.user
         points = problem_instance.points
         points += effective_distributed_points
@@ -170,7 +170,7 @@ class ProblemRankView(PlusMemberCheck, View):
         chart_info = []
         for problem_list in problem_lists:
             replay = AuthReplay(problem_list, timedelta(days=7))
-            replay.crunch()
+            replay.prepare()
             top10_chart_data, top10_rank = replay.get_statistic_data()
             rank_info.append((problem_list, top10_rank))
             chart_info.append((problem_list, top10_chart_data))

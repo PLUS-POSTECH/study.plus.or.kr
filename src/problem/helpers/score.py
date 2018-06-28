@@ -149,11 +149,18 @@ class AuthReplay:
                     state.solved_problems))
 
         crunched_datetime = self.state.datetime
-        logs_to_replay = ProblemAuthLog.objects \
+
+        logs = ProblemAuthLog.objects \
             .filter(
                 problem_instance__in=self.problem_instances.all(),
-                datetime__gt=crunched_datetime) \
-            .order_by('datetime')
+                datetime__gt=crunched_datetime)
+        solved_log_queries = []
+        for problem_instance in self.problem_instances.all():
+            correct_auth_key = problem_instance.problem.auth_key
+            solve_logs = logs.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
+            solved_log_queries.append(solve_logs)
+
+        logs_to_replay = reduce(lambda x, y: x | y, solved_log_queries).order_by('datetime')
 
         def append_chart(timestamp):
             for chart_user, points in user_points.items():

@@ -14,7 +14,8 @@ from django.views import View
 from website.views import PlusMemberCheck
 from website.models import Session
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
-from .helpers.score import get_problem_list_info, AuthReplay
+from .helpers.score import AuthReplay
+from .helpers.problem_info import get_problem_list_info, get_user_problem_info
 
 
 class ProblemListForm(forms.Form):
@@ -73,27 +74,8 @@ class ProblemGetView(PlusMemberCheck, View):
         except ObjectDoesNotExist:
             raise Http404
 
-        solved_log = ProblemAuthLog.objects \
-            .filter(problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key) \
-            .order_by('datetime')
-
-        first_solved_log = solved_log.first() if solved_log.exists() else None
-        solved = solved_log.filter(user=request.user).exists()
-        solved_count = solved_log.count()
-
-        effective_solved_count = solved_count + (0 if solved else 1)
-        effective_distributed_points = problem_instance.distributed_points // effective_solved_count
-        breakthrough_relevant = first_solved_log is None or first_solved_log.user == request.user
-        points = problem_instance.points
-        points += effective_distributed_points
-        points += problem_instance.breakthrough_points if breakthrough_relevant else 0
-
         return render(request, 'problem/get.html', {
-            'problem_instance': problem_instance,
-            'points': int(points),
-            'solved_count': solved_count,
-            'first_solved_log': first_solved_log,
-            'solved': solved
+            'info': get_user_problem_info(request.user, problem_instance)
         })
 
 
@@ -116,10 +98,8 @@ class ProblemAuthView(PlusMemberCheck, View):
             raise Http404
 
         try:
-            ProblemAuthLog.objects.create(user=request.user,
-                                          problem_instance=problem_instance,
-                                          auth_key=auth_key,
-                                          datetime=timezone.now())
+            ProblemAuthLog.objects.create(
+                user=request.user, problem_instance=problem_instance, auth_key=auth_key, datetime=timezone.now())
             if problem_instance.problem.auth_key == auth_key:
                 return_obj['result'] = True
             else:

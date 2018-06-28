@@ -1,25 +1,25 @@
 <i class="close icon"></i>
-<div class="ui header">{{ problem_instance }} - <small>{{ problem_instance.problem.categories_title }}, {{ points }} pts.</small></div>
+<div class="ui header">{{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
 <div class="content">
     <div class="description">
-        <p>{{ problem_instance.problem.description | linebreaksbr }}</p>
-        {% for attachment in problem_instance.problem.problemattachment_set.all %}
+        <p>{{ info.problem_instance.problem.description | linebreaksbr }}</p>
+        {% for attachment in info.problem_instance.problem.problemattachment_set.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
                 {{ attachment }}
             </a>
         {% endfor %}
-        {% if first_solved_log %}
-            <h4 class="ui header">First Blood: {{ first_solved_log.user }}</h4>
-            <div>Solved by {{ solved_count }} user(s).</div>
+        {% if info.first_solver %}
+            <h4 class="ui header">First Blood: {{ info.first_solver }}</h4>
+            <div>Solved by {{ info.solver_count }} user(s).</div>
         {% else %}
             <h4 class="ui header">Take the first blood!</h4>
         {% endif %}
     </div>
 </div>
 <div class="actions" id="action_field">
-    {% if not solved %}
-        <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=problem_instance.pk %}">{% csrf_token %}
+    {% if not info.solved %}
+        <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=info.problem_instance.pk %}">{% csrf_token %}
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
@@ -35,7 +35,7 @@
     {% endif %}
 </div>
 
-{% if not solved %}
+{% if not info.solved %}
     <script>
         $(document).ready(function () {
             let _auth_form = $('#auth_form');

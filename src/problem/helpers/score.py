@@ -10,27 +10,11 @@ from problem.models import ProblemInstance, ProblemAuthLog
 User = get_user_model()
 
 
-def get_problem_list_info(problem_list, user):
-    problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
-    problem_info = []
-    user_score = 0
-    for problem_instance in problem_instances:
-        solved_log = ProblemAuthLog.objects \
-            .filter(problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key) \
-            .order_by('datetime')
-
-        first_solved_log = solved_log.first() if solved_log.exists() else None
-        solved = solved_log.filter(user=user).exists()
-        solved_count = solved_log.count()
-        first_blood = first_solved_log is None or user == first_solved_log.user
-        points = problem_instance.points
-        points += problem_instance.distributed_points // (solved_count + (0 if solved else 1))
-        points += problem_instance.breakthrough_points if first_blood else 0
-        if solved:
-            user_score += points
-        problem_info.append((problem_instance, points, solved, first_blood))
-
-    return problem_info, user_score
+def calculate_problem_score(problem_instance, effective_solve_count, is_first_solve):
+    points = problem_instance.points
+    points += problem_instance.distributed_points // effective_solve_count
+    points += problem_instance.breakthrough_points if is_first_solve else 0
+    return points
 
 
 class ProblemState(NamedTuple):
@@ -117,7 +101,7 @@ class AuthReplay:
 
         self.process_preparation(logs, datetime_pivot)
 
-    def calc_problem_points(self, problem_instance, state_diffs):
+    def update_points_function(self, points_functions, problem_instance, state_diffs):
         problem_state = self.state.problem_states[problem_instance]
         problem_state_diff = state_diffs.get(problem_instance, default=None)
         solve_count = problem_state.solve_count
@@ -131,21 +115,17 @@ class AuthReplay:
         if solve_count == 0:
             return
 
-        default_points = problem_instance.points
-        distributed_points = problem_instance.distributed_points / solve_count
-        breakthrough_points = problem_instance.breakthrough_points
+        points_functions[problem_instance] = \
+            lambda user: calculate_problem_score(problem_instance, solve_count, user == first_solver)
 
-        return default_points + int(distributed_points), (first_solver, breakthrough_points)
-
-    def calc_user_problem_points(self, user, problem_instance, problem_points, state_diffs):
+    def calc_user_points(self, user, problem_instance, points_functions, state_diffs):
         user_state = self.state.user_states.get(user, default=UserState([], None))
         user_state_diff = state_diffs.get(user, default=UserState([], None))
         all_solved_problems = user_state.solved_problems + user_state_diff.solved_problems
         if problem_instance not in all_solved_problems:
             return 0
 
-        basic, (first_solver, breakthrough) = problem_points[problem_instance]
-        return (basic + breakthrough) if (user == first_solver) else basic
+        return points_functions[problem_instance](user)
 
     def get_statistic_data(self):
         if self.state.datetime is None:
@@ -154,16 +134,16 @@ class AuthReplay:
         problem_state_diffs = {}
         user_state_diffs = {}
 
-        problem_points = {}
+        points_functions = {}
         user_points = {}
 
         for problem_instance in self.state.problem_states:
-            problem_points[problem_instance] = self.calc_problem_points(problem_instance, problem_state_diffs)
+            self.update_points_function(points_functions, problem_instance, problem_state_diffs)
 
         for user, state in self.state.user_states.items():
             user_points[user] = \
                 sum(map(
-                    lambda x: self.calc_user_problem_points(user, x, problem_points, user_state_diffs),
+                    lambda x: self.calc_user_points(user, x, points_functions, user_state_diffs),
                     state.solved_problems))
 
         crunched_datetime = self.state.datetime
@@ -184,8 +164,8 @@ class AuthReplay:
 
         for log in logs_to_replay:
             for user in user_points:
-                user_points[user] -= self.calc_user_problem_points(
-                    user, log.problem_instance, problem_points, user_state_diffs)
+                user_points[user] -= self.calc_user_points(
+                    user, log.problem_instance, points_functions, user_state_diffs)
 
             prev_problem_state = problem_state_diffs.get(log.problem_instance, default=ProblemState(0, None))
             problem_state_diffs[log.problem_instance] = \
@@ -195,11 +175,11 @@ class AuthReplay:
                     if prev_problem_state.first_solve is not None else
                     log.user
                 )
-            problem_points[log.problem_instance] = self.calc_problem_points(log.problem_instance, problem_state_diffs)
+            self.update_points_function(points_functions, log.problem_instance, problem_state_diffs)
 
             for user in user_points:
-                user_points[user] += self.calc_user_problem_points(
-                    user, log.problem_instance, problem_points, user_state_diffs)
+                user_points[user] += self.calc_user_points(
+                    user, log.problem_instance, points_functions, user_state_diffs)
 
             prev_user_state = user_state_diffs.get(log.user, default=UserState([], None))
             user_state_diffs[log.user] = \
@@ -208,8 +188,8 @@ class AuthReplay:
                     last_auth=log.datetime
                 )
             prev_point = user_points.get(log.user, default=0)
-            user_points[log.user] = prev_point + self.calc_user_problem_points(
-                log.user, log.problem_instance, problem_points, user_state_diffs)
+            user_points[log.user] = prev_point + self.calc_user_points(
+                log.user, log.problem_instance, points_functions, user_state_diffs)
 
             append_chart(log.datetime)
 

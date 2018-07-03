@@ -124,10 +124,8 @@ class AuthReplay:
         user_state = self.state.user_states.get(user, UserState([], None))
         user_state_diff = state_diffs.get(user, UserState([], None))
         all_solved_problems = user_state.solved_problems + user_state_diff.solved_problems
-        if problem_instance not in all_solved_problems:
-            return 0
 
-        return points_functions[problem_instance](user)
+        return points_functions[problem_instance](user) if problem_instance in all_solved_problems else 0
 
     def get_statistic_data(self):
         if self.state.datetime is None:

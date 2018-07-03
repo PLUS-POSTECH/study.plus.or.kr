@@ -3,7 +3,7 @@
 <div class="content">
     <div class="description">
         <p>{{ info.problem_instance.problem.description | linebreaksbr }}</p>
-        {% for attachment in info.problem_instance.problem.problemattachment_set.all %}
+        {% for attachment in info.problem_instance.problem.problem_attachments.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
                 {{ attachment }}

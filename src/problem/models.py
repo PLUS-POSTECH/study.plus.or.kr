@@ -53,7 +53,7 @@ def upload_target(problem_attachment, filename):
 
 class ProblemAttachment(models.Model):
     file = models.FileField(storage=ProblemAttachmentStorage, upload_to=upload_target)
-    problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, related_name='problem_attachments')
 
     class Meta:
         verbose_name = '문제 첨부파일'

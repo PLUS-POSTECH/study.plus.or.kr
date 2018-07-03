@@ -39,7 +39,7 @@ def upload_target(seminar_attachment, filename):
 
 class SeminarAttachment(models.Model):
     file = models.FileField(storage=SeminarAttachmentStorage, upload_to=upload_target)
-    seminar = models.ForeignKey(Seminar, on_delete=models.PROTECT)
+    seminar = models.ForeignKey(Seminar, on_delete=models.PROTECT, related_name='seminar_attachments')
 
     class Meta:
         verbose_name = '세미나 첨부파일'

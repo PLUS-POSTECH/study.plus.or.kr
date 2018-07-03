@@ -148,12 +148,12 @@ class AuthReplay:
                     lambda x: self.calc_user_points(user, x, points_functions, user_state_diffs),
                     state.solved_problems))
 
-        crunched_datetime = self.state.datetime
+        datetime_pivot = self.state.datetime
 
         logs = ProblemAuthLog.objects \
             .filter(
                 problem_instance__in=self.problem_instances.all(),
-                datetime__gt=crunched_datetime)
+                datetime__gt=datetime_pivot)
         solved_log_queries = []
         for problem_instance in self.problem_instances.all():
             correct_auth_key = problem_instance.problem.auth_key
@@ -169,7 +169,7 @@ class AuthReplay:
                 chart_data[chart_user.username] = entry
 
         chart_data = {}
-        append_chart(crunched_datetime)
+        append_chart(datetime_pivot)
 
         for log in logs_to_replay:
             for user in user_points:

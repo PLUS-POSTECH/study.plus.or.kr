@@ -16,7 +16,7 @@ class UserProblemInfo(NamedTuple):
     solver_count: int
     effective_points: int
 
-    def effective_first_solve(self):
+    def display_first_solve(self):
         return self.first_solver is None or self.user == self.first_solver
 
 

@@ -48,7 +48,7 @@
                         <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}')">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
-                                     {% if not info.effective_first_solve %}style="visibility:hidden;"{% endif %}>
+                                     {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
                                     <i class="trophy icon"></i>
                                 </div>
                                 <h3 class="ui header">

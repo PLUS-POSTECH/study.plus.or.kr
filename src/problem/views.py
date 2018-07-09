@@ -56,7 +56,7 @@ class ProblemListView(PlusMemberCheck, View):
                 problem_info, user_score = get_problem_list_info(problem_list, request.user)
                 yield problem_list, problem_info, user_score
 
-        queried_problem_lists = construct_response()
+        queried_problem_lists = list(construct_response())
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,

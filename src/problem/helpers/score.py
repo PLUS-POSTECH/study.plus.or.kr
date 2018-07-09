@@ -36,7 +36,7 @@ class ReplayState(NamedTuple):
 class AuthReplay:
     def __init__(self, problem_list, crunch_timedelta):
         self.problem_list = problem_list
-        self.problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
+        self.problem_instances = problem_list.probleminstance_set
         self.state = ReplayState(
             datetime=None,
             user_states={},

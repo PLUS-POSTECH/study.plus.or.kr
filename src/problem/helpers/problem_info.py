@@ -2,7 +2,7 @@ from typing import NamedTuple, Optional
 
 from django.contrib.auth import get_user_model
 
-from problem.models import ProblemInstance, ProblemAuthLog
+from problem.models import ProblemInstance
 from .score import calculate_problem_score
 
 User = get_user_model()
@@ -21,8 +21,8 @@ class UserProblemInfo(NamedTuple):
 
 
 def get_user_problem_info(user, problem_instance):
-    solved_log = ProblemAuthLog.objects \
-        .filter(problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key) \
+    solved_log = problem_instance.problemauthlog_set \
+        .filter(auth_key=problem_instance.problem.auth_key) \
         .order_by('datetime')
 
     first_solver = solved_log.first().user if solved_log.exists() else None
@@ -36,7 +36,7 @@ def get_user_problem_info(user, problem_instance):
 
 
 def get_problem_list_info(problem_list, user):
-    problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
+    problem_instances = problem_list.probleminstance_set.all()
     problem_info = []
     user_score = 0
     for problem_instance in problem_instances:

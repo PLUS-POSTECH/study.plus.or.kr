@@ -288,8 +288,8 @@ class ProblemRankView(PlusMemberCheck, View):
 
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
-        questions = ProblemQuestion.objects.filter(user=request.user).order_by('datetime') 
-        answers = ProblemQuestion.objects.order_by('datetime') 
+        questions = ProblemQuestion.objects.filter(user=request.user).order_by('-datetime') 
+        answers = ProblemQuestion.objects.order_by('-datetime') 
         answers = list(filter(lambda x: x.problem_instance.problem.author == request.user,answers)) 
          
         return render(request, 'problem/question.html', { 

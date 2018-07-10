@@ -104,7 +104,7 @@
                     success: function(data) { 
                         if (data['ok'] === true) { 
                             $("#question_actions").html('' + 
-                                '<p>Accepted!</p>' + 
+                                '<p>Submitted!</p>' + 
                                 '<div class="ui positive button">OK</div>' + 
                                 ''); 
                         } else { 
@@ -126,7 +126,7 @@
  
             $("#ask_button").click( function (e) { 
                 e.preventDefault(); 
-                $("#get_prob_modal").modal('hide'); 
+                $("#problem_modal").modal('hide'); 
                 $("#question_modal").modal('show'); 
             }); 
         });

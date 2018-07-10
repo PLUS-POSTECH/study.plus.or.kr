@@ -23,6 +23,10 @@
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
+            <button id="ask_button" class="ui teal right labeled icon button"> 
+                <i class="question icon"></i> 
+                Question 
+            </button> 
             <button type="submit" class="ui primary right labeled icon button">
                 <i class="unlock icon"></i>
                 Auth
@@ -35,7 +39,7 @@
     {% endif %}
 </div>
 
-{% if not already_authed %}
+{% if not authed %}
     <script>
         $(document).ready(function () {
             var _auth_form = $('#auth_form');
@@ -72,6 +76,59 @@
                     }
                 });
             });
+
+            $("#question_modal").html( 
+                `<i class="close icon"></i> 
+                <div class="ui header">Question about {{ problem_instance }} - <small>{{ problem_instance.problem.categories_title }}, {{ points }} pts.</small></div> 
+                <div class="content"> 
+                    <div class="ui form field"> 
+                        <textarea name="question" id="question_text"></textarea> 
+                    </div> 
+                </div> 
+                <div class="actions" id="question_actions"> 
+                    <button id="question_submit" class="ui red right labeled icon button"> 
+                        <i class="envelope icon"></i> 
+                        Submit 
+                    </button> 
+                    <div class="ui cancel button">Close</div> 
+                </div>` 
+            ); 
+ 
+            $("#question_submit").click( function (e) { 
+                e.preventDefault(); 
+                $.ajax({ 
+                    url: "{% url 'problem:question' pk=problem_instance.pk %}", 
+                    type: "POST", 
+                    data: $("#question_text").serialize(), 
+                    dataType: 'json', 
+                    success: function(data) { 
+                        if (data['ok'] === true) { 
+                            $("#question_actions").html('' + 
+                                '<p>Accepted!</p>' + 
+                                '<div class="ui positive button">OK</div>' + 
+                                ''); 
+                        } else { 
+                            $("#question_actions").html('' + 
+                            '<p>No empty questions</p>' + 
+                            '<div class="ui negative button">Close</div>' + 
+                            ''); 
+                        } 
+                    }, 
+                    error: function() { 
+                        $("#question_actions").html('' + 
+                            '<p>Something is wrong with server</p>' + 
+                            '<div class="ui negative button">Close</div>' + 
+                            ''); 
+                    } 
+                }); 
+            }); 
+ 
+ 
+            $("#ask_button").click( function (e) { 
+                e.preventDefault(); 
+                $("#get_prob_modal").modal('hide'); 
+                $("#question_modal").modal('show'); 
+            }); 
         });
     </script>
 {% endif %}

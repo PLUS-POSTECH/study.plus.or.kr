@@ -63,14 +63,15 @@
             </div>
         </div>
     {% endfor %}
-    <div class="ui modal" id="modal_content"></div>
+    <div class="ui modal" id="get_prob_modal"></div> 
+    <div class="ui modal" id="question_modal"></div> 
 
     <script>
         var request_problem = function () {}
         $(document).ready(function () {
             var $_ui_dropdown = $('.ui.dropdown');
             var $_ui_search = $('.ui.search');
-            var $_ui_modal = $('.ui.modal');
+            var $_ui_modal = $('#get_prob_modal'); 
 
             var session_list = [
                 {% for session in sessions %}

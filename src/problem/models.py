@@ -87,3 +87,15 @@ class ProblemAuthLog(models.Model):
         unique_together = (('user', 'problem_instance', 'auth_key'),)
         verbose_name = '문제 인증 로그'
         verbose_name_plural = '문제 인증 로그들'
+
+
+class ProblemQuestion(models.Model): 
+    user = models.ForeignKey(User) 
+    problem_instance = models.ForeignKey(ProblemInstance) 
+    question = models.TextField() 
+    answer = models.TextField(blank=True) 
+    datetime = models.DateTimeField() 
+ 
+    class Meta: 
+        verbose_name = '문제 Q&A' 
+        verbose_name_plural = '문제 Q&A들'

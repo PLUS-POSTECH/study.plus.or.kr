@@ -15,7 +15,7 @@ from django.views import View
 
 from website.views import PlusMemberCheck
 from website.models import Session
-from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
+from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion 
 
 
 class ProblemListForm(forms.Form):
@@ -288,4 +288,47 @@ class ProblemRankView(PlusMemberCheck, View):
 
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
-        return render(request, 'problem/question.html')
+        questions = ProblemQuestion.objects.filter(user=request.user).order_by('datetime') 
+        answers = ProblemQuestion.objects.order_by('datetime') 
+        answers = list(filter(lambda x: x.problem_instance.problem.author == request.user,answers)) 
+         
+        return render(request, 'problem/question.html', { 
+            'queried_questions': questions, 
+            'queried_answers': answers 
+        }) 
+ 
+ 
+class ProblemQuestionAskForm(forms.Form): 
+    question = forms.CharField(required=False) 
+ 
+class ProblemQuestionAskView(PlusMemberCheck, View): 
+    def post(self, request, pk): 
+        form = ProblemQuestionAskForm(request.POST) 
+        if not form.is_valid(): 
+            return HttpResponseBadRequest() 
+         
+        question_text = form.cleaned_data['question'] 
+        problem_instance = ProblemInstance.objects.get(pk=int(pk)) 
+ 
+        question_response = { 
+            "name":problem_instance.problem.title, 
+            "list":problem_instance.problem_list.title, 
+            "question":question_text 
+        }         
+ 
+        if not question_text: 
+            question_response['ok']=False 
+            return JsonResponse(question_response) 
+ 
+        else: 
+            question_response['ok']=True 
+ 
+            try:  
+                ProblemQuestion.objects.create( user=request.user,  
+                                                problem_instance=problem_instance,  
+                                                question=question_text,  
+                                                datetime=timezone.now())  
+            except: 
+                return HttpResponseServerError()
+ 
+        return JsonResponse(question_response)

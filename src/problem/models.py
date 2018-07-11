@@ -11,11 +11,49 @@ from website.models import Category, Session
 User = get_user_model()
 
 
-ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'problem'))
+ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem'))
+
+
+class Problem(models.Model):
+    title = models.CharField(max_length=50)
+    categories = models.ManyToManyField(Category)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    description = models.TextField(blank=True)
+    auth_key = models.TextField()
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = '문제'
+        verbose_name_plural = '문제들'
+
+    def categories_title(self):
+        return ', '.join(map(lambda x: x.title, self.categories.all()))
+
+    def __str__(self):
+        return '%s' % self.title
+
+
+class ProblemList(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
+    allow_question = models.BooleanField()
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = '문제 리스트'
+        verbose_name_plural = '문제 리스트들'
+
+    def __str__(self):
+        return '%s' % self.title
+
+
+def upload_target(problem_attachment, filename):
+    return os.path.join(str(problem_attachment.problem.pk), filename)
 
 
 class ProblemAttachment(models.Model):
-    file = models.FileField(storage=ProblemAttachmentStorage)
+    file = models.FileField(storage=ProblemAttachmentStorage, upload_to=upload_target)
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, related_name='problem_attachments')
 
     class Meta:
         verbose_name = '문제 첨부파일'
@@ -28,42 +66,9 @@ class ProblemAttachment(models.Model):
         return '%s' % self.filename()
 
 
-class Problem(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    categories = models.ManyToManyField(Category)
-    author = models.ForeignKey(User)
-    description = models.TextField(blank=True)
-    auth_key = models.TextField()
-    last_modified = models.DateTimeField(auto_now=True)
-    attachments = models.ManyToManyField(ProblemAttachment, blank=True)
-
-    class Meta:
-        verbose_name = '문제'
-        verbose_name_plural = '문제들'
-
-    def categories_title(self):
-        return ','.join(map(lambda x: x.title, self.categories.all()))
-
-    def __str__(self):
-        return '%s' % self.title
-
-
-class ProblemList(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.TextField(blank=True)
-    session = models.ForeignKey(Session)
-
-    class Meta:
-        verbose_name = '문제 리스트'
-        verbose_name_plural = '문제 리스트들'
-
-    def __str__(self):
-        return '%s' % self.title
-
-
 class ProblemInstance(models.Model):
-    problem = models.ForeignKey(Problem)
-    problem_list = models.ForeignKey(ProblemList)
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT)
+    problem_list = models.ForeignKey(ProblemList, on_delete=models.PROTECT)
     points = models.IntegerField()
     distributed_points = models.IntegerField()
     breakthrough_points = models.IntegerField()
@@ -78,8 +83,8 @@ class ProblemInstance(models.Model):
 
 
 class ProblemAuthLog(models.Model):
-    user = models.ForeignKey(User)
-    problem_instance = models.ForeignKey(ProblemInstance)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
     auth_key = models.TextField()
     datetime = models.DateTimeField()
 

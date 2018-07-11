@@ -11,31 +11,16 @@ from website.models import Category, Session
 User = get_user_model()
 
 
-SeminarAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'seminar'))
-
-
-class SeminarAttachment(models.Model):
-    file = models.FileField(storage=SeminarAttachmentStorage)
-
-    class Meta:
-        verbose_name = '세미나 첨부파일'
-        verbose_name_plural = '세미나 첨부파일들'
-
-    def filename(self):
-        return os.path.basename(self.file.name)
-
-    def __str__(self):
-        return '%s' % self.filename()
+SeminarAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'seminar'))
 
 
 class Seminar(models.Model):
     title = models.CharField(max_length=50)
     categories = models.ManyToManyField(Category)
-    author = models.ForeignKey(User)
-    session = models.ForeignKey(Session)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT)
     date = models.DateField()
     description = models.TextField(blank=True)
-    attachments = models.ManyToManyField(SeminarAttachment, blank=True)
 
     class Meta:
         verbose_name = '세미나'
@@ -46,3 +31,22 @@ class Seminar(models.Model):
 
     def __str__(self):
         return '%s' % self.title
+
+
+def upload_target(seminar_attachment, filename):
+    return os.path.join(str(seminar_attachment.seminar.pk), filename)
+
+
+class SeminarAttachment(models.Model):
+    file = models.FileField(storage=SeminarAttachmentStorage, upload_to=upload_target)
+    seminar = models.ForeignKey(Seminar, on_delete=models.PROTECT, related_name='seminar_attachments')
+
+    class Meta:
+        verbose_name = '세미나 첨부파일'
+        verbose_name_plural = '세미나 첨부파일들'
+
+    def filename(self):
+        return os.path.basename(self.file.name)
+
+    def __str__(self):
+        return '%s' % self.filename()

@@ -4,12 +4,11 @@
 {% block problem_rank_active %}active{% endblock %}
 
 {% block head %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"
-            integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg="
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"
+            integrity="sha256-CutOzxCRucUsn6C6TcEYsauvvYilEniTXldPa6/wu0k="
             crossorigin="anonymous"></script>
-    <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"
-            integrity="sha256-SiHXR50l06UwJvHhFY4e5vzwq75vEHH+8fFNpkXePr0="
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"
+            integrity="sha256-CfcERD4Ov4+lKbWbYqXD6aFM9M51gN4GUEtDhkWABMo="
             crossorigin="anonymous"></script>
 {% endblock %}
 
@@ -57,9 +56,9 @@
                 var colorName = colorNames[index % colorNames.length];
                 return chartColors[colorName];
             }
-            {% for problem_list_id, chart_data in chart_info %}
-                var ctx_{{ problem_list_id }} = $("#chart_{{ problem_list_id }}");
-                var chart_{{ problem_list_id }} = new Chart(ctx_{{ problem_list_id }}, {
+            {% for problem_list, chart_data in chart_info %}
+                var ctx_{{ problem_list.pk }} = $("#chart_{{ problem_list.pk }}");
+                var chart_{{ problem_list.pk }} = new Chart(ctx_{{ problem_list.pk }}, {
                     type: 'line',
                     options: {
                         responsive: true,

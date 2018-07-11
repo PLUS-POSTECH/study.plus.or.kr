@@ -23,10 +23,10 @@
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
-            <button id="ask_button" class="ui teal right labeled icon button">
+            <div id="ask_button" class="ui teal left floated right labeled icon button">
                 <i class="question icon"></i>
                 Question
-            </button>
+            </div>
             <button type="submit" class="ui primary right labeled icon button">
                 <i class="unlock icon"></i>
                 Auth
@@ -123,12 +123,7 @@
                 });
             });
 
-
-            $("#ask_button").click( function (e) {
-                e.preventDefault();
-                $("#problem_modal").modal('hide');
-                $("#question_modal").modal('show');
-            });
+            $('#question_modal').modal('attach events', '#ask_button')
         });
     </script>
 {% endif %}

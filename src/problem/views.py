@@ -5,9 +5,8 @@ from datetime import timedelta
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseBadRequest, FileResponse, JsonResponse
+from django.http import Http404, HttpResponseBadRequest, HttpResponseServerError, FileResponse, JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from django.utils.http import urlquote
 from django.views import View
 
@@ -99,7 +98,7 @@ class ProblemAuthView(PlusMemberCheck, View):
 
         try:
             ProblemAuthLog.objects.create(
-                user=request.user, problem_instance=problem_instance, auth_key=auth_key, datetime=timezone.now())
+                user=request.user, problem_instance=problem_instance, auth_key=auth_key)
             if problem_instance.problem.auth_key == auth_key:
                 return_obj['result'] = True
             else:
@@ -175,6 +174,7 @@ class ProblemQuestionView(PlusMemberCheck, View):
 class ProblemQuestionAskForm(forms.Form):
     question = forms.CharField(required=False)
 
+
 class ProblemQuestionAskView(PlusMemberCheck, View):
     def post(self, request, pk):
         form = ProblemQuestionAskForm(request.POST)
@@ -185,23 +185,22 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
         problem_instance = ProblemInstance.objects.get(pk=int(pk))
 
         question_response = {
-            "name":problem_instance.problem.title,
-            "list":problem_instance.problem_list.title,
-            "question":question_text
+            "name": problem_instance.problem.title,
+            "list": problem_instance.problem_list.title,
+            "question": question_text
         }
 
         if not question_text:
-            question_response['ok']=False
+            question_response['ok'] = False
             return JsonResponse(question_response)
 
         else:
-            question_response['ok']=True
+            question_response['ok'] = True
 
             try:
-                ProblemQuestion.objects.create( user=request.user,
-                                                problem_instance=problem_instance,
-                                                question=question_text,
-                                                datetime=timezone.now())
+                ProblemQuestion.objects.create(
+                    user=request.user, problem_instance=problem_instance, question=question_text)
+
             except:
                 return HttpResponseServerError()
 

@@ -86,7 +86,7 @@ class ProblemAuthLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
     auth_key = models.TextField()
-    datetime = models.DateTimeField()
+    datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = (('user', 'problem_instance', 'auth_key'),)
@@ -95,11 +95,11 @@ class ProblemAuthLog(models.Model):
 
 
 class ProblemQuestion(models.Model): 
-    user = models.ForeignKey(User) 
-    problem_instance = models.ForeignKey(ProblemInstance) 
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
     question = models.TextField() 
     answer = models.TextField(blank=True) 
-    datetime = models.DateTimeField() 
+    datetime = models.DateTimeField(auto_now_add=True)
  
     class Meta: 
         verbose_name = '문제 Q&A' 

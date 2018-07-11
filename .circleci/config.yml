@@ -20,19 +20,10 @@ jobs:
           paths:
             - "venv"
       - run:
-          name: Flake8
+          name: Check
           command: |
             . venv/bin/activate
             flake8 src/
-      - run:
-          name: Pylint
-          command: |
-            . venv/bin/activate
             pylint --load-plugins pylint_django src/website src/problem src/seminar src/plus_study
-      - run:
-          name: Check security
-          command: |
-            . venv/bin/activate
             bandit -r src/
-
 

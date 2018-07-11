@@ -45,7 +45,7 @@
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}')">
+                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>

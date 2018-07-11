@@ -28,24 +28,43 @@
                     <div class="results"></div>
                 </div>
             </div>
+
         </div>
     </form>
+    <form class="ui form_2" method="GET" action="/problem">
+        <div class="field">Sort by category
+            <div class="ui select dropdown">
+                <input type="hidden" name="session">
+                <i class="dropdown icon"></i>
+                <div class="default text">Select session</div>
+                <div class="menu">
+                    <div class="item" data-value="All">All</div>
+                    {% if categories %}
+                        {% for category in categories %}
+                            <div class="item" data-value="{{ category }}">{{ category }}</div>
+                        {% endfor %}
+                    {% endif %}
+                 </div>
+            </div>
+            </div>
+    </form>
+
     {% if not queried_problem_lists %}
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problems, total_score in queried_problem_lists %}
-        <div class="ui top attached clearing segment">
+        <div class="ui top attached clearing segment" data-ewqqw="{{ problem_list.title }}">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
         </div>
-        <div class="ui bottom attached segment">
-            <div class="ui stackable four column grid">
+        <div class="ui bottom attached segment" data-ewqqw1="{{ problem_list.title }}">
+            <div class="ui stackable four column grid" data-ewqqww="{{ problem_list.title }}">
                 {% for problem_instance, points, authed, first_blood in problems %}
                     {% if not problem_instance.hidden or is_staff %}
-                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
+                        <a data-kinux98="{{ problem_instance.problem.categories_title }}" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=problem_instance.pk %}')">
                             <div class="ui {% if problem_instance.hidden %}grey inverted{% elif authed %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not first_blood %}style="visibility:hidden;"{% endif %}>
@@ -68,9 +87,10 @@
     <script>
         var request_problem = function () {}
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.dropdown');
+            var $_ui_dropdown = $('.ui.inline.dropdown');
             var $_ui_search = $('.ui.search');
             var $_ui_modal = $('.ui.modal');
+            var $_ui_dropdown_category = $('.ui.select.dropdown');
 
             var session_list = [
                 {% for session in sessions %}
@@ -82,6 +102,88 @@
                     { title: '{{ problem_list.title }}', href: '{% url 'problem:list' %}?search_by=list_title&q={{ problem_list.title | urlencode }}' },
                 {% endfor %}
             ];
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $_ui_dropdown_category
+                .dropdown({
+                    onChange: function (val)
+                    {
+                         var category = val;
+                         var i=0;
+                         if(category == "All")
+                         {
+                            $("div[data-ewqqw]").show();
+                            $("div[data-ewqqw1]").show();
+                            $("a[data-kinux98]").show();
+                         }
+                         else {
+                         $("div[data-ewqqw]").show();
+                         $("div[data-ewqqw1]").show();
+                         $("a[data-kinux98]").show();
+                         {% for cate in categories %}
+                         if( category != "{{ cate }}" )
+                         {
+                            $("a[data-kinux98='{{ cate }}']").hide();
+                         }
+                          else if(category == "{{ cate }}" )
+                         {
+                            $("a[data-kinux98='{{ cate }}']").show();
+                         }
+                         {% endfor %}
+                         var flag=0;
+
+                         {% for i, _, _ in queried_problem_lists %}
+                         flag=0;
+                         var tmp= $("div[data-ewqqw1='{{ i.title }}']").children();
+                         tmp.children().each(function()
+                         {
+                            if($(this).is(":visible"))
+                            {
+                                flag=1;
+                            }
+                         });
+                         if(flag==0)
+                         {
+                             $("div[data-ewqqw='{{ i.title }}']").hide();
+                             $("div[data-ewqqw1='{{ i.title }}']").hide();
+                         }
+                         else
+                         {
+                             $("div[data-ewqqw='{{ i.title }}']").show();
+                             $("div[data-ewqqw1='{{ i.title }}']").show();
+                         }
+                         {% endfor %}
+
+                       }
+                    }
+                });
             $_ui_search
                 .search({
                     onSelect: function (result) {
@@ -115,36 +217,6 @@
                     location.reload();
                 }
             });
-
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-            var csrftoken = getCookie('csrftoken');
-
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
             request_problem = function (prob_url) {
                 $_ui_modal.html('<div class="ui text loader active">Loading</div>');
                 $_ui_modal.modal('refresh');

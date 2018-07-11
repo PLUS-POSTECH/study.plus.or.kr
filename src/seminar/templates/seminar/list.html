@@ -30,15 +30,33 @@
             </div>
         </div>
     </form>
+    <form class="ui form_2" method="GET" action="/problem">
+        <div class="field">Sort by category
+            <div class="ui select dropdown">
+                <input type="hidden" name="session">
+                <i class="dropdown icon"></i>
+                <div class="default text">Select session</div>
+                <div class="menu">
+                    <div class="item" data-value="All">All</div>
+                    {% if categories %}
+                        {% for category in categories %}
+                            <div class="item" data-value="{{ category }}">{{ category }}</div>
+                        {% endfor %}
+                    {% endif %}
+                 </div>
+            </div>
+            </div>
+    </form>
+
     {% if not seminar_dict %}
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <h2 class="ui top attached header">{{ session.title }}</h2>
-        <div class="ui bottom attached segment">
+        <h2 class="ui top attached header" data-ewqqw="{{ session.title }}">{{ session.title }}</h2>
+        <div class="ui bottom attached segment" data-ewqqw="{{ session.title }}">
             <div class="ui stackable three column grid">
                 {% for seminar in seminars %}
-                    <div class="column">
+                    <div class="column" data-kinux="{{ seminar.categories_title }}">
                         <div class="ui fluid card">
                             <div class="content">
                                 <div class="header">{{ seminar.title }}</div>
@@ -59,8 +77,9 @@
     {% endfor %}
     <script>
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.dropdown');
+            var $_ui_dropdown = $('.ui.inline.dropdown');
             var $_ui_search = $('.ui.search');
+            var $_ui_dropdown_category = $('.ui.select.dropdown');
 
             var session_list = [
                 {% for session in sessions %}
@@ -72,6 +91,57 @@
                     { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
+             $_ui_dropdown_category
+                .dropdown({
+                    onChange: function (val)
+                    {
+                        var category = val;
+                        if(category == "All")
+                         {
+                            $("div[data-kinux]").show();
+                            $("div[data-ewqqw]").show();
+                            $("h2[data-ewqqw]").show();
+                         }
+                         else {
+                            $("div[data-kinux]").show();
+                            $("div[data-ewqqw]").show();
+                            $("h2[data-ewqqw]").show();
+                            {% for cate in categories %}
+                            if( category != "{{ cate }}" )
+                            {
+                                $("div[data-kinux='{{ cate }}']").hide();
+                            }
+                            else if(category == "{{ cate }}" )
+                            {
+                                $("div[data-kinux='{{ cate }}']").show();
+                            }
+                            {% endfor %}
+
+                            var flag=0;
+                            {% for i, _ in seminar_dict.items %}
+                            flag=0;
+                            var tmp = $("div[data-ewqqw='{{ i.title }}']").children();
+                            tmp.children().each(function()
+                            {
+                                if($(this).is(":visible"))
+                                {
+                                    flag=1;
+                                }
+                            });
+                            if(flag==0)
+                            {
+                                $("h2[data-ewqqw='{{ i.title }}']").hide();
+                                $("div[data-ewqqw='{{ i.title }}']").hide();
+                            }
+                            else
+                            {
+                                $("h2[data-ewqqw='{{ i.title }}']").show();
+                                $("div[data-ewqqw='{{ i.title }}']").show();
+                            }
+                            {% endfor %}
+                         }
+                    }
+                });
             $_ui_search
                 .search({
                     onSelect: function (result, response) {

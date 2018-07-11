@@ -14,7 +14,7 @@ from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
-from website.models import Session
+from website.models import Session, Category
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
 
 
@@ -36,9 +36,11 @@ class ProblemListView(PlusMemberCheck, View):
         all_problem_lists = ProblemList.objects.order_by('title')
         sessions = all_sessions.filter(isActive=True)
         problem_lists = all_problem_lists
+        categories = Category.objects.order_by('title').exclude(title='')
+
         q = ''
         search_by = 'list_title'
-        if form.cleaned_data['q']:
+        if form.cleaned_data['q']:  # search by specific keywords
             if form.cleaned_data['search_by']:
                 search_by = form.cleaned_data['search_by']
             q = form.cleaned_data['q']
@@ -76,14 +78,16 @@ class ProblemListView(PlusMemberCheck, View):
             return problem_list, problem_info, int(total_score)
 
         problem_response = [
-            problem_list_info(problem_list)
+                problem_list_info(problem_list)
             for problem_list in problem_lists
+
         ]
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,
             'problem_lists': all_problem_lists,
             'queried_problem_lists': problem_response,
+            'categories': categories,
             'search_by': search_by,
             'q': q
         })

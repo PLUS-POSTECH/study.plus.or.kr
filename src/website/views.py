@@ -54,4 +54,5 @@ class RegisterView(View):
 class PlusMemberCheck(UserPassesTestMixin):
     def test_func(self):
         return not self.request.user.is_anonymous() and self.request.user.is_plus_member
+
     login_url = '/login'

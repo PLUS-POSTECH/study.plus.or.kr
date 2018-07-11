@@ -79,7 +79,7 @@
 
             $("#question_modal").html(
                 `<i class="close icon"></i>
-                <div class="ui header">Question about {{ problem_instance }} - <small>{{ problem_instance.problem.categories_title }}, {{ points }} pts.</small></div>
+                <div class="ui header">Question about {{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
                 <div class="content">
                     <div class="ui form field">
                         <textarea name="question" id="question_text"></textarea>
@@ -97,7 +97,7 @@
             $("#question_submit").click( function (e) {
                 e.preventDefault();
                 $.ajax({
-                    url: "{% url 'problem:question' pk=problem_instance.pk %}",
+                    url: "{% url 'problem:question' pk=info.problem_instance.pk %}",
                     type: "POST",
                     data: $("#question_text").serialize(),
                     dataType: 'json',

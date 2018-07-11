@@ -4,97 +4,97 @@
 {% block problem_qna_active %}active{% endblock %}
 
 {% block problem_content %}
-    <div class="ui brown top attached clearing segment"> 
-        <h2 class="ui left floated header">Your Questions</h2> 
-    </div> 
-    <div class="ui bottom attached segment"> 
-        <div class="ui styled fluid accordion"> 
-            {% for question in queried_questions %} 
-                <div class="title"> 
-                    <div class="ui header"> 
-                        <i class="dropdown icon"></i> 
-                        <span style="font-size:100%">{{question.problem_instance.problem.title}}</span> 
- 
-                        <span class="ui basic red label" style="color:indianred;padding:0.25rem">{{question.user}}</span> 
-                        {% if question.answer %}  
-                            <i class="green check icon" style="float:right"></i> 
-                        {% else %}  
-                            <i class="red close icon" style="float:right"></i> 
-                        {% endif %} 
-                    </div> 
-                    <div class="ui mini blue label" style="padding:0.25rem">{{question.problem_instance.problem.categories_title}}</div> 
-                    <small>{{question.problem_instance.problem_list.session}} : {{question.problem_instance.problem_list.title}}</small> 
-                    <div style="float:right">{{question.datetime}}</div> 
-                         
-                </div> 
-                <div class="content"> 
-                    <div class="ui dividing header"> 
-                        질문 
-                    </div> 
-                    <p> 
-                        {{question.question}} 
-                    </p> 
-                    <div class="ui dividing header"> 
-                        답변 
-                    </div> 
-                    <p> 
-                        {% if question.answer %}  
-                            {{question.answer}}  
-                        {% endif %} 
-                    </p> 
-                     
-                </div> 
-            {% endfor %} 
-        </div> 
-    </div> 
- 
-    <div class="ui green top attached clearing segment"> 
-        <h2 class="ui left floated header">Your Answers</h2> 
-    </div> 
-    <div class="ui bottom attached segment"> 
-        <div class="ui styled fluid accordion"> 
-            {% for question in queried_answers %} 
-                <div class="title"> 
-                    <div class="ui header"> 
-                        <i class="dropdown icon"></i> 
-                        <span style="font-size:100%">{{question.problem_instance.problem.title}}</span> 
- 
-                        <span class="ui basic red label" style="color:indianred;padding:0.25rem">{{question.user}}</span> 
-                        {% if question.answer %}  
-                            <i class="green check icon" style="float:right"></i> 
-                        {% else %}  
-                            <i class="red close icon" style="float:right"></i> 
-                        {% endif %} 
-                    </div> 
-                    <div class="ui mini blue label" style="padding:0.25rem">{{question.problem_instance.problem.categories_title}}</div> 
-                    <small>{{question.problem_instance.problem_list.session}} : {{question.problem_instance.problem_list.title}}</small> 
-                    <div style="float:right">{{question.datetime}}</div> 
-                         
-                </div> 
-                <div class="content"> 
-                    <div class="ui dividing header"> 
-                        질문 
-                    </div> 
-                    <p> 
-                        {{question.question}} 
-                    </p> 
-                    <div class="ui dividing header"> 
-                        답변 
-                    </div> 
-                    <p> 
-                        {% if question.answer %}  
-                            {{question.answer}}  
-                        {% endif %} 
-                    </p> 
-                     
-                </div> 
-            {% endfor %} 
-        </div> 
-    </div> 
- 
-    <script> 
-        $(document).ready(function() { 
-            $('.ui.accordion').accordion(); 
-        }); 
+    <div class="ui brown top attached clearing segment">
+        <h2 class="ui left floated header">Your Questions</h2>
+    </div>
+    <div class="ui bottom attached segment">
+        <div class="ui styled fluid accordion">
+            {% for question in queried_questions %}
+                <div class="title">
+                    <div class="ui header">
+                        <i class="dropdown icon"></i>
+                        <span style="font-size:100%">{{ question.problem_instance.problem.title }}</span>
+
+                        <span class="ui basic red label" style="color:indianred;padding:0.25rem">{{ question.user }}</span>
+                        {% if question.answer %}
+                            <i class="green check icon" style="float:right"></i>
+                        {% else %}
+                            <i class="red close icon" style="float:right"></i>
+                        {% endif %}
+                    </div>
+                    <div class="ui mini blue label" style="padding:0.25rem">{{ question.problem_instance.problem.categories_title }}</div>
+                    <small>{{ question.problem_instance.problem_list.session }} : {{ question.problem_instance.problem_list.title }}</small>
+                    <div style="float:right">{{ question.datetime }}</div>
+
+                </div>
+                <div class="content">
+                    <div class="ui dividing header">
+                        질문
+                    </div>
+                    <p>
+                        {{ question.question }}
+                    </p>
+
+                    {% if question.answer %}
+                        <div class="ui dividing header">
+                            답변
+                        </div>
+                        <p>
+                        {{ question.answer }}
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="ui green top attached clearing segment">
+        <h2 class="ui left floated header">Your Answers</h2>
+    </div>
+    <div class="ui bottom attached segment">
+        <div class="ui styled fluid accordion">
+            {% for question in queried_answers %}
+                <div class="title">
+                    <div class="ui header">
+                        <i class="dropdown icon"></i>
+                        <span style="font-size:100%">{{ question.problem_instance.problem.title }}</span>
+
+                        <span class="ui basic red label" style="color:indianred;padding:0.25rem">{{ question.user }}</span>
+                        {% if question.answer %}
+                            <i class="green check icon" style="float:right"></i>
+                        {% else %}
+                            <i class="red close icon" style="float:right"></i>
+                        {% endif %}
+                    </div>
+                    <div class="ui mini blue label" style="padding:0.25rem">{{ question.problem_instance.problem.categories_title }}</div>
+                    <small>{{ question.problem_instance.problem_list.session }} : {{ question.problem_instance.problem_list.title }}</small>
+                    <div style="float:right">{{ question.datetime }}</div>
+
+                </div>
+                <div class="content">
+                    <div class="ui dividing header">
+                        질문
+                    </div>
+                    <p>
+                        {{ question.question }}
+                    </p>
+                    <div class="ui dividing header">
+                        답변
+                    </div>
+                    <p>
+                        {% if question.answer %}
+                            {{ question.answer }}
+                        {% endif %}
+                    </p>
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('.ui.accordion').accordion();
+        });
     </script>
 {% endblock %}

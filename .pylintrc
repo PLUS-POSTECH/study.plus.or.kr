@@ -9,6 +9,7 @@ extension-pkg-whitelist=
 # paths.
 ignore=CVS,
        migrations,
+       tests.py,
        south_migrations
 
 # Add files or directories matching the regex patterns to the blacklist. The
@@ -137,6 +138,8 @@ disable=print-statement,
         exception-escape,
         comprehension-escape,
         duplicate-code, # Added
+        too-few-public-methods, # Added
+        too-many-locals, # Added
         missing-docstring # Added
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -378,7 +381,7 @@ class-naming-style=PascalCase
 #class-rgx=
 
 # Naming style matching correct constant names
-const-naming-style=UPPER_CASE
+const-naming-style=any
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style

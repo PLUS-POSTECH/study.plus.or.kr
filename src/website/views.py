@@ -36,22 +36,23 @@ class RegisterView(View):
 
     def post(self, request):
         form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-                form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'],
-                povis_id=form.cleaned_data['povis_id'],
-            )
-            login(request, user)
-            return redirect('/')
-        else:
+        if not form.is_valid():
             return render(request, 'registration/register.html', {
                 'form': form
             })
 
+        user = User.objects.create_user(
+            form.cleaned_data['username'],
+            email=form.cleaned_data['email'],
+            password=form.cleaned_data['password'],
+            povis_id=form.cleaned_data['povis_id'],
+        )
+        login(request, user)
+        return redirect('/')
+
 
 class PlusMemberCheck(UserPassesTestMixin):
+    # pylint: disable=no-member
     def test_func(self):
         return not self.request.user.is_anonymous and self.request.user.is_plus_member
     login_url = '/login'

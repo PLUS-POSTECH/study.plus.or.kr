@@ -144,6 +144,7 @@ class AuthReplay:
             self.update_points_function(points_functions, problem_instance, problem_state_diffs)
 
         for user, state in self.state.user_states.items():
+            # pylint: disable=cell-var-from-loop
             user_points[user] = \
                 sum(map(
                     lambda x: self.calc_user_points(user, x, points_functions, user_state_diffs),

@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: python:latest
+      - image: python:3.6
     steps:
       - checkout
       - restore_cache:

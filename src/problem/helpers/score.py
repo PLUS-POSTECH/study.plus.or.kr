@@ -69,7 +69,9 @@ class AuthReplay:
 
             problem_states[problem_instance] = new_state
 
-        solve_logs = reduce(lambda x, y: x | y, solved_log_queries).order_by('datetime')
+        solve_logs = \
+            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+            .order_by('datetime')
         user_pks_with_logs = solve_logs.values_list('user', flat=True)
         users_with_logs = map(lambda x: User.objects.get(pk=x), user_pks_with_logs)
 
@@ -162,7 +164,9 @@ class AuthReplay:
             solve_logs = logs.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
             solved_log_queries.append(solve_logs)
 
-        logs_to_replay = reduce(lambda x, y: x | y, solved_log_queries).order_by('datetime')
+        logs_to_replay = \
+            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+            .order_by('datetime')
 
         def append_chart(timestamp):
             for chart_user, points in user_points.items():

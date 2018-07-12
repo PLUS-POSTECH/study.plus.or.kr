@@ -45,7 +45,7 @@
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}')">
+                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
@@ -63,7 +63,8 @@
             </div>
         </div>
     {% endfor %}
-    <div class="ui modal" id="modal_content"></div>
+    <div class="ui modal" id="problem_modal"></div>
+    <div class="ui modal" id="question_modal"></div>
 
     <script>
         let request_problem;
@@ -71,6 +72,7 @@
             let $_ui_dropdown = $('.ui.dropdown');
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
+            let _problem_modal = $('#problem_modal');
 
             let session_list = [
                 {% for session in sessions %}
@@ -111,6 +113,7 @@
                     break;
             }
             $_ui_modal.modal({
+                allowMultiple: false,
                 onApprove: function () {
                     location.reload();
                 }
@@ -145,19 +148,19 @@
             });
 
             request_problem = function (prob_url) {
-                $_ui_modal.html('<div class="ui text loader active">Loading</div>');
-                $_ui_modal.modal('refresh');
-                $_ui_modal.modal('show');
+                _problem_modal.html('<div class="ui text loader active">Loading</div>');
+                _problem_modal.modal('refresh');
+                _problem_modal.modal('show');
                 $.ajax({
                     url: prob_url,
                     type: 'GET',
                     dataType: 'html',
                     success: function(data) {
-                        $_ui_modal.html(data);
-                        $_ui_modal.modal('refresh');
+                        _problem_modal.html(data);
+                        _problem_modal.modal('refresh');
                     },
                     error: function() {
-                        $_ui_modal.html('' +
+                        _problem_modal.html('' +
                             '<div class="ui negative message">' +
                             '<i class="close icon"></i>' +
                             '<div class="header">' +

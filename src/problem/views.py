@@ -5,15 +5,14 @@ from datetime import timedelta
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseBadRequest, FileResponse, JsonResponse
+from django.http import Http404, HttpResponseBadRequest, HttpResponseServerError, FileResponse, JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
 from website.models import Session
-from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
+from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_info, get_user_problem_info
 
@@ -99,7 +98,7 @@ class ProblemAuthView(PlusMemberCheck, View):
 
         try:
             ProblemAuthLog.objects.create(
-                user=request.user, problem_instance=problem_instance, auth_key=auth_key, datetime=timezone.now())
+                user=request.user, problem_instance=problem_instance, auth_key=auth_key)
             if problem_instance.problem.auth_key == auth_key:
                 return_obj['result'] = True
             else:
@@ -163,4 +162,46 @@ class ProblemRankView(PlusMemberCheck, View):
 
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
-        return render(request, 'problem/question.html')
+        questions = request.user.problemquestion_set.order_by('-datetime')
+        answers = ProblemQuestion.objects.filter(problem_instance__problem__author=request.user).order_by('-datetime')
+
+        return render(request, 'problem/question.html', {
+            'queried_questions': questions,
+            'queried_answers': answers
+        })
+
+
+class ProblemQuestionAskForm(forms.Form):
+    question = forms.CharField(required=False)
+
+
+class ProblemQuestionAskView(PlusMemberCheck, View):
+    def post(self, request, pk):
+        form = ProblemQuestionAskForm(request.POST)
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+
+        question_text = form.cleaned_data['question']
+        problem_instance = ProblemInstance.objects.get(pk=int(pk))
+
+        question_response = {
+            "name": problem_instance.problem.title,
+            "list": problem_instance.problem_list.title,
+            "question": question_text
+        }
+
+        if not question_text:
+            question_response['ok'] = False
+            return JsonResponse(question_response)
+
+        else:
+            question_response['ok'] = True
+
+            try:
+                ProblemQuestion.objects.create(
+                    user=request.user, problem_instance=problem_instance, question=question_text)
+
+            except:
+                return HttpResponseServerError()
+
+        return JsonResponse(question_response)

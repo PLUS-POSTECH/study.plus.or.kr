@@ -99,16 +99,13 @@ class ProblemAuthView(PlusMemberCheck, View):
         try:
             ProblemAuthLog.objects.create(
                 user=request.user, problem_instance=problem_instance, auth_key=auth_key)
-            if problem_instance.problem.auth_key == auth_key:
-                return_obj['result'] = True
-            else:
-                return_obj['result'] = False
+            is_correct = problem_instance.problem.auth_key == auth_key
+            return_obj['result'] = is_correct
 
         except IntegrityError:
             return_obj['result'] = False
 
-        finally:
-            return JsonResponse(return_obj)
+        return JsonResponse(return_obj)
 
 
 class ProblemDownloadView(PlusMemberCheck, View):
@@ -201,7 +198,7 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
                 ProblemQuestion.objects.create(
                     user=request.user, problem_instance=problem_instance, question=question_text)
 
-            except:
+            except BaseException:
                 return HttpResponseServerError()
 
         return JsonResponse(question_response)

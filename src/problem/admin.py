@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import *
+
+from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 
 
 @admin.register(Problem)
@@ -28,6 +29,6 @@ class ProblemAuthLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'problem_instance', 'auth_key', 'datetime')
 
 
-@admin.register(ProblemQuestion) 
-class ProblemQuestionAdmin(admin.ModelAdmin): 
+@admin.register(ProblemQuestion)
+class ProblemQuestionAdmin(admin.ModelAdmin):
     list_display = ('user', 'problem_instance', 'question', 'answer', 'datetime')

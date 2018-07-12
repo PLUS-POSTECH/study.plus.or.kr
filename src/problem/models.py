@@ -94,13 +94,13 @@ class ProblemAuthLog(models.Model):
         verbose_name_plural = '문제 인증 로그들'
 
 
-class ProblemQuestion(models.Model): 
+class ProblemQuestion(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
-    question = models.TextField() 
-    answer = models.TextField(blank=True) 
+    question = models.TextField()
+    answer = models.TextField(blank=True)
     datetime = models.DateTimeField(auto_now_add=True)
- 
-    class Meta: 
-        verbose_name = '문제 Q&A' 
+
+    class Meta:
+        verbose_name = '문제 Q&A'
         verbose_name_plural = '문제 Q&A들'

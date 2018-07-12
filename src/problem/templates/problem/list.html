@@ -30,18 +30,28 @@
             </div>
         </div>
     </form>
+    <div class="ui fluid multiple search normal selection dropdown">
+        <input type="hidden" name="country">
+        <i class="dropdown icon"></i>
+        <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
+        <div class="menu" tabindex="-1">
+        {% for category in categories %}
+        <div class="item" data-value="{{ category }}">{{ category }}</div>
+        {% endfor %}
+        </div>
+    </div> 
     {% if not queried_problem_lists %}
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, total_score in queried_problem_lists %}
-        <div class="ui top attached clearing segment">
+        <div class="ui top attached clearing segment" data-sessiontop="{{ problem_list.session.title }}">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
         </div>
-        <div class="ui bottom attached segment">
+        <div class="ui bottom attached segment" data-sessionbot="{{ problem_list.session.title}}">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
@@ -68,9 +78,10 @@
     <script>
         let request_problem;
         $(document).ready(function () {
-            let $_ui_dropdown = $('.ui.dropdown');
+            let $_ui_dropdown = $('.ui.inline.dropdown');
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
+            let $_ui_sort = $(".ui.fluid.dropdown");
 
             let session_list = [
                 {% for session in sessions %}
@@ -82,6 +93,63 @@
                     { title: '{{ problem_list.title }}', href: '{% url 'problem:list' %}?search_by=list_title&q={{ problem_list.title | urlencode }}' },
                 {% endfor %}
             ];
+            $_ui_sort
+                .dropdown({
+                    onChange: function(val) {
+                        var category_arry = val.split(',');
+                        category_arry = category_arry.sort();
+                        var delete_list = $(".ui.blue.label");
+                        if(category_arry=="")
+                        {
+                            $(".ui.bottom").show();
+                            $(".ui.top").show();
+                            $(".center.aligned.column").show();
+                        }
+                        else
+                        {
+                            $(".ui.bottom").show();
+                            $(".ui.top").show();
+                            $(".center.aligned.column").show(); 
+                            delete_list.each(function(){
+                                var flag=0;
+                                var tmp = $(this).text();
+                                tmp = tmp.replace(" ","");
+                                tmp = tmp.split(',');
+                                for(let i=0; i<category_arry.length; i++)
+                                {
+                                    for(let j=0; j<tmp.length; j++)
+                                    {
+                                        if(category_arry[i]==tmp[j])
+                                            flag++;
+                                    }
+                                }
+                                if(flag >= 1)
+                                    $(this).parents(".center.aligned.column").show();
+                                else
+                                    $(this).parents(".center.aligned.column").hide();
+
+                                var is_visible=0;
+                                $(this).parents(".ui.stackable").children().each(function(){
+                                    if($(this).is(":visible"))
+                                        is_visible=1;
+                                });
+                                var session_name = "";
+                                session_name = $(this).parents(".ui.bottom").attr("data-sessionbot");
+                                if(is_visible==0)
+                                {
+                                    $(this).parents(".ui.bottom").hide();
+                                    $("div[data-sessiontop='"+session_name+"']").hide();
+                                }
+                                else
+                                {
+                                    $(this).parents(".ui.bottom").show();
+                                    $("div[data-sessiontop='"+session_name+"']").show();
+
+                                }
+                            });
+                        }
+                    }
+                });
             $_ui_search
                 .search({
                     onSelect: function (result) {

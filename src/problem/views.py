@@ -198,7 +198,7 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
                 ProblemQuestion.objects.create(
                     user=request.user, problem_instance=problem_instance, question=question_text)
 
-            except:
+            except BaseException:
                 return HttpResponseServerError()
 
         return JsonResponse(question_response)

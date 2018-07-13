@@ -179,7 +179,14 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
             return HttpResponseBadRequest()
 
         question_text = form.cleaned_data['question']
-        problem_instance = ProblemInstance.objects.get(pk=int(pk))
+
+        try:
+            problem_instance = ProblemInstance.objects.get(pk=int(pk))
+        except ObjectDoesNotExist:
+            raise Http404
+
+        if not problem_instance.problem_list.allow_question:
+            return HttpResponseBadRequest()
 
         question_response = {
             "name": problem_instance.problem.title,

@@ -181,6 +181,9 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
         question_text = form.cleaned_data['question']
         problem_instance = ProblemInstance.objects.get(pk=int(pk))
 
+        if not problem_instance.problem_list.allow_question:
+            return HttpResponseBadRequest()
+
         question_response = {
             "name": problem_instance.problem.title,
             "list": problem_instance.problem_list.title,

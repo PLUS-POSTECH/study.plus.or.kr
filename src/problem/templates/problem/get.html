@@ -23,10 +23,12 @@
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
-            <div id="ask_button" class="ui teal left floated right labeled icon button">
-                <i class="question icon"></i>
-                Question
-            </div>
+            {% if info.problem_instance.problem_list.allow_question %}
+                <div id="ask_button" class="ui teal left floated right labeled icon button">
+                    <i class="question icon"></i>
+                    Question
+                </div>
+            {% endif %}
             <button type="submit" class="ui primary right labeled icon button">
                 <i class="unlock icon"></i>
                 Auth

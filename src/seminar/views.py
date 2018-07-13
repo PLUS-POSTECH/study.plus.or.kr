@@ -7,7 +7,7 @@ from django.http import HttpResponseBadRequest, FileResponse
 from django.shortcuts import render
 from django.utils.http import urlquote
 from django.views import View
-
+from website.models import Category
 from website.views import PlusMemberCheck
 from .models import Session, Seminar, SeminarAttachment
 
@@ -29,6 +29,7 @@ class SeminarListView(PlusMemberCheck, View):
 
         all_sessions = Session.objects.order_by('title')
         all_seminars = Seminar.objects.order_by('title')
+        category = Category.objects.order_by('title');
         sessions = all_sessions
         seminars = Seminar.objects.order_by('session', '-date')
         q = ''
@@ -52,6 +53,7 @@ class SeminarListView(PlusMemberCheck, View):
             'sessions': all_sessions,
             'seminars': all_seminars,
             'seminar_dict': seminar_dict,
+            'categories': category,
             'search_by': search_by,
             'q': q
         })

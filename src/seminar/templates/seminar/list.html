@@ -30,15 +30,25 @@
             </div>
         </div>
     </form>
+    <div class="ui fluid multiple search normal selection dropdown">
+        <input type="hidden" name="country">
+        <i class="dropdown icon"></i>
+        <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
+        <div class="menu" tabindex="-1">
+        {% for category in categories %}
+        <div class="item" data-value="{{ category }}">{{ category }}</div>
+        {% endfor %}
+        </div>
+    </div> 
     {% if not seminar_dict %}
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <h2 class="ui top attached header">{{ session.title }}</h2>
-        <div class="ui bottom attached segment">
-            <div class="ui stackable three column grid">
+        <h2 class="ui top attached header" data-session="{{ session.title }}">{{ session.title }}</h2>
+        <div class="ui bottom attached segment" data-session="{{ session.title }}">
+            <div class="ui stackable three column grid" >
                 {% for seminar in seminars %}
-                    <div class="column">
+                    <div class="column" data-title="{{ session.title }}">
                         <div class="ui fluid card">
                             <div class="content">
                                 <div class="header">{{ seminar.title }}</div>
@@ -59,8 +69,9 @@
     {% endfor %}
     <script>
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.dropdown');
+            var $_ui_dropdown = $('.ui.inline.dropdown');
             var $_ui_search = $('.ui.search');
+            var $_ui_sort = $('.ui.fluid.dropdown')
 
             var session_list = [
                 {% for session in sessions %}
@@ -72,6 +83,67 @@
                     { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
+            $_ui_sort
+                .dropdown({
+                    onChange: function(val) {
+                        var category_arry = val.split(',');
+                        category_arry = category_arry.sort();
+                        console.log(category_arry);
+                        var delete_list = $(".ui.blue.label");
+                        if(category_arry=="")
+                        {
+                            $(".ui.bottom").show();
+                            $(".ui.top").show();
+                            $(".center.aligned.column").show();
+                        }
+                        else
+                        {
+                            $(".ui.bottom").show();
+                            $(".ui.top").show();
+                            $(".center.aligned.column").show(); 
+                            delete_list.each(function(){
+                                var flag=0;
+                                var tmp = $(this).text();
+                                tmp = tmp.replace(/ /gi,"");
+                                tmp = tmp.split(',');
+                                for(let i=0; i<category_arry.length; i++)
+                                {
+                                    for(let j=0; j<tmp.length; j++)
+                                    {
+                                        if(category_arry[i]==tmp[j])
+                                            flag++;
+                                    }
+                                }
+                                console.log("flag is::"+flag);
+                                if(flag >= 1)
+                                    $(this).parents(".center.aligned.column").show();
+                                else if(flag==0)
+                                    $(this).parents(".center.aligned.column").hide();
+
+                                var is_visible=0;
+                                $(this).parents(".ui.stackable").children().each(function(){
+                                    console.log($(this));
+                                    if($(this).is(":visible"))
+                                        is_visible=1;
+                                });
+                                console.log("is_visible is:: "+is_visible);
+                                var session_name = "";
+                                session_name = $(this).parents(".ui.bottom").attr("data-sessionbot");
+                                list_name = $(this).parents(".ui.bottom").attr("data-listbot");
+                                if(is_visible==0)
+                                {
+                                    $(this).parents(".ui.bottom").hide();
+                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").hide();
+                                }
+                                else
+                                {
+                                    $(this).parents(".ui.bottom").show();
+                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").show();
+                                }
+                            });
+                        }
+                    }
+                });
             $_ui_search
                 .search({
                     onSelect: function (result, response) {

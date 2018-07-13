@@ -44,14 +44,14 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, total_score in queried_problem_lists %}
-        <div class="ui top attached clearing segment" data-sessiontop="{{ problem_list.session.title }}">
+        <div class="ui top attached clearing segment" data-listtop="{{problem_list.title}}"data-sessiontop="{{ problem_list.session.title }}">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
         </div>
-        <div class="ui bottom attached segment" data-sessionbot="{{ problem_list.session.title}}">
+        <div class="ui bottom attached segment" data-listbot="{{ problem_list.title }}"data-sessionbot="{{ problem_list.session.title }}">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
@@ -113,7 +113,7 @@
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
-                                tmp = tmp.replace(" ","");
+                                tmp = tmp.replace(/ /gi,"");
                                 tmp = tmp.split(',');
                                 for(let i=0; i<category_arry.length; i++)
                                 {
@@ -125,26 +125,27 @@
                                 }
                                 if(flag >= 1)
                                     $(this).parents(".center.aligned.column").show();
-                                else
+                                else if(flag==0)
                                     $(this).parents(".center.aligned.column").hide();
 
                                 var is_visible=0;
                                 $(this).parents(".ui.stackable").children().each(function(){
+                                    console.log($(this));
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
                                 var session_name = "";
                                 session_name = $(this).parents(".ui.bottom").attr("data-sessionbot");
+                                list_name = $(this).parents(".ui.bottom").attr("data-listbot");
                                 if(is_visible==0)
                                 {
                                     $(this).parents(".ui.bottom").hide();
-                                    $("div[data-sessiontop='"+session_name+"']").hide();
+                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").hide();
                                 }
                                 else
                                 {
                                     $(this).parents(".ui.bottom").show();
-                                    $("div[data-sessiontop='"+session_name+"']").show();
-
+                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").show();
                                 }
                             });
                         }

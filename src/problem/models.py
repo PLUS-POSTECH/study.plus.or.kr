@@ -51,6 +51,7 @@ class Problem(models.Model):
 class ProblemList(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
+    notification = models.TextField(blank=True)
     session = models.ForeignKey(Session)
 
     class Meta:
@@ -87,3 +88,4 @@ class ProblemAuthLog(models.Model):
         unique_together = (('user', 'problem_instance', 'auth_key'),)
         verbose_name = '문제 인증 로그'
         verbose_name_plural = '문제 인증 로그들'
+

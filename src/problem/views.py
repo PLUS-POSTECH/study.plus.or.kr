@@ -54,6 +54,7 @@ class ProblemListView(PlusMemberCheck, View):
         def problem_list_info(problem_list):
             problem_instances = ProblemInstance.objects.filter(problem_list=problem_list)
             problem_info = []
+            notification = problem_list.notification
             total_score = 0
             for problem_instance in problem_instances:
                 first_solved_log = None
@@ -73,7 +74,7 @@ class ProblemListView(PlusMemberCheck, View):
                     total_score += points
                 problem_info.append((problem_instance, int(points), authed, first_blood))
 
-            return problem_list, problem_info, int(total_score)
+            return problem_list, problem_info, notification, int(total_score)
 
         problem_response = [
             problem_list_info(problem_list)
@@ -87,6 +88,8 @@ class ProblemListView(PlusMemberCheck, View):
             'search_by': search_by,
             'q': q
         })
+
+
 
 
 class ProblemGetView(PlusMemberCheck, View):

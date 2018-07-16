@@ -48,7 +48,7 @@
         <div class="ui bottom attached segment" data-session="{{ session.title }}">
             <div class="ui stackable three column grid" >
                 {% for seminar in seminars %}
-                    <div class="column" data-title="{{ session.title }}">
+                    <div class="column" data-isActive="1">
                         <div class="ui fluid card">
                             <div class="content">
                                 <div class="header">{{ seminar.title }}</div>
@@ -88,24 +88,25 @@
                     onChange: function(val) {
                         var category_arry = val.split(',');
                         category_arry = category_arry.sort();
-                        console.log(category_arry);
-                        var delete_list = $(".ui.blue.label");
+                        var delete_list = $(".meta");
                         if(category_arry=="")
                         {
                             $(".ui.bottom").show();
                             $(".ui.top").show();
-                            $(".center.aligned.column").show();
+                            $(".column").show();
                         }
                         else
                         {
                             $(".ui.bottom").show();
                             $(".ui.top").show();
-                            $(".center.aligned.column").show(); 
+                            $(".column").show(); 
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
                                 tmp = tmp.replace(/ /gi,"");
-                                tmp = tmp.split(',');
+                                tmp = tmp.split('-');
+                                tmp2 = tmp[0];
+                                tmp = tmp2.split(',');
                                 for(let i=0; i<category_arry.length; i++)
                                 {
                                     for(let j=0; j<tmp.length; j++)
@@ -114,31 +115,22 @@
                                             flag++;
                                     }
                                 }
-                                console.log("flag is::"+flag);
                                 if(flag >= 1)
-                                    $(this).parents(".center.aligned.column").show();
+                                    $(this).parents("div[data-isActive='1']").show();
                                 else if(flag==0)
-                                    $(this).parents(".center.aligned.column").hide();
+                                    $(this).parents("div[data-isActive='1']").hide();
 
                                 var is_visible=0;
                                 $(this).parents(".ui.stackable").children().each(function(){
-                                    console.log($(this));
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
-                                console.log("is_visible is:: "+is_visible);
                                 var session_name = "";
-                                session_name = $(this).parents(".ui.bottom").attr("data-sessionbot");
-                                list_name = $(this).parents(".ui.bottom").attr("data-listbot");
+                                session_name = $(this).parents(".ui.bottom").attr("data-session");
                                 if(is_visible==0)
                                 {
                                     $(this).parents(".ui.bottom").hide();
-                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").hide();
-                                }
-                                else
-                                {
-                                    $(this).parents(".ui.bottom").show();
-                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").show();
+                                    $("h2[data-session='"+session_name+"']").hide();
                                 }
                             });
                         }

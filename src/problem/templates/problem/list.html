@@ -33,24 +33,24 @@
     {% if not queried_problem_lists %}
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
-    {% for problem_list, problem_infos, notification, total_score in queried_problem_lists %}
+    {% for problem_list, problem_infos, announcement_message, total_score in queried_problem_lists %}
         <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
-            <div>
-                {% if notification %}
-                    <div class="ui message">
-                        <p>Notification : </p>
-                        <ul class="ui list">
-                            <li>{{ notification }}</li>
-                        </ul>
-                    </div>
-                {% endif %}
+        </div>
+        {% if announcement_message %}
+        <div class="ui attached segment">
+            <div class="ui message">
+                <p>Announcement : </p>
+                <ul class="ui list">
+                    <li>{{ announcement_message }}</li>
+                </ul>
             </div>
         </div>
+        {% endif %}
         <div class="ui bottom attached segment">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}

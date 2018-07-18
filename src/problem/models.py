@@ -36,7 +36,7 @@ class Problem(models.Model):
 class ProblemList(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
-    notification = models.TextField(blank=True)
+    announcement = models.TextField(blank=True)
     allow_question = models.BooleanField()
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
 

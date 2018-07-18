@@ -42,12 +42,12 @@
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
             <div>
                 {% if notification %}
-                <div class="ui message">
-                    <p>Notification : </p>
-                    <ul class="ui list">
-                        <li>{{ notification }}</li>
-                    </ul>
-                </div>
+                    <div class="ui message">
+                        <p>Notification : </p>
+                        <ul class="ui list">
+                            <li>{{ notification }}</li>
+                        </ul>
+                    </div>
                 {% endif %}
             </div>
         </div>

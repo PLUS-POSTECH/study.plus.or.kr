@@ -23,7 +23,6 @@ class SeminarListForm(forms.Form):
 
 class SeminarListView(PlusMemberCheck, View):
     def get(self, request):
-        # TODO: Add Category Filter
         form = SeminarListForm(request.GET)
         if not form.is_valid():
             return HttpResponseBadRequest()

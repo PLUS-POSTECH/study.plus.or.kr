@@ -23,6 +23,12 @@
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
+            {% if info.problem_instance.problem_list.allow_question %}
+                <div id="ask_button" class="ui teal left floated right labeled icon button">
+                    <i class="question icon"></i>
+                    Question
+                </div>
+            {% endif %}
             <button type="submit" class="ui primary right labeled icon button">
                 <i class="unlock icon"></i>
                 Auth
@@ -42,6 +48,7 @@
             let _auth_field = $('#auth_field');
             let _auth_input = $('#auth_input');
             let _action_field = $('#action_field');
+            let _question_modal = $('#question_modal');
 
             _auth_form.submit(function (e) {
                 e.preventDefault();
@@ -72,6 +79,54 @@
                     }
                 });
             });
+
+            _question_modal.html(
+                `<i class="close icon"></i>
+                <div class="ui header">Question about {{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
+                <div class="content">
+                    <div class="ui form field">
+                        <textarea name="question" id="question_text"></textarea>
+                    </div>
+                </div>
+                <div class="actions" id="question_actions">
+                    <button id="question_submit" class="ui red right labeled icon button">
+                        <i class="envelope icon"></i>
+                        Submit
+                    </button>
+                    <div class="ui cancel button">Close</div>
+                </div>`
+            );
+
+            $("#question_submit").click( function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{% url 'problem:question' pk=info.problem_instance.pk %}",
+                    type: "POST",
+                    data: $("#question_text").serialize(),
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data['ok'] === true) {
+                            $("#question_actions").html('' +
+                                '<p>Submitted!</p>' +
+                                '<div class="ui positive button">OK</div>' +
+                                '');
+                        } else {
+                            $("#question_actions").html('' +
+                            '<p>No empty questions</p>' +
+                            '<div class="ui negative button">Close</div>' +
+                            '');
+                        }
+                    },
+                    error: function() {
+                        $("#question_actions").html('' +
+                            '<p>Something is wrong with server</p>' +
+                            '<div class="ui negative button">Close</div>' +
+                            '');
+                    }
+                });
+            });
+
+            _question_modal.modal('attach events', '#ask_button')
         });
     </script>
 {% endif %}

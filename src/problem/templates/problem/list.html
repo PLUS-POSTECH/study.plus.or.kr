@@ -39,23 +39,33 @@
         <div class="item" data-value="{{ category }}">{{ category }}</div>
         {% endfor %}
         </div>
-    </div> 
+    </div>
     {% if not queried_problem_lists %}
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
-    {% for problem_list, problem_infos, total_score in queried_problem_lists %}
+    {% for problem_list, problem_infos, notification, total_score in queried_problem_lists %}
         <div class="ui top attached clearing segment" data-listtop="{{problem_list.title}}"data-sessiontop="{{ problem_list.session.title }}">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
+            <div>
+                {% if notification %}
+                    <div class="ui message">
+                        <p>Notification : </p>
+                        <ul class="ui list">
+                            <li>{{ notification }}</li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
         </div>
         <div class="ui bottom attached segment" data-listbot="{{ problem_list.title }}"data-sessionbot="{{ problem_list.session.title }}">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}')">
+                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
@@ -73,7 +83,8 @@
             </div>
         </div>
     {% endfor %}
-    <div class="ui modal" id="modal_content"></div>
+    <div class="ui modal" id="problem_modal"></div>
+    <div class="ui modal" id="question_modal"></div>
 
     <script>
         let request_problem;
@@ -81,6 +92,7 @@
             let $_ui_dropdown = $('.ui.inline.dropdown');
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
+            let _problem_modal = $('#problem_modal');
             let $_ui_sort = $(".ui.fluid.dropdown");
 
             let session_list = [
@@ -109,7 +121,7 @@
                         {
                             $(".ui.bottom").show();
                             $(".ui.top").show();
-                            $(".center.aligned.column").show(); 
+                            $(".center.aligned.column").show();
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
@@ -179,6 +191,7 @@
                     break;
             }
             $_ui_modal.modal({
+                allowMultiple: false,
                 onApprove: function () {
                     location.reload();
                 }
@@ -213,19 +226,19 @@
             });
 
             request_problem = function (prob_url) {
-                $_ui_modal.html('<div class="ui text loader active">Loading</div>');
-                $_ui_modal.modal('refresh');
-                $_ui_modal.modal('show');
+                _problem_modal.html('<div class="ui text loader active">Loading</div>');
+                _problem_modal.modal('refresh');
+                _problem_modal.modal('show');
                 $.ajax({
                     url: prob_url,
                     type: 'GET',
                     dataType: 'html',
                     success: function(data) {
-                        $_ui_modal.html(data);
-                        $_ui_modal.modal('refresh');
+                        _problem_modal.html(data);
+                        _problem_modal.modal('refresh');
                     },
                     error: function() {
-                        $_ui_modal.html('' +
+                        _problem_modal.html('' +
                             '<div class="ui negative message">' +
                             '<i class="close icon"></i>' +
                             '<div class="header">' +

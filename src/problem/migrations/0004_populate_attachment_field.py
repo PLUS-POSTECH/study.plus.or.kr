@@ -26,7 +26,8 @@ def populate_attachment_field(apps, _):
     attachments_path = os.path.join(settings.MEDIA_ROOT, 'attachments')
     previous_path = os.path.join(settings.MEDIA_ROOT, 'problem')
     pathlib.Path(attachments_path).mkdir(parents=True, exist_ok=True)
-    shutil.move(previous_path, attachments_path)
+    if pathlib.Path(previous_path).exists():
+        shutil.move(previous_path, attachments_path)
 
     for item in delete_list:
         item.delete()
@@ -40,7 +41,8 @@ def reverse_populate_attachment_field(apps, _):
         problem_attachment.problem.attachments.add(problem_attachment)
 
     previous_path = os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem')
-    shutil.move(previous_path, settings.MEDIA_ROOT)
+    if pathlib.Path(previous_path).exists():
+        shutil.move(previous_path, settings.MEDIA_ROOT)
 
 
 class Migration(migrations.Migration):

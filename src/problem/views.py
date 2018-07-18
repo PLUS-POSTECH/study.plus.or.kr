@@ -5,15 +5,14 @@ from datetime import timedelta
 from django import forms
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseBadRequest, FileResponse, JsonResponse
+from django.http import Http404, HttpResponseBadRequest, HttpResponseServerError, FileResponse, JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
 from website.models import Session, Category
-from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog
+from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_info, get_user_problem_info
 
@@ -55,7 +54,8 @@ class ProblemListView(PlusMemberCheck, View):
         def construct_response():
             for problem_list in problem_lists:
                 problem_info, user_score = get_problem_list_info(problem_list, request.user)
-                yield problem_list, problem_info, user_score
+                notification_message = problem_list.notification
+                yield problem_list, problem_info, notification_message, user_score
 
         queried_problem_lists = list(construct_response())
 
@@ -101,17 +101,14 @@ class ProblemAuthView(PlusMemberCheck, View):
 
         try:
             ProblemAuthLog.objects.create(
-                user=request.user, problem_instance=problem_instance, auth_key=auth_key, datetime=timezone.now())
-            if problem_instance.problem.auth_key == auth_key:
-                return_obj['result'] = True
-            else:
-                return_obj['result'] = False
+                user=request.user, problem_instance=problem_instance, auth_key=auth_key)
+            is_correct = problem_instance.problem.auth_key == auth_key
+            return_obj['result'] = is_correct
 
         except IntegrityError:
             return_obj['result'] = False
 
-        finally:
-            return JsonResponse(return_obj)
+        return JsonResponse(return_obj)
 
 
 class ProblemDownloadView(PlusMemberCheck, View):
@@ -165,4 +162,53 @@ class ProblemRankView(PlusMemberCheck, View):
 
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
-        return render(request, 'problem/question.html')
+        questions = request.user.problemquestion_set.order_by('-datetime')
+        answers = ProblemQuestion.objects.filter(problem_instance__problem__author=request.user).order_by('-datetime')
+
+        return render(request, 'problem/question.html', {
+            'queried_questions': questions,
+            'queried_answers': answers
+        })
+
+
+class ProblemQuestionAskForm(forms.Form):
+    question = forms.CharField(required=False)
+
+
+class ProblemQuestionAskView(PlusMemberCheck, View):
+    def post(self, request, pk):
+        form = ProblemQuestionAskForm(request.POST)
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+
+        question_text = form.cleaned_data['question']
+
+        try:
+            problem_instance = ProblemInstance.objects.get(pk=int(pk))
+        except ObjectDoesNotExist:
+            raise Http404
+
+        if not problem_instance.problem_list.allow_question:
+            return HttpResponseBadRequest()
+
+        question_response = {
+            "name": problem_instance.problem.title,
+            "list": problem_instance.problem_list.title,
+            "question": question_text
+        }
+
+        if not question_text:
+            question_response['ok'] = False
+            return JsonResponse(question_response)
+
+        else:
+            question_response['ok'] = True
+
+            try:
+                ProblemQuestion.objects.create(
+                    user=request.user, problem_instance=problem_instance, question=question_text)
+
+            except BaseException:
+                return HttpResponseServerError()
+
+        return JsonResponse(question_response)

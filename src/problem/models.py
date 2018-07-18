@@ -36,6 +36,7 @@ class Problem(models.Model):
 class ProblemList(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
+    notification = models.TextField(blank=True)
     allow_question = models.BooleanField()
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
 
@@ -86,9 +87,21 @@ class ProblemAuthLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
     auth_key = models.TextField()
-    datetime = models.DateTimeField()
+    datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = (('user', 'problem_instance', 'auth_key'),)
         verbose_name = '문제 인증 로그'
         verbose_name_plural = '문제 인증 로그들'
+
+
+class ProblemQuestion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
+    question = models.TextField()
+    answer = models.TextField(blank=True)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = '문제 Q&A'
+        verbose_name_plural = '문제 Q&A들'

@@ -34,7 +34,7 @@
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
-        <div class="menu" tabindex="-1">
+        <div class="menu" tabindjioex="-1">
         {% for category in categories %}
         <div class="item" data-value="{{ category }}">{{ category }}</div>
         {% endfor %}
@@ -44,28 +44,30 @@
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <h2 class="ui top attached header" data-session="{{ session.title }}">{{ session.title }}</h2>
-        <div class="ui bottom attached segment" data-session="{{ session.title }}">
-            <div class="ui stackable three column grid" >
-                {% for seminar in seminars %}
-                    <div class="column" data-isActive="1">
-                        <div class="ui fluid card">
-                            <div class="content">
-                                <div class="header">{{ seminar.title }}</div>
-                                <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
-                                <div class="description">{{ seminar.description }}</div>
+        <div id="block_in_seminar">
+            <h2 class="ui top attached header" data-session="{{ session.title }}">{{ session.title }}</h2>
+            <div class="ui bottom attached segment" data-session="{{ session.title }}">
+                <div class="ui stackable three column grid" >
+                    {% for seminar in seminars %}
+                        <div class="column" data-isActive="1">
+                            <div class="ui fluid card">
+                                <div class="content">
+                                    <div class="header">{{ seminar.title }}</div>
+                                    <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
+                                    <div class="description">{{ seminar.description }}</div>
+                                </div>
+                                {% for attachment in seminar.seminar_attachments.all %}
+                                    <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
+                                        <i class="download icon"></i>
+                                        {{ attachment }}
+                                    </a>
+                                {% endfor %}
                             </div>
-                            {% for attachment in seminar.seminar_attachments.all %}
-                                <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
-                                    <i class="download icon"></i>
-                                    {{ attachment }}
-                                </a>
-                            {% endfor %}
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        </div>    
     {% endfor %}
     <script>
         $(document).ready(function () {
@@ -86,20 +88,18 @@
             $_ui_sort
                 .dropdown({
                     onChange: function(val) {
-                        var category_arry = val.split(',');
+                        var category_arry = val.split(', ');
                         category_arry = category_arry.sort();
                         var delete_list = $(".meta");
                         if(category_arry=="")
                         {
-                            $(".ui.bottom").show();
-                            $(".ui.top").show();
-                            $(".column").show();
+                            $("#block_in_seminar").show();
+                            $("div[data-isActive='1']").show(); 
                         }
                         else
                         {
-                            $(".ui.bottom").show();
-                            $(".ui.top").show();
-                            $(".column").show(); 
+                            $("#block_in_seminar").show();
+                            $("div[data-isActive='1']").show(); 
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
@@ -129,8 +129,7 @@
                                 session_name = $(this).parents(".ui.bottom").attr("data-session");
                                 if(is_visible==0)
                                 {
-                                    $(this).parents(".ui.bottom").hide();
-                                    $("h2[data-session='"+session_name+"']").hide();
+                                    $("#block_in_seminar").hide();
                                 }
                             });
                         }

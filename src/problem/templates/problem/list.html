@@ -30,13 +30,13 @@
             </div>
         </div>
     </form>
-    <div class="ui fluid multiple search normal selection dropdown">
+    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
         <div class="menu" tabindex="-1">
         {% for category in categories %}
-        <div class="item" data-value="{{ category }}">{{ category }}</div>
+            <div class="item" data-value="{{ category }}">{{ category }}</div>
         {% endfor %}
         </div>
     </div>
@@ -44,7 +44,8 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, notification, total_score in queried_problem_lists %}
-        <div class="ui top attached clearing segment" data-listtop="{{problem_list.title}}"data-sessiontop="{{ problem_list.session.title }}">
+    <div id="problem_list_block">
+        <div class="ui top attached clearing segment" data-listtop="{{ problem_list.title }}"data-sessiontop="{{ problem_list.session.title }}">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
                 <div class="sub header">Score: {{ total_score }}</div>
@@ -61,11 +62,11 @@
                 {% endif %}
             </div>
         </div>
-        <div class="ui bottom attached segment" data-listbot="{{ problem_list.title }}"data-sessionbot="{{ problem_list.session.title }}">
+        <div class="ui bottom attached segment" data-listbot="{{ problem_list.title }}" data-sessionbot="{{ problem_list.session.title }}">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
+                        <a id="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
@@ -75,13 +76,14 @@
                                     {{ info.problem_instance }}
                                     <div class="sub header">{{ info.effective_points }} pts.</div>
                                 </h3>
-                                <div class="ui blue label">{{ info.problem_instance.problem.categories_title }}</div>
+                                <div class="ui blue label" id="problem_in_problemlist">{{ info.problem_instance.problem.categories_title }}</div>
                             </div>
                         </a>
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
+    </div>
     {% endfor %}
     <div class="ui modal" id="problem_modal"></div>
     <div class="ui modal" id="question_modal"></div>
@@ -93,7 +95,7 @@
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
             let _problem_modal = $('#problem_modal');
-            let $_ui_sort = $(".ui.fluid.dropdown");
+            let $_ui_sort = $("#sort_by_category");
 
             let session_list = [
                 {% for session in sessions %}
@@ -108,10 +110,10 @@
             $_ui_sort
                 .dropdown({
                     onChange: function(val) {
-                        var category_arry = val.split(',');
-                        category_arry = category_arry.sort();
-                        var delete_list = $(".ui.blue.label");
-                        if(category_arry=="")
+                        var category_array = val.split(', ');
+                        category_array = category_array.sort();
+                        var delete_list = $("#problem_in_problemlist");
+                        if(category_array=="")
                         {
                             $(".ui.bottom").show();
                             $(".ui.top").show();
@@ -119,44 +121,34 @@
                         }
                         else
                         {
-                            $(".ui.bottom").show();
-                            $(".ui.top").show();
+                            $("#problem_list_block").show();
                             $(".center.aligned.column").show();
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
                                 tmp = tmp.replace(/ /gi,"");
                                 tmp = tmp.split(',');
-                                for(let i=0; i<category_arry.length; i++)
+                                for(let i=0; i<category_array.length; i++)
                                 {
                                     for(let j=0; j<tmp.length; j++)
                                     {
-                                        if(category_arry[i]==tmp[j])
+                                        if(category_array[i]==tmp[j])
                                             flag++;
                                     }
                                 }
                                 if(flag >= 1)
-                                    $(this).parents(".center.aligned.column").show();
+                                    $(this).parents("#problem_square").show();
                                 else if(flag==0)
-                                    $(this).parents(".center.aligned.column").hide();
+                                    $(this).parents("#problem_square").hide();
 
                                 var is_visible=0;
                                 $(this).parents(".ui.stackable").children().each(function(){
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
-                                var session_name = "";
-                                session_name = $(this).parents(".ui.bottom").attr("data-sessionbot");
-                                list_name = $(this).parents(".ui.bottom").attr("data-listbot");
                                 if(is_visible==0)
                                 {
-                                    $(this).parents(".ui.bottom").hide();
-                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").hide();
-                                }
-                                else
-                                {
-                                    $(this).parents(".ui.bottom").show();
-                                    $("div[data-sessiontop='"+session_name+"'][data-listtop='"+list_name+"']").show();
+                                   $(this).parents("#problem_list_block").hide();
                                 }
                             });
                         }

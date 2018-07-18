@@ -34,7 +34,7 @@ class ProblemListView(PlusMemberCheck, View):
         all_sessions = Session.objects.order_by('title')
         all_problem_lists = ProblemList.objects.order_by('title')
         sessions = all_sessions.filter(isActive=True)
-        category = Category.objects.order_by('title')
+        categories = Category.objects.order_by('title')
         problem_lists = all_problem_lists
         q = ''
         search_by = 'list_title'
@@ -61,7 +61,7 @@ class ProblemListView(PlusMemberCheck, View):
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,
-            'categories' : category,
+            'categories' : categories,
             'problem_lists': all_problem_lists,
             'queried_problem_lists': queried_problem_lists,
             'search_by': search_by,

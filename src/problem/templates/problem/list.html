@@ -120,17 +120,17 @@
                         if (val !== "") {
                             _problem_lists.each(function () {
                                 let $this = $(this);
-                                let list_visible = true;
-                                $this.find('div[data-ui-class="problem_instance"]').each(function () {
+                                let list_visible = false;
+                                $this.find('a[data-ui-class="problem_instance"]').each(function () {
                                     let $this = $(this);
-                                    let category_text = $this.find('div[data-ui-class="category"]');
+                                    let category_text = $this.find('div[data-ui-class="category"]').text();
                                     let problem_categories = category_text.replace(/ /gi, '').split(',');
 
                                     let show_problem = false;
 
-                                    for (let problem_category in problem_categories) {
-                                        for (let filter_category in category_array) {
-                                            if (problem_category === filter_category) {
+                                    for (let i = 0; i < problem_categories.length; i++) {
+                                        for (let j = 0; j < category_array.length; j++) {
+                                            if (problem_categories[i] === category_array[j]) {
                                                 show_problem = true;
                                                 break;
                                             }

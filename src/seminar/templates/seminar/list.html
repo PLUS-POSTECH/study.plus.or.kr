@@ -99,17 +99,17 @@
                         if (val !== "") {
                             sessions.each(function () {
                                 let $this = $(this);
-                                let session_visible = true;
+                                let session_visible = false;
                                 $this.find('div[data-ui-class="seminar"]').each(function () {
                                     let $this = $(this);
-                                    let category_text = $this.find('div[data-ui-class="category"]');
+                                    let category_text = $this.find('div[data-ui-class="category"]').text();
                                     let seminar_categories = category_text.replace(/ /gi, '').split('-')[0].split(',');
 
                                     let show_seminar = false;
 
-                                    for (let seminar_category in seminar_categories) {
-                                        for (let filter_category in category_array) {
-                                            if (seminar_category === filter_category) {
+                                    for (let i = 0; i < seminar_categories.length; i++) {
+                                        for (let j = 0; j < category_array.length; j++) {
+                                            if (seminar_categories[i] === category_array[j]) {
                                                 show_seminar = true;
                                                 break;
                                             }

@@ -52,14 +52,14 @@
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
         </div>
         {% if announcement_message %}
-        <div class="ui attached segment">
-            <div class="ui message">
-                <p>Announcement : </p>
-                <ul class="ui list">
-                    <li>{{ announcement_message }}</li>
-                </ul>
+            <div class="ui attached segment">
+                <div class="ui message">
+                    <p>Announcement : </p>
+                    <ul class="ui list">
+                        <li>{{ announcement_message }}</li>
+                    </ul>
+                </div>
             </div>
-        </div>
         {% endif %}
         <div class="ui bottom attached segment">
             <div class="ui stackable four column grid">
@@ -82,7 +82,6 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
     {% endfor %}
     <div class="ui modal" id="problem_modal"></div>
     <div class="ui modal" id="question_modal"></div>

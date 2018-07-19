@@ -30,7 +30,7 @@
             </div>
         </div>
     </form>
-    <div class="ui fluid multiple search normal selection dropdown" id="_sort_by_category">
+    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
@@ -44,16 +44,17 @@
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <div data-shutter="block_in_seminar">
-            <h2 class="ui top attached header" data-session="{{ session.title }}">{{ session.title }}</h2>
-            <div class="ui bottom attached segment" data-session="{{ session.title }}">
+        <div data-ui-class="session">
+            <div class="ui horizontal divider"></div>
+            <h2 class="ui top attached header">{{ session.title }}</h2>
+            <div class="ui bottom attached segment">
                 <div class="ui stackable three column grid" >
                     {% for seminar in seminars %}
-                        <div class="column" data-enable="1">
+                        <div class="column" data-ui-class="seminar">
                             <div class="ui fluid card">
                                 <div class="content">
                                     <div class="header">{{ seminar.title }}</div>
-                                    <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
+                                    <div class="meta" data-ui-class="category">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
                                     <div class="description">{{ seminar.description }}</div>
                                 </div>
                                 {% for attachment in seminar.seminar_attachments.all %}
@@ -71,61 +72,62 @@
     {% endfor %}
     <script>
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.inline.dropdown');
-            var $_ui_search = $('.ui.search');
-            var $_sort_by_category = $('#_sort_by_category');
+            let $_ui_dropdown = $('.ui.inline.dropdown');
+            let $_ui_search = $('.ui.search');
+            let _sort_by_category = $('#sort_by_category');
 
-            var session_list = [
+            let session_list = [
                 {% for session in sessions %}
                     { title: '{{ session.title }}', href: '{% url 'seminar:list' %}?search_by=session&q={{ session.title | urlencode }}' },
                 {% endfor %}
             ];
-            var seminar_list = [
+            let seminar_list = [
                 {% for seminar in seminars %}
                     { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
-            $_sort_by_category
+
+            _sort_by_category
                 .dropdown({
                     onChange: function(val) {
-                        var category_arry = val.split(',');
-                        var delete_list = $(".meta");
-                        $("div[data-shutter='block_in_seminar']").show();
-                        $("div[data-enable='1']").show();
-                        if(category_arry != "")
-                        {
-                            delete_list.each(function(){
-                                var flag=false;
-                                var tmp = $(this).text();
-                                tmp = tmp.replace(/ /gi,"");
-                                tmp = tmp.split('-');
-                                tmp2 = tmp[0];
-                                tmp = tmp2.split(',');
-                                for(let i=0; i<category_arry.length; i++)
-                                {
-                                    for(let j=0; j<tmp.length; j++)
-                                    {
-                                        if(category_arry[i]==tmp[j])
-                                        {
-                                            flag=true;
-                                            break;
+                        let category_array = val.split(',');
+                        let sessions = $('div[data-ui-class="session"]');
+
+                        sessions.show();
+                        $('div[data-ui-class="seminar"]').show();
+
+                        if (val !== "") {
+                            sessions.each(function () {
+                                let $this = $(this);
+                                let session_visible = true;
+                                $this.find('div[data-ui-class="seminar"]').each(function () {
+                                    let $this = $(this);
+                                    let category_text = $this.find('div[data-ui-class="category"]');
+                                    let seminar_categories = category_text.replace(/ /gi, '').split('-')[0].split(',');
+
+                                    let show_seminar = false;
+
+                                    for (let seminar_category in seminar_categories) {
+                                        for (let filter_category in category_array) {
+                                            if (seminar_category === filter_category) {
+                                                show_seminar = true;
+                                                break;
+                                            }
                                         }
                                     }
-                                }
-                                if(flag === true)
-                                    $(this).parents("div[data-enable='1']").show();
-                                else if(flag === false)
-                                    $(this).parents("div[data-enable='1']").hide();
 
-                                var is_visible=false;
-                                $(this).parents(".ui.stackable").children().each(function(){
-                                    if($(this).is(":visible"))
-                                        is_visible=true;
+                                    if (show_seminar) {
+                                        $this.show();
+                                        session_visible = true;
+                                    } else {
+                                        $this.hide();
+                                    }
                                 });
-                                if(is_visible===false)
-                                {
-                                    $(this).parents("div[data-shutter='block_in_seminar']").hide();
+
+                                if (!session_visible) {
+                                    $this.hide();
                                 }
+
                             });
                         }
                     }

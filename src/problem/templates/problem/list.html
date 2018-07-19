@@ -44,8 +44,8 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, announcement_message, total_score in queried_problem_lists %}
-        <div class="ui horizontal divider"></div>
-        <div data-shutter="problem_list_block">
+        <div data-ui-class="problem_list">
+            <div class="ui horizontal divider"></div>
             <div class="ui top attached clearing segment">
                 <h2 class="ui left floated header">
                     {{ problem_list.session.title }}: {{ problem_list.title }}
@@ -67,7 +67,7 @@
                 <div class="ui stackable four column grid">
                     {% for info in problem_infos %}
                         {% if not info.problem_instance.hidden or info.user.is_staff %}
-                            <a data-indicator="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
+                            <a data-ui-class="problem_instance" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                                 <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                     <div class="ui left corner orange label"
                                         {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
@@ -77,7 +77,7 @@
                                         {{ info.problem_instance }}
                                         <div class="sub header">{{ info.effective_points }} pts.</div>
                                     </h3>
-                                    <div class="ui blue label" data-categories="indicator">{{ info.problem_instance.problem.categories_title }}</div>
+                                    <div class="ui blue label" data-ui-class="category">{{ info.problem_instance.problem.categories_title }}</div>
                                 </div>
                             </a>
                         {% endif %}
@@ -112,41 +112,41 @@
                 .dropdown({
                     onChange: function (val) {
                         let category_array = val.split(',');
-                        let delete_list = $("div[data-categories='indicator']");
+                        let _problem_lists = $('div[data-ui-class="problem_list"]');
 
-                        $("div[data-shutter='problem_list_block']").show();
-                        $("a[data-indicator='problem_square']").show();
+                        _problem_lists.show();
+                        $("a[data-ui-class='problem_instance']").show();
 
                         if (val !== "") {
-                            delete_list.each(function () {
-                                let flag = false;
-                                let tmp = $(this).text();
-                                tmp = tmp.replace(/ /gi,"");
-                                tmp = tmp.split(',');
+                            _problem_lists.each(function () {
+                                let $this = $(this);
+                                let list_visible = true;
+                                $this.find('div[data-ui-class="problem_instance"]').each(function () {
+                                    let $this = $(this);
+                                    let category_text = $this.find('div[data-ui-class="category"]');
+                                    let problem_categories = category_text.replace(/ /gi, '').split(',');
 
-                                for (let i = 0; i < category_array.length; i++) {
-                                    for (let j = 0; j < tmp.length; j++) {
-                                        if (category_array[i] === tmp[j]) {
-                                            flag = true;
-                                            break;
+                                    let show_problem = false;
+
+                                    for (let problem_category in problem_categories) {
+                                        for (let filter_category in category_array) {
+                                            if (problem_category === filter_category) {
+                                                show_problem = true;
+                                                break;
+                                            }
                                         }
                                     }
-                                }
 
-                                let _problem_square = $(this).parents("a[data-indicator='problem_square']");
-                                if (flag === true)
-                                    _problem_square.show();
-                                else
-                                    _problem_square.hide();
-
-                                let is_visible = false;
-                                $(this).parents(".ui.stackable").children().each(function () {
-                                    if($(this).is(":visible"))
-                                        is_visible = true;
+                                    if (show_problem) {
+                                        $this.show();
+                                        list_visible = true;
+                                    } else {
+                                        $this.hide();
+                                    }
                                 });
 
-                                if (is_visible === false) {
-                                    $(this).parents("div[data-shutter='problem_list_block']").hide();
+                                if (!list_visible) {
+                                    $this.hide();
                                 }
                             });
                         }

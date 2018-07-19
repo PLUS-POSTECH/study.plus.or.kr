@@ -44,14 +44,14 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, notification, total_score in queried_problem_lists %}
-    <div id="problem_list_block">
-        <div class="ui top attached clearing segment" data-listtop="{{ problem_list.title }}"data-sessiontop="{{ problem_list.session.title }}">
+    <div class="problem_list_block">
+        <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
-                <div class="sub header">Score: {{ total_score }}</div>
+                <div class="sub header">Score: {{ otal_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
-            <div>
+            <div class="notification">
                 {% if notification %}
                     <div class="ui message">
                         <p>Notification : </p>
@@ -62,11 +62,11 @@
                 {% endif %}
             </div>
         </div>
-        <div class="ui bottom attached segment" data-listbot="{{ problem_list.title }}" data-sessionbot="{{ problem_list.session.title }}">
+        <div class="ui bottom attached segment">
             <div class="ui stackable four column grid">
                 {% for info in problem_infos %}
                     {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a id="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
+                        <a data-indicator="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
                             <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
                                 <div class="ui left corner orange label"
                                      {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
@@ -76,7 +76,7 @@
                                     {{ info.problem_instance }}
                                     <div class="sub header">{{ info.effective_points }} pts.</div>
                                 </h3>
-                                <div class="ui blue label" id="problem_in_problemlist">{{ info.problem_instance.problem.categories_title }}</div>
+                                <div class="ui blue label" data-categories="indicator">{{ info.problem_instance.problem.categories_title }}</div>
                             </div>
                         </a>
                     {% endif %}
@@ -110,24 +110,25 @@
             $_ui_sort
                 .dropdown({
                     onChange: function(val) {
-                        var category_array = val.split(', ');
+                        var category_array = val.split(',');
                         category_array = category_array.sort();
-                        var delete_list = $("#problem_in_problemlist");
+                        console.log(category_array);
+                        var delete_list = $("div[data-categories='indicator']");
                         if(category_array=="")
                         {
-                            $(".ui.bottom").show();
-                            $(".ui.top").show();
-                            $(".center.aligned.column").show();
+                            $(".problem_list_block").show();
+                            $("a[data-indicator='problem_square']").show();        
                         }
                         else
                         {
-                            $("#problem_list_block").show();
-                            $(".center.aligned.column").show();
+                            $(".problem_list_block").show();
+                            $("a[data-indicator='problem_square']").show();
                             delete_list.each(function(){
                                 var flag=0;
                                 var tmp = $(this).text();
                                 tmp = tmp.replace(/ /gi,"");
                                 tmp = tmp.split(',');
+                                console.log(tmp);
                                 for(let i=0; i<category_array.length; i++)
                                 {
                                     for(let j=0; j<tmp.length; j++)
@@ -136,19 +137,22 @@
                                             flag++;
                                     }
                                 }
+                                console.log("flag:" + flag);
                                 if(flag >= 1)
-                                    $(this).parents("#problem_square").show();
+                                    $(this).parents("a[data-indicator='problem_square']").show();
                                 else if(flag==0)
-                                    $(this).parents("#problem_square").hide();
+                                    $(this).parents("a[data-indicator='problem_square']").hide();
 
                                 var is_visible=0;
                                 $(this).parents(".ui.stackable").children().each(function(){
+                                    console.log($(this));
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
+                                console.log("is_visible: "+is_visible);
                                 if(is_visible==0)
                                 {
-                                   $(this).parents("#problem_list_block").hide();
+                                   $(this).parents(".problem_list_block").hide();
                                 }
                             });
                         }

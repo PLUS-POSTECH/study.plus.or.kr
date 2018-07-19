@@ -30,21 +30,21 @@
             </div>
         </div>
     </form>
-    <div class="ui fluid multiple search normal selection dropdown">
+    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
         <div class="menu" tabindjioex="-1">
         {% for category in categories %}
-        <div class="item" data-value="{{ category }}">{{ category }}</div>
+            <div class="item" data-value="{{ category }}">{{ category }}</div>
         {% endfor %}
         </div>
     </div> 
     {% if not seminar_dict %}
-        <h2 class="first">No active or queried session exists.</h2>
+        <h2 class="first">No active or queried session exists.</2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <div id="block_in_seminar">
+        <div class="block_in_seminar">
             <h2 class="ui top attached header" data-session="{{ session.title }}">{{ session.title }}</h2>
             <div class="ui bottom attached segment" data-session="{{ session.title }}">
                 <div class="ui stackable three column grid" >
@@ -73,7 +73,7 @@
         $(document).ready(function () {
             var $_ui_dropdown = $('.ui.inline.dropdown');
             var $_ui_search = $('.ui.search');
-            var $_ui_sort = $('.ui.fluid.dropdown')
+            var $_ui_sort = $('#sort_by_category');
 
             var session_list = [
                 {% for session in sessions %}
@@ -88,17 +88,17 @@
             $_ui_sort
                 .dropdown({
                     onChange: function(val) {
-                        var category_arry = val.split(', ');
+                        var category_arry = val.split(',');
                         category_arry = category_arry.sort();
                         var delete_list = $(".meta");
                         if(category_arry=="")
                         {
-                            $("#block_in_seminar").show();
+                            $(".block_in_seminar").show();
                             $("div[data-isActive='1']").show(); 
                         }
                         else
                         {
-                            $("#block_in_seminar").show();
+                            $(".block_in_seminar").show();
                             $("div[data-isActive='1']").show(); 
                             delete_list.each(function(){
                                 var flag=0;
@@ -125,11 +125,9 @@
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
-                                var session_name = "";
-                                session_name = $(this).parents(".ui.bottom").attr("data-session");
                                 if(is_visible==0)
                                 {
-                                    $("#block_in_seminar").hide();
+                                    $(".block_in_seminar").hide();
                                 }
                             });
                         }

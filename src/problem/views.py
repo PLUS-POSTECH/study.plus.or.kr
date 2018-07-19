@@ -61,7 +61,7 @@ class ProblemListView(PlusMemberCheck, View):
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,
-            'categories' : categories,
+            'categories': categories,
             'problem_lists': all_problem_lists,
             'queried_problem_lists': queried_problem_lists,
             'search_by': search_by,

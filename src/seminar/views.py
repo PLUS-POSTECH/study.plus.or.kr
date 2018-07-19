@@ -29,7 +29,7 @@ class SeminarListView(PlusMemberCheck, View):
 
         all_sessions = Session.objects.order_by('title')
         all_seminars = Seminar.objects.order_by('title')
-        categories = Category.objects.order_by('title');
+        categories = Category.objects.order_by('title')
         sessions = all_sessions
         seminars = Seminar.objects.order_by('session', '-date')
         q = ''

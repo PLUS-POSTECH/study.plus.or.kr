@@ -73,7 +73,7 @@
         $(document).ready(function () {
             var $_ui_dropdown = $('.ui.inline.dropdown');
             var $_ui_search = $('.ui.search');
-            var $_ui_sort = $('#_sort_by_category');
+            var $_sort_by_category = $('#_sort_by_category');
 
             var session_list = [
                 {% for session in sessions %}
@@ -85,7 +85,7 @@
                     { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
-            $_ui_sort
+            $_sort_by_category
                 .dropdown({
                     onChange: function(val) {
                         var category_arry = val.split(',');
@@ -106,12 +106,15 @@
                                     for(let j=0; j<tmp.length; j++)
                                     {
                                         if(category_arry[i]==tmp[j])
+                                        {
                                             flag=true;
+                                            break;
+                                        }
                                     }
                                 }
-                                if(flag == true)
+                                if(flag === true)
                                     $(this).parents("div[data-enable='1']").show();
-                                else if(flag == false)
+                                else if(flag === false)
                                     $(this).parents("div[data-enable='1']").hide();
 
                                 var is_visible=false;
@@ -119,7 +122,7 @@
                                     if($(this).is(":visible"))
                                         is_visible=true;
                                 });
-                                if(is_visible==false)
+                                if(is_visible===false)
                                 {
                                     $(this).parents("div[data-shutter='block_in_seminar']").hide();
                                 }

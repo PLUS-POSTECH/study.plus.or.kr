@@ -11,7 +11,7 @@ from django.utils.http import urlquote
 from django.views import View
 
 from website.views import PlusMemberCheck
-from website.models import Session
+from website.models import Session, Category
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_info, get_user_problem_info
@@ -34,6 +34,7 @@ class ProblemListView(PlusMemberCheck, View):
         all_sessions = Session.objects.order_by('title')
         all_problem_lists = ProblemList.objects.order_by('title')
         sessions = all_sessions.filter(isActive=True)
+        categories = Category.objects.order_by('title')
         problem_lists = all_problem_lists
         q = ''
         search_by = 'list_title'
@@ -60,6 +61,7 @@ class ProblemListView(PlusMemberCheck, View):
 
         return render(request, 'problem/list.html', {
             'sessions': all_sessions,
+            'categories': categories,
             'problem_lists': all_problem_lists,
             'queried_problem_lists': queried_problem_lists,
             'search_by': search_by,

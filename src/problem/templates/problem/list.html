@@ -30,7 +30,7 @@
             </div>
         </div>
     </form>
-    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
+    <div class="ui fluid multiple search normal selection dropdown" id="_sort_by_category">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
@@ -44,7 +44,7 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, announcement_message, total_score in queried_problem_lists %}
-        <div class="problem_list_block">    
+        <div data-shutter="problem_list_block">    
             <div class="ui top attached clearing segment">
                 <h2 class="ui left floated header">
                     {{ problem_list.session.title }}: {{ problem_list.title }}
@@ -95,7 +95,7 @@
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
             let _problem_modal = $('#problem_modal');
-            let $_ui_sort = $("#sort_by_category");
+            let $_ui_sort = $("#_sort_by_category");
 
             let session_list = [
                 {% for session in sessions %}
@@ -111,19 +111,15 @@
                 .dropdown({
                     onChange: function(val) {
                         var category_array = val.split(',');
-                        category_array = category_array.sort();
                         var delete_list = $("div[data-categories='indicator']");
-                        if(category_array=="")
+                        $("div[data-shutter='problem_list_block']").show();
+                        $("a[data-indicator='problem_square']").show(); 
+                        if(category_array != "")
                         {
-                            $(".problem_list_block").show();
-                            $("a[data-indicator='problem_square']").show();        
-                        }
-                        else
-                        {
-                            $(".problem_list_block").show();
+                            $("div[data-shutter='problem_list_block']").show();
                             $("a[data-indicator='problem_square']").show();
                             delete_list.each(function(){
-                                var flag=0;
+                                var flag=false;
                                 var tmp = $(this).text();
                                 tmp = tmp.replace(/ /gi,"");
                                 tmp = tmp.split(',');
@@ -132,22 +128,22 @@
                                     for(let j=0; j<tmp.length; j++)
                                     {
                                         if(category_array[i]==tmp[j])
-                                            flag++;
+                                            flag=true;
                                     }
                                 }
-                                if(flag >= 1)
+                                if(flag == true)
                                     $(this).parents("a[data-indicator='problem_square']").show();
-                                else if(flag==0)
+                                else if(flag == false)
                                     $(this).parents("a[data-indicator='problem_square']").hide();
 
-                                var is_visible=0;
+                                var is_visible=false;
                                 $(this).parents(".ui.stackable").children().each(function(){
                                     if($(this).is(":visible"))
-                                        is_visible=1;
+                                        is_visible=true;
                                 });
-                                if(is_visible==0)
+                                if(is_visible == false)
                                 {
-                                   $(this).parents(".problem_list_block").hide();
+                                   $(this).parents("div[data-shutter='problem_list_block']").hide();
                                 }
                             });
                         }

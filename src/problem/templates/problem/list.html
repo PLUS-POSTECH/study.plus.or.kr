@@ -112,7 +112,6 @@
                     onChange: function(val) {
                         var category_array = val.split(',');
                         category_array = category_array.sort();
-                        console.log(category_array);
                         var delete_list = $("div[data-categories='indicator']");
                         if(category_array=="")
                         {
@@ -137,7 +136,6 @@
                                             flag++;
                                     }
                                 }
-                                console.log("flag:" + flag);
                                 if(flag >= 1)
                                     $(this).parents("a[data-indicator='problem_square']").show();
                                 else if(flag==0)
@@ -145,11 +143,9 @@
 
                                 var is_visible=0;
                                 $(this).parents(".ui.stackable").children().each(function(){
-                                    console.log($(this));
                                     if($(this).is(":visible"))
                                         is_visible=1;
                                 });
-                                console.log("is_visible: "+is_visible);
                                 if(is_visible==0)
                                 {
                                    $(this).parents(".problem_list_block").hide();

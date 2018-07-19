@@ -44,7 +44,8 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, announcement_message, total_score in queried_problem_lists %}
-        <div data-shutter="problem_list_block">    
+        <div class="ui horizontal divider"></div>
+        <div data-shutter="problem_list_block">
             <div class="ui top attached clearing segment">
                 <h2 class="ui left floated header">
                     {{ problem_list.session.title }}: {{ problem_list.title }}

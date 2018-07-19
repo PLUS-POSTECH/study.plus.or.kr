@@ -54,8 +54,8 @@ class ProblemListView(PlusMemberCheck, View):
         def construct_response():
             for problem_list in problem_lists:
                 problem_info, user_score = get_problem_list_info(problem_list, request.user)
-                notification_message = problem_list.notification
-                yield problem_list, problem_info, notification_message, user_score
+                announcement_message = problem_list.announcement
+                yield problem_list, problem_info, announcement_message, user_score
 
         queried_problem_lists = list(construct_response())
 

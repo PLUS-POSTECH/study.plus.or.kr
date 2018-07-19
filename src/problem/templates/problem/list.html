@@ -48,7 +48,7 @@
         <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
                 {{ problem_list.session.title }}: {{ problem_list.title }}
-                <div class="sub header">Score: {{ otal_score }}</div>
+                <div class="sub header">Score: {{ total_score }}</div>
             </h2>
             <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
             <div class="notification">

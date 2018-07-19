@@ -44,42 +44,44 @@
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}
     {% for problem_list, problem_infos, announcement_message, total_score in queried_problem_lists %}
-        <div class="ui top attached clearing segment">
-            <h2 class="ui left floated header">
-                {{ problem_list.session.title }}: {{ problem_list.title }}
-                <div class="sub header">Score: {{ total_score }}</div>
-            </h2>
-            <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
-        </div>
-        {% if announcement_message %}
-            <div class="ui attached segment">
-                <div class="ui message">
-                    <p>Announcement : </p>
-                    <ul class="ui list">
-                        <li>{{ announcement_message }}</li>
-                    </ul>
-                </div>
+        <div class="problem_list_block">    
+            <div class="ui top attached clearing segment">
+                <h2 class="ui left floated header">
+                    {{ problem_list.session.title }}: {{ problem_list.title }}
+                    <div class="sub header">Score: {{ total_score }}</div>
+                </h2>
+                <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
             </div>
-        {% endif %}
-        <div class="ui bottom attached segment">
-            <div class="ui stackable four column grid">
-                {% for info in problem_infos %}
-                    {% if not info.problem_instance.hidden or info.user.is_staff %}
-                        <a data-indicator="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
-                            <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
-                                <div class="ui left corner orange label"
-                                     {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
-                                    <i class="trophy icon"></i>
+            {% if announcement_message %}
+                <div class="ui attached segment">
+                    <div class="ui message">
+                        <p>Announcement : </p>
+                        <ul class="ui list">
+                            <li>{{ announcement_message }}</li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="ui bottom attached segment">
+                <div class="ui stackable four column grid">
+                    {% for info in problem_infos %}
+                        {% if not info.problem_instance.hidden or info.user.is_staff %}
+                            <a data-indicator="problem_square" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">
+                                <div class="ui {% if info.problem_instance.hidden %}grey inverted{% elif info.solved %}green inverted{% endif %} fluid segment">
+                                    <div class="ui left corner orange label"
+                                        {% if not info.display_first_solve %}style="visibility:hidden;"{% endif %}>
+                                        <i class="trophy icon"></i>
+                                    </div>
+                                    <h3 class="ui header">
+                                        {{ info.problem_instance }}
+                                        <div class="sub header">{{ info.effective_points }} pts.</div>
+                                    </h3>
+                                    <div class="ui blue label" data-categories="indicator">{{ info.problem_instance.problem.categories_title }}</div>
                                 </div>
-                                <h3 class="ui header">
-                                    {{ info.problem_instance }}
-                                    <div class="sub header">{{ info.effective_points }} pts.</div>
-                                </h3>
-                                <div class="ui blue label" data-categories="indicator">{{ info.problem_instance.problem.categories_title }}</div>
-                            </div>
-                        </a>
-                    {% endif %}
-                {% endfor %}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
     {% endfor %}

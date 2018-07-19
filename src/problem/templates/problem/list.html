@@ -95,7 +95,7 @@
             let $_ui_search = $('.ui.search');
             let $_ui_modal = $('.ui.modal');
             let _problem_modal = $('#problem_modal');
-            let $_ui_sort = $("#_sort_by_category");
+            let $_sort_by_category = $("#_sort_by_category");
 
             let session_list = [
                 {% for session in sessions %}
@@ -107,7 +107,7 @@
                     { title: '{{ problem_list.title }}', href: '{% url 'problem:list' %}?search_by=list_title&q={{ problem_list.title | urlencode }}' },
                 {% endfor %}
             ];
-            $_ui_sort
+            $_sort_by_category
                 .dropdown({
                     onChange: function(val) {
                         var category_array = val.split(',');
@@ -131,9 +131,9 @@
                                             flag=true;
                                     }
                                 }
-                                if(flag == true)
+                                if(flag === true)
                                     $(this).parents("a[data-indicator='problem_square']").show();
-                                else if(flag == false)
+                                else if(flag === false)
                                     $(this).parents("a[data-indicator='problem_square']").hide();
 
                                 var is_visible=false;
@@ -141,7 +141,7 @@
                                     if($(this).is(":visible"))
                                         is_visible=true;
                                 });
-                                if(is_visible == false)
+                                if(is_visible === false)
                                 {
                                    $(this).parents("div[data-shutter='problem_list_block']").hide();
                                 }

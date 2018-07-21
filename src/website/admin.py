@@ -1,7 +1,5 @@
 from django.contrib import admin
-
-from .models import User, Category, Session
-
+from .models import User, Category, Session, Notification
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -16,3 +14,5 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ('title', 'description')
+
+admin.site.register(Notification)

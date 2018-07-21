@@ -5,12 +5,14 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
-
-from .models import User
+from .models import User, Notification
 
 
 def home(request):
-    return render(request, 'index.html')
+    all_notifications = Notification.objects.order_by('-date')
+    return render(request, 'index.html', {
+        'notifications': all_notifications
+    })
 
 
 def validate_unique_username(value):

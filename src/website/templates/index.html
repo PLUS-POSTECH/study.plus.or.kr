@@ -13,22 +13,27 @@
     </div>
 </div>
 <div class="ui two column very relaxed grid" style="position:relative; margin:0; padding:0;">
-        <div class="column">
-            <div class="ui segment">
-                <h2 class="ui dividing header">Notifications</h2>
-                {% for noti in notifications %}
+    <div class="column">
+        <h2 class="ui dividing header">Notifications</h2>
+        {% if notifications %}
+            {% for noti in notifications %}
+                {% if noti.isActive %}
                     <div class="ui segment">
                         <h3 class="ui dividing header">{{ noti.title }}</h3>
                         <p>{{ noti.description }}</p>
                         <p style="opacity:0.5">{{ noti.date }}</p>
                     </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="ui vertical divider" style="position:relative; width:1; "></div>
-        <div class="column">
-            
-        </div>
+                {% endif %}    
+            {% endfor %}
+        {% endif %}
+        {% if not notifications %}
+        <p>There is no notification</p>
+        {% endif %}
+
+    </div>
+    <div class="ui vertical divider" style="position:relative; width:1; "></div>
+    <div class="column">
+    </div>
 </div>
 <script>
     $(document).ready(function () {

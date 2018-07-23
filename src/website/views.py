@@ -1,3 +1,4 @@
+from functools import reduce
 from django import forms
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -5,9 +6,8 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
-from .models import User, Notification
 from problem.models import ProblemAuthLog, ProblemInstance
-from functools import reduce
+from .models import User, Notification
 
 
 def home(request):

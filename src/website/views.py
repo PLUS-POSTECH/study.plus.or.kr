@@ -18,13 +18,13 @@ def home(request):
     for problem_instance in ProblemInstance.objects.all():
         correct_auth_key = problem_instance.problem.auth_key
         solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key) \
-                    .order_by('-datetime')
+            .order_by('-datetime')
         solved_log_queries.append(solve_logs)
         if solve_logs.exists():
             first_solved_logs.append(solve_logs.last())
 
     recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-                    .order_by('-datetime')[:10]
+        .order_by('-datetime')[:10]
 
     return render(request, 'index.html', {
         'notifications': all_notifications,

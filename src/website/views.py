@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
 from .models import User, Notification
-from problem.models import ProblemAuthLog,ProblemInstance
+from problem.models import ProblemAuthLog, ProblemInstance
 from functools import reduce
 
 
@@ -17,17 +17,19 @@ def home(request):
     first_solved_logs = []
     for problem_instance in ProblemInstance.objects.all():
         correct_auth_key = problem_instance.problem.auth_key
-        solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key).order_by('-datetime')
+        solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key) \
+                    .order_by('-datetime')
         solved_log_queries.append(solve_logs)
         if solve_logs.exists():
             first_solved_logs.append(solve_logs.last())
 
-    recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()).order_by('-datetime')[:10]
+    recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+                    .order_by('-datetime')[:10]
 
     return render(request, 'index.html', {
         'notifications': all_notifications,
-        'recent_solves' : recent_solves,
-        'first_solves' : first_solved_logs
+        'recent_solves': recent_solves,
+        'first_solves': first_solved_logs
     })
 
 

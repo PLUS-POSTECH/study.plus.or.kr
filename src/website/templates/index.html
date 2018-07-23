@@ -7,7 +7,7 @@
 <div class="ui vertical center aligned segment" id="home_banner">
     <div class="ui text container">
       <h1 class="ui dividing header">
-        Welcome to PLUS! 
+        Welcome to PLUS!
       </h1>
       <h2>Study hard to be a good HACKER</h2>
     </div>
@@ -23,7 +23,7 @@
                         <p>{{ noti.description }}</p>
                         <p style="opacity:0.5">{{ noti.date }}</p>
                     </div>
-                {% endif %}    
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% if not notifications %}
@@ -33,6 +33,22 @@
     </div>
     <div class="ui vertical divider" style="position:relative; width:1; "></div>
     <div class="column">
+        <h2 class="ui dividing header">Recent Solves</h2>
+        {% if recent_solves %}
+            {% for recent_solve in recent_solves %}
+                <div class="ui segment">
+                    <h3 class="ui dividing header">
+                        <span style="color:palevioletred">{{ recent_solve.user }}</span>
+                         solved <span style="color:dodgerblue">{{ recent_solve.problem_instance.problem.title }}</span>
+                        <span style="float:right;color:gray" class="small"> {{ recent_solve.problem_instance.problem_list.title }}</span>
+                    </h3>
+                    {{ recent_solve.datetime }}
+                    {% if recent_solve in first_solves %}
+                        <div class="ui red label" style="float:right">FIRST BLOOD</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 <script>

@@ -23,7 +23,7 @@ def home(request):
         solved_log_queries.append(solve_logs)
         if solve_logs.exists():
             first_solved_logs.append(solve_logs.last())
-    
+
     user_last_solved = 0
     recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
         .order_by('-datetime')
@@ -46,7 +46,6 @@ def home(request):
         'user_total_score': user_total_score,
         'user_last_solved': user_last_solved
     })
-
 
 def validate_unique_username(value):
     if User.objects.filter(username__iexact=value).count() > 0:

@@ -47,6 +47,7 @@ def home(request):
         'user_last_solved': user_last_solved
     })
 
+
 def validate_unique_username(value):
     if User.objects.filter(username__iexact=value).count() > 0:
         raise ValidationError(

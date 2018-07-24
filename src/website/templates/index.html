@@ -40,7 +40,7 @@
                     <h3 class="ui dividing header">
                         <span style="color:palevioletred">{{ recent_solve.user }}</span>
                          solved <span style="color:dodgerblue">{{ recent_solve.problem_instance.problem.title }}</span>
-                        <span style="float:right;color:gray" class="small"> {{ recent_solve.problem_instance.problem_list.title }}</span>
+                        <small style="float:right;color:gray">{{ recent_solve.problem_instance.session.title }} : {{ recent_solve.problem_instance.problem_list.title }}</small>
                     </h3>
                     {{ recent_solve.datetime }}
                     {% if recent_solve in first_solves %}

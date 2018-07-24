@@ -12,6 +12,15 @@
       <h2>Study hard to be a good HACKER</h2>
     </div>
 </div>
+<div class="ui vertical center aligned segment">
+    {% if user.is_plus_member %}
+        <h3 class="item">
+            id  :  {{ user.username }} &emsp;
+            Total Score  :  {{ user_total_score }} &emsp;
+            Last Solved : {{ user_last_solved.datetime }}
+        </h3>
+    {% endif %}
+</div>
 <div class="ui two column very relaxed grid" style="position:relative; margin:0; padding:0;">
     <div class="column">
         <h2 class="ui dividing header">Notifications</h2>

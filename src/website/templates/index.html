@@ -29,12 +29,11 @@
                     <div class="ui segment">
                         <h3 class="ui dividing header">{{ noti.title }}</h3>
                         <p>{{ noti.description }}</p>
-                        <p style="opacity:0.5">{{ noti.date }}</p>
+                        <p style="opacity:0.5">{{ noti.datetime }}</p>
                     </div>
                 {% endif %}
             {% endfor %}
-        {% endif %}
-        {% if not notifications %}
+        {% else %}
         <p>There is no notification</p>
         {% endif %}
 
@@ -61,13 +60,4 @@
         {% endif %}
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-
-
-
-
-
-    });
-</script>
 {% endblock %}

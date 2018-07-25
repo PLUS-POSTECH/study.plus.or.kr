@@ -17,4 +17,6 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = ('title', 'description')
 
 
-admin.site.register(Notification)
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')

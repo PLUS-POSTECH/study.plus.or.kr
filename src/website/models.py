@@ -40,7 +40,7 @@ class Notification(models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=False)
     isActive = models.BooleanField(default=True)
-    date = models.DateTimeField()
+    datetime = models.DateTimeField()
 
     class Meta:
         verbose_name = '공지사항'

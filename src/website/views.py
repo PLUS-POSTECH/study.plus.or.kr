@@ -20,7 +20,7 @@ class PlusMemberCheck(UserPassesTestMixin):
 
 class HomeView(PlusMemberCheck, View):
     def get(self, request):
-        all_notifications = Notification.objects.order_by('-date')
+        all_notifications = Notification.objects.order_by('-datetime')
 
         solved_log_queries = []
         first_solved_logs = []

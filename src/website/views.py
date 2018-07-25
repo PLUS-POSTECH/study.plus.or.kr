@@ -11,41 +11,49 @@ from problem.helpers.problem_info import get_problem_list_info
 from .models import User, Notification
 
 
-def home(request):
-    all_notifications = Notification.objects.order_by('-date')
+class PlusMemberCheck(UserPassesTestMixin):
+    # pylint: disable=no-member
+    def test_func(self):
+        return not self.request.user.is_anonymous and self.request.user.is_plus_member
+    login_url = '/login'
 
-    solved_log_queries = []
-    first_solved_logs = []
-    for problem_instance in ProblemInstance.objects.all():
-        correct_auth_key = problem_instance.problem.auth_key
-        solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key) \
+
+class HomeView(PlusMemberCheck, View):
+    def get(self, request):
+        all_notifications = Notification.objects.order_by('-date')
+
+        solved_log_queries = []
+        first_solved_logs = []
+        for problem_instance in ProblemInstance.objects.all():
+            correct_auth_key = problem_instance.problem.auth_key
+            solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key) \
+                .order_by('-datetime')
+            solved_log_queries.append(solve_logs)
+            if solve_logs.exists():
+                first_solved_logs.append(solve_logs.last())
+
+        user_last_solved = 0
+        recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
             .order_by('-datetime')
-        solved_log_queries.append(solve_logs)
-        if solve_logs.exists():
-            first_solved_logs.append(solve_logs.last())
+        for solved_log in recent_solves:
+            if solved_log.user == request.user:
+                user_last_solved = solved_log
+                break
+        recent_solves = recent_solves[:10]
 
-    user_last_solved = 0
-    recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-        .order_by('-datetime')
-    for solved_log in recent_solves:
-        if solved_log.user == request.user:
-            user_last_solved = solved_log
-            break
-    recent_solves = recent_solves[:10]
+        problem_lists = ProblemList.objects.all()
+        user_total_score = 0
+        for problem_list in problem_lists:
+            _, user_problemlist_score = get_problem_list_info(problem_list, request.user)
+            user_total_score += user_problemlist_score
 
-    problem_lists = ProblemList.objects.all()
-    user_total_score = 0
-    for problem_list in problem_lists:
-        _, user_problemlist_score = get_problem_list_info(problem_list, request.user)
-        user_total_score += user_problemlist_score
-
-    return render(request, 'index.html', {
-        'notifications': all_notifications,
-        'recent_solves': recent_solves,
-        'first_solves': first_solved_logs,
-        'user_total_score': user_total_score,
-        'user_last_solved': user_last_solved
-    })
+        return render(request, 'index.html', {
+            'notifications': all_notifications,
+            'recent_solves': recent_solves,
+            'first_solves': first_solved_logs,
+            'user_total_score': user_total_score,
+            'user_last_solved': user_last_solved
+        })
 
 
 def validate_unique_username(value):
@@ -84,10 +92,3 @@ class RegisterView(View):
         )
         login(request, user)
         return redirect('/')
-
-
-class PlusMemberCheck(UserPassesTestMixin):
-    # pylint: disable=no-member
-    def test_func(self):
-        return not self.request.user.is_anonymous and self.request.user.is_plus_member
-    login_url = '/login'

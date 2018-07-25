@@ -32,13 +32,12 @@ class HomeView(PlusMemberCheck, View):
             if solve_logs.exists():
                 first_solved_logs.append(solve_logs.last())
 
-        user_last_solved = 0
+        user_last_solved = None
         recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
             .order_by('-datetime')
-        for solved_log in recent_solves:
-            if solved_log.user == request.user:
-                user_last_solved = solved_log
-                break
+        user_last_solved_query = recent_solves.filter(user=request.user)
+        if user_last_solved_query.exists():
+            user_last_solved = user_last_solved_query.first()
         recent_solves = recent_solves[:10]
 
         problem_lists = ProblemList.objects.all()

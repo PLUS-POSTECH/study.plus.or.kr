@@ -34,3 +34,17 @@ class Session(models.Model):
 
     def __str__(self):
         return '%s' % self.title
+
+
+class Notification(models.Model):
+    title = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=False)
+    isActive = models.BooleanField(default=True)
+    datetime = models.DateTimeField()
+
+    class Meta:
+        verbose_name = '공지사항'
+        verbose_name_plural = '공지사항들'
+
+    def __str__(self):
+        return '%s' % self.title

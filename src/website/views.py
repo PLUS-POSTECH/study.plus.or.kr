@@ -1,3 +1,4 @@
+from functools import reduce
 from django import forms
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -5,12 +6,53 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
+from problem.models import ProblemAuthLog, ProblemInstance, ProblemList
+from problem.helpers.problem_info import get_problem_list_info
+from .models import User, Notification
 
-from .models import User
+
+class PlusMemberCheck(UserPassesTestMixin):
+    # pylint: disable=no-member
+    def test_func(self):
+        return not self.request.user.is_anonymous and self.request.user.is_plus_member
+    login_url = '/login'
 
 
-def home(request):
-    return render(request, 'index.html')
+class HomeView(PlusMemberCheck, View):
+    def get(self, request):
+        all_notifications = Notification.objects.order_by('-datetime')
+
+        solved_log_queries = []
+        first_solved_logs = []
+        for problem_instance in ProblemInstance.objects.all():
+            correct_auth_key = problem_instance.problem.auth_key
+            solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key) \
+                .order_by('-datetime')
+            solved_log_queries.append(solve_logs)
+            if solve_logs.exists():
+                first_solved_logs.append(solve_logs.last())
+
+        user_last_solved = None
+        recent_solves = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+            .order_by('-datetime')
+        user_last_solved_query = recent_solves.filter(user=request.user)
+        if user_last_solved_query.exists():
+            user_last_solved = user_last_solved_query.first()
+        recent_solves = recent_solves[:10]
+
+        problem_lists = ProblemList.objects.all()
+        user_total_score = 0
+        for problem_list in problem_lists:
+            _, user_problemlist_score = get_problem_list_info(problem_list, request.user)
+            user_total_score += user_problemlist_score
+
+        return render(request, 'index.html', {
+            'notifications': all_notifications,
+            'recent_solves': recent_solves,
+            'first_solves': first_solved_logs,
+            'user_total_score': user_total_score,
+            'user_last_solved': user_last_solved
+        })
 
 
 def validate_unique_username(value):
@@ -49,10 +91,3 @@ class RegisterView(View):
         )
         login(request, user)
         return redirect('/')
-
-
-class PlusMemberCheck(UserPassesTestMixin):
-    # pylint: disable=no-member
-    def test_func(self):
-        return not self.request.user.is_anonymous and self.request.user.is_plus_member
-    login_url = '/login'

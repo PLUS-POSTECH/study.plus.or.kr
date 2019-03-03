@@ -30,48 +30,108 @@
             </div>
         </div>
     </form>
+    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
+        <input type="hidden" name="country">
+        <i class="dropdown icon"></i>
+        <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
+        <div class="menu" tabindex="-1">
+        {% for category in categories %}
+            <div class="item" data-value="{{ category }}">{{ category }}</div>
+        {% endfor %}
+        </div>
+    </div> 
     {% if not seminar_dict %}
         <h2 class="first">No active or queried session exists.</h2>
     {% endif %}
     {% for session, seminars in seminar_dict.items %}
-        <h2 class="ui top attached header">{{ session.title }}</h2>
-        <div class="ui bottom attached segment">
-            <div class="ui stackable three column grid">
-                {% for seminar in seminars %}
-                    <div class="column">
-                        <div class="ui fluid card">
-                            <div class="content">
-                                <div class="header">{{ seminar.title }}</div>
-                                <div class="meta">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
-                                <div class="description">{{ seminar.description }}</div>
+        <div data-ui-class="session">
+            <div class="ui horizontal divider"></div>
+            <h2 class="ui top attached header">{{ session.title }}</h2>
+            <div class="ui bottom attached segment">
+                <div class="ui stackable three column grid" >
+                    {% for seminar in seminars %}
+                        <div class="column" data-ui-class="seminar">
+                            <div class="ui fluid card">
+                                <div class="content">
+                                    <div class="header">{{ seminar.title }}</div>
+                                    <div class="meta" data-ui-class="category">{{ seminar.categories_title }} - {{ seminar.author }} - {{ seminar.date }}</div>
+                                    <div class="description">{{ seminar.description }}</div>
+                                </div>
+                                {% for attachment in seminar.seminar_attachments.all %}
+                                    <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
+                                        <i class="download icon"></i>
+                                        {{ attachment }}
+                                    </a>
+                                {% endfor %}
                             </div>
-                            {% for attachment in seminar.attachments.all %}
-                                <a class="ui bottom attached button" href="{% url 'seminar:download' pk=attachment.pk %}">
-                                    <i class="download icon"></i>
-                                    {{ attachment }}
-                                </a>
-                            {% endfor %}
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        </div>    
     {% endfor %}
     <script>
         $(document).ready(function () {
-            var $_ui_dropdown = $('.ui.dropdown');
-            var $_ui_search = $('.ui.search');
+            let $_ui_dropdown = $('.ui.inline.dropdown');
+            let $_ui_search = $('.ui.search');
+            let _sort_by_category = $('#sort_by_category');
 
-            var session_list = [
+            let session_list = [
                 {% for session in sessions %}
                     { title: '{{ session.title }}', href: '{% url 'seminar:list' %}?search_by=session&q={{ session.title | urlencode }}' },
                 {% endfor %}
             ];
-            var seminar_list = [
+            let seminar_list = [
                 {% for seminar in seminars %}
                     { title: '{{ seminar.title }}', href: '{% url 'seminar:list' %}?search_by=seminar&q={{ seminar.title | urlencode }}' },
                 {% endfor %}
             ];
+
+            _sort_by_category
+                .dropdown({
+                    onChange: function(val) {
+                        let category_array = val.split(',');
+                        let sessions = $('div[data-ui-class="session"]');
+
+                        sessions.show();
+                        $('div[data-ui-class="seminar"]').show();
+
+                        if (val !== "") {
+                            sessions.each(function () {
+                                let $this = $(this);
+                                let session_visible = false;
+                                $this.find('div[data-ui-class="seminar"]').each(function () {
+                                    let $this = $(this);
+                                    let category_text = $this.find('div[data-ui-class="category"]').text();
+                                    let seminar_categories = category_text.replace(/ /gi, '').split('-')[0].split(',');
+
+                                    let show_seminar = false;
+
+                                    for (let i = 0; i < seminar_categories.length; i++) {
+                                        for (let j = 0; j < category_array.length; j++) {
+                                            if (seminar_categories[i] === category_array[j]) {
+                                                show_seminar = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (show_seminar) {
+                                        $this.show();
+                                        session_visible = true;
+                                    } else {
+                                        $this.hide();
+                                    }
+                                });
+
+                                if (!session_visible) {
+                                    $this.hide();
+                                }
+
+                            });
+                        }
+                    }
+                });
             $_ui_search
                 .search({
                     onSelect: function (result, response) {

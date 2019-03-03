@@ -1,28 +1,34 @@
 <i class="close icon"></i>
-<div class="ui header">{{ problem_instance }} - <small>{{ problem_instance.problem.categories_title }}, {{ points }} pts.</small></div>
+<div class="ui header">{{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
 <div class="content">
     <div class="description">
-        <p>{{ problem_instance.problem.description | linebreaksbr }}</p>
-        {% for attachment in problem_instance.problem.attachments.all %}
+        <p>{{ info.problem_instance.problem.description | linebreaksbr }}</p>
+        {% for attachment in info.problem_instance.problem.problem_attachments.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
                 {{ attachment }}
             </a>
         {% endfor %}
-        {% if first_solved_log %}
-            <h4 class="ui header">First Blood: {{ first_solved_log.user }}</h4>
-            <div>Solved by {{ solved_count }} user(s).</div>
+        {% if info.first_solver %}
+            <h4 class="ui header">First Blood: {{ info.first_solver }}</h4>
+            <div>Solved by {{ info.solver_count }} user(s).</div>
         {% else %}
             <h4 class="ui header">Take the first blood!</h4>
         {% endif %}
     </div>
 </div>
 <div class="actions" id="action_field">
-    {% if not authed %}
-        <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=problem_instance.pk %}">{% csrf_token %}
+    {% if not info.solved %}
+        <form class="ui form" id="auth_form" method="post" action="{% url 'problem:auth' pk=info.problem_instance.pk %}">{% csrf_token %}
             <div class="field" id="auth_field">
                 <input class="ui input" id="auth_input" type="text" name="auth_key" placeholder="Input Flag">
             </div>
+            {% if info.problem_instance.problem_list.allow_question %}
+                <div id="ask_button" class="ui teal left floated right labeled icon button">
+                    <i class="question icon"></i>
+                    Question
+                </div>
+            {% endif %}
             <button type="submit" class="ui primary right labeled icon button">
                 <i class="unlock icon"></i>
                 Auth
@@ -35,13 +41,14 @@
     {% endif %}
 </div>
 
-{% if not already_authed %}
+{% if not info.solved %}
     <script>
         $(document).ready(function () {
-            var _auth_form = $('#auth_form');
-            var _auth_field = $('#auth_field');
-            var _auth_input = $('#auth_input');
-            var _action_field = $('#action_field');
+            let _auth_form = $('#auth_form');
+            let _auth_field = $('#auth_field');
+            let _auth_input = $('#auth_input');
+            let _action_field = $('#action_field');
+            let _question_modal = $('#question_modal');
 
             _auth_form.submit(function (e) {
                 e.preventDefault();
@@ -72,6 +79,54 @@
                     }
                 });
             });
+
+            _question_modal.html(
+                `<i class="close icon"></i>
+                <div class="ui header">Question about {{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
+                <div class="content">
+                    <div class="ui form field">
+                        <textarea name="question" id="question_text"></textarea>
+                    </div>
+                </div>
+                <div class="actions" id="question_actions">
+                    <button id="question_submit" class="ui red right labeled icon button">
+                        <i class="envelope icon"></i>
+                        Submit
+                    </button>
+                    <div class="ui cancel button">Close</div>
+                </div>`
+            );
+
+            $("#question_submit").click( function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{% url 'problem:question' pk=info.problem_instance.pk %}",
+                    type: "POST",
+                    data: $("#question_text").serialize(),
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data['ok'] === true) {
+                            $("#question_actions").html('' +
+                                '<p>Submitted!</p>' +
+                                '<div class="ui positive button">OK</div>' +
+                                '');
+                        } else {
+                            $("#question_actions").html('' +
+                            '<p>No empty questions</p>' +
+                            '<div class="ui negative button">Close</div>' +
+                            '');
+                        }
+                    },
+                    error: function() {
+                        $("#question_actions").html('' +
+                            '<p>Something is wrong with server</p>' +
+                            '<div class="ui negative button">Close</div>' +
+                            '');
+                    }
+                });
+            });
+
+            _question_modal.modal('attach events', '#ask_button')
         });
     </script>
 {% endif %}

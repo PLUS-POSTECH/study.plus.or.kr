@@ -53,7 +53,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_point = item_to_buy.price
         required_luck = Decimal(100) - item_to_buy.chance
 
-        enough_point =
+        enough_point = 50
         enough_luck = \
             (True if SystemRandom().uniform(0, 100) > required_luck \
             else False)

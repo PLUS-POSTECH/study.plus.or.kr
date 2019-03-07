@@ -20,7 +20,7 @@ class ShopItem(models.Model):
     image = models.FileField(storage=ShopImageStorage)
     last_modified = models.DateTimeField(auto_now=True)
     price = models.IntegerField()
-    chance = models.DecimalField()
+    chance = models.DecimalField(max_digits=4, decimal_places=2)
     hidden = models.BooleanField()
 
     class Meta:
@@ -36,7 +36,7 @@ class Shop(models.Model):
     description = models.TextField(blank=True)
     last_modified = models.DateTimeField(auto_now=True)
     shop_items = models.ManyToManyField(ShopItem)
-    problem_list = models.ForeignKey(ProblemList, on_delete=models.PROTECT)
+    session = models.ForeignKey(Session, on_delete=models.PROTECT, unique=True)
 
     class Meta:
         verbose_name = '상점'

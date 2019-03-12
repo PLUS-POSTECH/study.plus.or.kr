@@ -2,7 +2,7 @@
 <div class="ui header">{{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
 <div class="content">
     <div class="description">
-        <p>{{ info.problem_instance.problem.description | linebreaksbr }}</p>
+        <p>{{ info.problem_instance.problem.description | linebreaksbr | safe }}</p>
         {% for attachment in info.problem_instance.problem.problem_attachments.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>

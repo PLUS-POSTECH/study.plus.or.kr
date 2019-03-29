@@ -85,7 +85,7 @@ class ProblemInstance(models.Model):
 
 class ProblemAuthLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.PROTECT)
+    problem_instance = models.ForeignKey(ProblemInstance, on_delete=models.CASCADE)
     auth_key = models.TextField()
     datetime = models.DateTimeField(auto_now_add=True)
 

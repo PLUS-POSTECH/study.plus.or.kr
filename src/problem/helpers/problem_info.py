@@ -36,7 +36,7 @@ def get_user_problem_info(user, problem_instance):
 
 
 def get_problem_list_info(problem_list, user):
-    problem_instances = problem_list.probleminstance_set.all()
+    problem_instances = problem_list.probleminstance_set.order_by('points','problem__title')
     problem_info = []
     user_score = 0
     for problem_instance in problem_instances:

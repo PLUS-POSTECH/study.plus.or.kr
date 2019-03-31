@@ -11,7 +11,13 @@
         {% endfor %}
         {% if info.first_solver %}
             <h4 class="ui header">First Blood: {{ info.first_solver }}</h4>
-            <div>Solved by {{ info.solver_count }} user(s).</div>
+            <div>Solved by {{ info.solver_count }} user(s).
+                <span data-tooltip="
+                {% for solver_name in info.solver_list %} 
+                    {% if not forloop.first %}, {% endif %}{{ solver_name }}
+                {% endfor %}
+                " data-inverted=""><i class="question circle icon"></i></span>
+            </div>
         {% else %}
             <h4 class="ui header">Take the first blood!</h4>
         {% endif %}

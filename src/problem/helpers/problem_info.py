@@ -29,7 +29,7 @@ def get_user_problem_info(user, problem_instance):
     first_solver = solved_log.first().user if solved_log.exists() else None
     solved = solved_log.filter(user=user).exists()
     solve_count = solved_log.count()
-    solve_user_list = list(map(lambda x : x.user.username, solved_log))
+    solve_user_list = list(map(lambda x: x.user.username, solved_log))
     effective_solve_count = solve_count + (0 if solved else 1)
     first_blood = first_solver is None or user == first_solver
     points = calculate_problem_score(problem_instance, effective_solve_count, first_blood)

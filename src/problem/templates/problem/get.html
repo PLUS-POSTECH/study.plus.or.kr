@@ -131,7 +131,8 @@
 
             _solver_list.popup({
                 content : 
-                `{% for solver_name in info.solver_list %} {% if not forloop.first %}, {% endif %}
+                `{% for solver_name in info.solver_list %}
+                    {% if not forloop.first %},{% endif %}
                     {{ solver_name }}
                 {% endfor %}`,
                 variation: 'very wide inverted'

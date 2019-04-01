@@ -14,6 +14,7 @@ class UserProblemInfo(NamedTuple):
     solved: bool
     first_solver: Optional[User]
     solver_count: int
+    solver_list: list
     effective_points: int
 
     def display_first_solve(self):
@@ -28,11 +29,12 @@ def get_user_problem_info(user, problem_instance):
     first_solver = solved_log.first().user if solved_log.exists() else None
     solved = solved_log.filter(user=user).exists()
     solve_count = solved_log.count()
+    solve_user_list = list(map(lambda x: x.user.username, solved_log))
     effective_solve_count = solve_count + (0 if solved else 1)
     first_blood = first_solver is None or user == first_solver
     points = calculate_problem_score(problem_instance, effective_solve_count, first_blood)
 
-    return UserProblemInfo(user, problem_instance, solved, first_solver, solve_count, points)
+    return UserProblemInfo(user, problem_instance, solved, first_solver, solve_count, solve_user_list, points)
 
 
 def get_problem_list_info(problem_list, user):

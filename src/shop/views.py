@@ -120,7 +120,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
 class ShopRetrieveView(PlusMemberCheck, View):
     def post(self, request, pk):
         try:
-            log = ShopPurchaseLog.objects.filter(pk=int(pk))
+            log = ShopPurchaseLog.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
             raise Http404
         

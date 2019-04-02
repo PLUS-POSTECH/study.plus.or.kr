@@ -28,7 +28,7 @@ class ShopProdView(PlusMemberCheck, View):
         else:
             shop = Shop.objects.get(pk=int(pk))
         
-        item_list = shop.shop_items
+        item_list = list(map(lambda x: x.shop_items))
 
         available_points = 999
 

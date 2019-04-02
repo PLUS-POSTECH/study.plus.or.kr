@@ -4,7 +4,34 @@
 {% block shop_inven_active %}active{% endblock %}
 
 {% block shop_content %}
-    {% for log in purchase_logs %}
-        {{ log }}
-    {% endfor %}
+    <div class="ui divided list">
+        {% for log in purchase_logs %}
+            {% if log.succeed %}
+                <div class="item">
+                    {% if log.retrieved %}
+                        <i class="large red heart middle aligned icon"></i>
+                    {% else %}
+                        <i class="large times middle aligned icon"></i>
+                    {% endif %}
+                        <div class="middle aligned content">
+                            <div class="header">{{ log.item.title }}</div>
+                            <div class="meta">
+                                <a class="ui large green label">
+                                    <i class="dollar sign icon"></i>
+                                    {{ log.item.price }}
+                                </a>
+                                <a class="ui large red label">
+                                    {{ log.item.chance }}
+                                    <i class="percent icon"></i>
+                                </a>
+                                <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
+                                <button class="ui right floated orange button">Check</button>
+                            </div>
+                        </div>
+                        
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
 {% endblock %}

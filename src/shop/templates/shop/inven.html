@@ -9,10 +9,9 @@
             {% if log.succeed %}
                 <div class="item">
                     {% if log.retrieved %}
-                    
-                        <i class="huge red heart middle aligned icon"></i>
+                        <i class="huge grey envelope open outline middle aligned icon"></i>
                     {% else %}
-                        <i class="huge times middle aligned icon"></i>
+                        <i class="huge teal envelope outline middle aligned icon"></i>
                     {% endif %}
                         <div class="middle aligned content">
                             <h2 class="header">{{ log.item.title }}</h2>
@@ -27,8 +26,8 @@
                                 </a>
                                 <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
                             </div>
+                            <div class="extra">{{ log.purchase_time }}</div>
                         </div>
-                        
                 </div>
             {% endif %}
         {% endfor %}

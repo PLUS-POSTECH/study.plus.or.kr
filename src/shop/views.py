@@ -112,7 +112,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         else:
             response['result'] = False
             if not enough_point:
-                response['reason'] = 'Not enough point!'
+                response['reason'] = 'Not enough points!'
         
         return JsonResponse(response)
 

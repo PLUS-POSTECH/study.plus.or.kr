@@ -1,6 +1,7 @@
 # IDE Workspaces
 .idea/
 .vscode/
+*.code-workspace
 
 # Docker compose configuration
 docker-compose.override.yml

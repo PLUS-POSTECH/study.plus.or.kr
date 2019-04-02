@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'website',
     'seminar',
     'problem',
+    'shop'
 ]
 
 MIDDLEWARE = [

@@ -23,6 +23,6 @@ jobs:
           command: |
             . venv/bin/activate
             flake8 src/
-            pylint --load-plugins pylint_django src/website src/problem src/seminar src/plus_study
+            pylint --load-plugins pylint_django src/website src/problem src/seminar src/plus_study src/shop
             bandit -r src/
 

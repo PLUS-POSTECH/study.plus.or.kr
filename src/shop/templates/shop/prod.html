@@ -15,8 +15,19 @@
         <div class="ui bottom attached segment">
             {% for item in info.shop_items %}
                 <div class="ui segment">
-                    <h4>{{ item.title }}</h4>
-                    <img src="{{ item.image.path }}">
+                    <div class="ui grid">
+                        <div class="four wide column">
+                            <div class="ui fluid card">
+                                <div class="image">
+                                    <img src="{{ item.image.path }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="twelve wide column">
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.description }}</p>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>

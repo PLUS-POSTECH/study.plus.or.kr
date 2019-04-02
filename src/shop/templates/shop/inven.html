@@ -8,14 +8,17 @@
         {% if log.succeed %}
             {% if log.retrieved %}
             <div class="ui icon floating mini message">
-                    <button class="ui basic icon button disabled">
-                        <i class="grey envelope open outline icon"></i>
+                <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                    {% csrf_token %}
+                    <button class="ui basic icon massive button disabled" type="submit">
+                        <i class="teal envelope outline icon"></i>
                     </button>
+                </form>
             {% else %}
             <div class="ui icon floating mini message teal">
                 <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
                     {% csrf_token %}
-                    <button class="ui basic icon button" type="submit">
+                    <button class="ui basic icon massive button" type="submit">
                         <i class="teal envelope outline icon"></i>
                     </button>
                 </form>

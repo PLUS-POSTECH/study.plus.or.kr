@@ -36,7 +36,7 @@ class Shop(models.Model):
     description = models.TextField(blank=True)
     last_modified = models.DateTimeField(auto_now=True)
     shop_items = models.ManyToManyField(ShopItem)
-    problem_list = models.OnetoOneField(ProblemList, on_delete=models.PROTECT)
+    problem_list = models.OneToOneField(ProblemList, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = '상점'

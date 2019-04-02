@@ -2,7 +2,7 @@
 <div class="ui header">{{ info.problem_instance }} - <small>{{ info.problem_instance.problem.categories_title }}, {{ info.effective_points }} pts.</small></div>
 <div class="content">
     <div class="description">
-        <p>{{ info.problem_instance.problem.description | linebreaksbr }}</p>
+        <p>{{ info.problem_instance.problem.description | safe | linebreaksbr }}</p>
         {% for attachment in info.problem_instance.problem.problem_attachments.all %}
             <a class="ui button" href="{% url 'problem:download' pk=attachment.pk %}">
                 <i class="download icon"></i>
@@ -11,7 +11,7 @@
         {% endfor %}
         {% if info.first_solver %}
             <h4 class="ui header">First Blood: {{ info.first_solver }}</h4>
-            <div>Solved by {{ info.solver_count }} user(s).</div>
+            <div>Solved by {{ info.solver_count }} user(s).<i class="question circle icon" id="solver_list"></i></div>
         {% else %}
             <h4 class="ui header">Take the first blood!</h4>
         {% endif %}
@@ -49,6 +49,7 @@
             let _auth_input = $('#auth_input');
             let _action_field = $('#action_field');
             let _question_modal = $('#question_modal');
+            let _solver_list = $('#solver_list');
 
             _auth_form.submit(function (e) {
                 e.preventDefault();
@@ -127,6 +128,19 @@
             });
 
             _question_modal.modal('attach events', '#ask_button')
+
+            _solver_list.popup({
+                content : 
+                `{% for solver_name in info.solver_list %}
+                    {% if not forloop.first %},{% endif %}
+                    {{ solver_name }}
+                {% endfor %}`,
+                variation: 'very wide inverted'
+            })
+            
+
+
+
         });
     </script>
 {% endif %}

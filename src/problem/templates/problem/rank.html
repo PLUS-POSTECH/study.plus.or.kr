@@ -92,6 +92,7 @@
                                     backgroundColor: getNewColor({{ forloop.counter0 }}),
                                     borderColor: getNewColor({{ forloop.counter0 }}),
                                     fill: false,
+                                    lineTension: 0,
                                     data: JSON.parse('{{ chart_points | escapejs }}')
                                 },
                             {% endfor %}

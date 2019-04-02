@@ -163,7 +163,10 @@ class ProblemRankView(PlusMemberCheck, View):
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
         questions = request.user.problemquestion_set.order_by('-datetime')
-        answers = ProblemQuestion.objects.filter(problem_instance__problem__author=request.user).order_by('-datetime')
+        if self.request.user.is_staff:
+            answers = ProblemQuestion.objects.all().order_by('-datetime')
+        else:
+            answers = {}
 
         return render(request, 'problem/question.html', {
             'queried_questions': questions,

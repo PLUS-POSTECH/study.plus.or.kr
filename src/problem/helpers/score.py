@@ -73,14 +73,14 @@ class AuthReplay:
             reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
             .order_by('datetime')
         user_pks_with_logs = solve_logs.values_list('user', flat=True)
-        users_with_logs = map(lambda x: User.objects.get(pk=x), user_pks_with_logs)
+        users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
 
         # Update user state per user who has a correct auth logs for problem list
         for user in users_with_logs:
             previous_state = user_states.get(user, UserState([], None))
             user_solve_logs = solve_logs.filter(user=user)
             solved_problem_pks = user_solve_logs.values_list('problem_instance', flat=True)
-            solved_problems = map(lambda x: ProblemInstance.objects.get(pk=x), solved_problem_pks.all())
+            solved_problems = ProblemInstance.objects.filter(pk__in=solved_problem_pks)
             last_auth = user_solve_logs.last().datetime
 
             user_states[user] = UserState(

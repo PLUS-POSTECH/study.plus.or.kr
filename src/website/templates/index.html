@@ -26,7 +26,7 @@
                 {% if noti.isActive %}
                     <div class="ui segment">
                         <h3 class="ui dividing header">{{ noti.title }}</h3>
-                        <p>{{ noti.description }}</p>
+                        <p>{{ noti.description | linebreaksbr }}</p>
                         <p style="opacity:0.5">{{ noti.datetime }}</p>
                     </div>
                 {% endif %}

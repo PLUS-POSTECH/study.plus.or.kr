@@ -1,5 +1,6 @@
 from decimal import Decimal
 from random import SystemRandom
+from functools import reduce
 
 from django import forms
 from django.db import IntegrityError
@@ -10,7 +11,10 @@ from django.utils import timezone
 from django.views import View
 
 from website.views import PlusMemberCheck
+from problem.models import ProblemAuthLog
 from .models import Shop, ShopItem, ShopPurchaseLog
+from problem.helpers.problem_info import get_problem_list_info
+
 
 class ShopInvenView(PlusMemberCheck, View):
     def get(self, request):
@@ -24,17 +28,23 @@ class ShopInvenView(PlusMemberCheck, View):
 class ShopProdView(PlusMemberCheck, View):
     def get(self, request, pk=None):
         if pk is None:
-            shop = Shop.objects.all()
+            shops = Shop.objects.all()
         else:
-            shop = Shop.objects.get(pk=int(pk))
+            shops = Shop.objects.get(pk=int(pk))
         
-        item_list = list(map(lambda x: x.shop_items, shop))
+        infos = []
+        for shop in shops:
+            #item_list = list(map(lambda x: x.shop_items.filter(hidden=False), shop))
+            _ , user_money = get_problem_list_info(shop.problem_list, request.user)
+            user_money -= reduce(lambda x,y: x+y, map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user)))
 
-        available_points = 999
+            infos.append({
+                'shop': shop,
+                'user_money': user_money
+            })
 
         return render(request, 'shop/prod.html', {
-            'item_list': item_list,
-            'available_points': available_points
+            'shop_infos': infos
         })
 
 
@@ -66,7 +76,12 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_point = item_to_buy.price
         required_luck = Decimal(100) - item_to_buy.chance
 
-        enough_point = 50
+        _ , user_money = get_problem_list_info(shop.problem_list, request.user)
+        user_money -= reduce(lambda x,y: x+y, map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user)))
+
+        enough_point = \
+            (True if user_money >= required_point \
+            else False)
         enough_luck = \
             (True if SystemRandom().uniform(0, 100) > required_luck \
             else False)
@@ -76,8 +91,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         try:
             ShopPurchaseLog.objects.create( \
                 user=request.user, shop=shop_to_visit, \
-                item=item_to_buy, succeed=succeed_purchase, \
-                purchase_time=timezone.now())
+                item=item_to_buy, succeed=succeed_purchase)
 
             response['result'] = succeed_purchase
             if not enough_point:

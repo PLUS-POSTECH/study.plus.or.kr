@@ -35,8 +35,8 @@ class Shop(models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
     last_modified = models.DateTimeField(auto_now=True)
-    shop_items = models.ManyToManyField(ShopItem)
     problem_list = models.OneToOneField(ProblemList, on_delete=models.PROTECT)
+    shop_items = models.ManyToManyField(ShopItem)
 
     class Meta:
         verbose_name = '상점'
@@ -52,7 +52,7 @@ class ShopPurchaseLog(models.Model):
     item = models.ForeignKey(ShopItem, on_delete=models.PROTECT)
     succeed = models.BooleanField()
     retrieved = models.BooleanField()
-    purchase_time = models.DateTimeField(auto_now=True)
+    purchase_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = '상점 구매 로그'

@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from shop import views
 
+app_name = 'shop'
+
 urlpatterns = [
     url(r'^prod/(?P<pk>\d+)/buy$', views.ShopPurchaseView.as_view(), name='buy'),
     url(r'^prod/(?P<pk>\d+)$', views.ShopProdView.as_view(), name='prod'),

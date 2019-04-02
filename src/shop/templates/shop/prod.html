@@ -38,10 +38,10 @@
                             <form class="ui form" action="{% url 'shop:buy' pk=info.shop.pk %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="item" value="{{ item.pk }}">
-                                <div class="ui right floated primary submit button">
+                                <button class="ui right floated primary button" type="submit">
                                     Buy
                                     <i class="right chevron icon"></i>
-                                </div>
+                                </button>
                             </form>
                             
                         </div>

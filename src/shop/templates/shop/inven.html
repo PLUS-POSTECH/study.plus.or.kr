@@ -14,18 +14,18 @@
                         <i class="large times middle aligned icon"></i>
                     {% endif %}
                         <div class="middle aligned content">
-                            <div class="header">{{ log.item.title }}</div>
+                            <a class="header">{{ log.item.title }}</a>
                             <div class="meta">
-                                <a class="ui large green label">
+                                <a class="ui small green label">
                                     <i class="dollar sign icon"></i>
                                     {{ log.item.price }}
                                 </a>
-                                <a class="ui large red label">
+                                <a class="ui small red label">
                                     {{ log.item.chance }}
                                     <i class="percent icon"></i>
                                 </a>
-                                <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
-                                <button class="ui right floated orange button">Check</button>
+                                <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
+                                <button class="ui small right floated orange button">Check</button>
                             </div>
                         </div>
                         

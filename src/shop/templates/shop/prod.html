@@ -60,6 +60,7 @@
             let _buy_form = $(".ui.form")
 
             _ui_modal.modal({
+                centered: true,
                 allowMultiple: false,
                 onHide: function () {
                     location.reload();
@@ -88,10 +89,11 @@
                         } else {
                             _ui_modal.html(`
                                 <div class="ui icon header">
-                                    <i class="smile outline icon"></i>
+                                    <i class="frown outline icon"></i>
                                     Too Bad...
                                 </div>
                                 <div class="content">
+
                                     <p>${data['reason']}</p>
                                 </div>
                             `)

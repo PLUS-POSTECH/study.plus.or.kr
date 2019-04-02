@@ -54,10 +54,10 @@
     <script>
 
         $(document).ready(function () {
-            let _ui_modal = $(".ui.modal")
+            let _result_modal = $("result_modal")
             let _buy_form = $(".ui.form")
 
-            _ui_modal.modal({
+            _result_modal.modal({
                 allowMultiple: false,
                 onHide: function () {
                     location.reload();
@@ -74,7 +74,7 @@
                     dataType: 'json',
                     success: function(data) {
                         if (data['result'] === true) {
-                            _ui_modal.html(`
+                            _result_modal.html(`
                                 <div class="ui icon header">
                                     <i class="pink smile outline icon"></i>
                                     <h1>Congratulations!</h1>
@@ -82,7 +82,7 @@
                                 </div>
                             `)
                         } else {
-                            _ui_modal.html(`
+                            _result_modal.html(`
                                 <div class="ui icon header">
                                     <i class="purple frown outline icon"></i>
                                     <h1>Too Bad...</h1>
@@ -91,7 +91,7 @@
                             `)
                         }
 
-                        _ui_modal.modal('show')
+                        _result_modal.modal('show')
                     },
                     error: function() {
                         alert('Something is wrong with server');

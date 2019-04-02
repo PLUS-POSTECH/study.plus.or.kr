@@ -6,16 +6,28 @@
 {% block shop_content %}
     {% for log in purchase_logs %}
         {% if log.succeed %}
+            {% if log.retrieved %}
             <div class="ui icon floating mini message">
-                {% if log.retrieved %}
-                    <button class="ui basic icon button">
+                    <button class="ui basic icon button disabled">
                         <i class="grey envelope open outline icon"></i>
                     </button>
-                {% else %}
-                    <button class="ui basic icon button">
+            {% else %}
+            <div class="ui icon floating mini message teal">
+                            <form class="ui form" action="{% url 'shop:buy' pk=info.shop.pk %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="item" value="{{ item.pk }}">
+                                <button class="ui right floated primary button" type="submit">
+                                    Buy
+                                    <i class="right chevron icon"></i>
+                                </button>
+                            </form>
+                <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                    {% csrf_token %}
+                    <button class="ui basic icon button" type="submit">
                         <i class="teal envelope outline icon"></i>
                     </button>
-                {% endif %}
+                </form>
+            {% endif %}
                     <div class="content">
                         <div class="header">{{ log.item.title }}</div>
                         <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
@@ -24,5 +36,68 @@
             </div>
         {% endif %}
     {% endfor %}
+
+    <div class="ui mini basic modal" id="retrieve_modal"></div>
     
+    <script>
+        $(document).ready(function () {
+            let _retrieve_form = $(".ui.form")
+            let _retrieve_modal = $("#retrieve_modal")
+
+            
+
+            _retrieve_form.submit(function (e) {
+                e.preventDefault();
+                let t = jQuery(this)
+
+                _retrieve_modal.modal({
+                    allowMultiple: false,
+                    onApprove: function () {
+                        $.ajax({
+                            url: t.attr('action'),
+                            type: t.attr('method'),
+                            data: t.serialize(),
+                            dataType: 'json',
+                            success: function(data) {
+                                if (data['result'] === true) {
+                                    location.reload();
+                                } else {
+                                    alert(data['reason']);
+                                }
+                            },
+                            error: function() {
+                                alert('Something is wrong with server');
+                            }
+                        });
+                        
+                    }
+                });
+
+                _retrieve_modal.html(`
+                    <div class="ui icon header">
+                        <i class="red hand paper outline icon"></i>
+                        <h1>WARNING</h1>
+                        <p>Only say yes if you actually got your prize</p>
+                        <p>This action cannot be undone</p>
+                    </div>
+                    <div class="actions">
+                        <div class="ui red basic cancel inverted button">
+                        <i class="remove icon"></i>
+                        No
+                        </div>
+                        <div class="ui green ok inverted button">
+                        <i class="checkmark icon"></i>
+                        Yes
+                        </div>
+                    </div>
+                `)
+
+
+                _retrieve_modal.modal('show')
+
+
+                
+            })
+        })
+    </script>
 {% endblock %}

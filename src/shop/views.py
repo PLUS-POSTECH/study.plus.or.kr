@@ -116,7 +116,25 @@ class ShopPurchaseView(PlusMemberCheck, View):
         
         return JsonResponse(response)
 
-
         
-
+class ShopRetrieveView(PlusMemberCheck, View):
+    def post(self, request, pk):
+        try:
+            log = ShopPurchaseLog.objects.filter(pk=int(pk))
+        except ObjectDoesNotExist:
+            raise Http404
         
+        if log.user != request.user or log.retrieved or not log.succeed:
+            return HttpResponseBadRequest()
+        
+        response = {}
+        try:
+            log.retrieved = True
+            log.save()
+            response['result'] = True
+        except IntegrityError:
+            response['result'] = False
+            response['reason'] = 'Something is wrong!'
+        
+        return JsonResponse(response)
+

@@ -11,7 +11,7 @@ class ShopItemAdmin(admin.ModelAdmin):
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ('problem_list')
+    list_display = ('problem_list', )
     readonly_fields = ('last_modified', )
 
 

@@ -82,7 +82,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_luck = Decimal(100) - item_to_buy.chance
 
         _ , user_money = get_problem_list_info(shop_point_source, request.user)
-        purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
+        purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_point_source)))
         if purchase_log:
             user_money -= reduce(lambda x,y: x+y, purchase_log)
 

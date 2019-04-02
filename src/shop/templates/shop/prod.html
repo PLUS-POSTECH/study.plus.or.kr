@@ -51,9 +51,20 @@
         </div>
     {% endfor %}
 
+    <div class="ui basic modal" id="result_modal"></div>
+
     <script>
+
         $(document).ready(function () {
+            let _ui_modal = $(".ui.modal")
             let _buy_form = $(".ui.form")
+
+            $_ui_modal.modal({
+                allowMultiple: false,
+                onHide: function () {
+                    location.reload();
+                }
+            });
 
             _buy_form.submit(function (e) {
                 e.preventDefault();
@@ -63,21 +74,38 @@
                     type: t.attr('method'),
                     data: t.serialize(),
                     dataType: 'json',
-                    beforeSend: function() {
-                        t.parent().next().next().html('')
-                    },
                     success: function(data) {
                         if (data['result'] === true) {
-                            t.parent().next().next().html('Success!');
+                            _ui_modal.html(`
+                                <div class="ui icon header">
+                                    <i class="smile outline icon"></i>
+                                    Congratulations
+                                </div>
+                                <div class="content">
+                                    <p>You won the prize!!</p>
+                                </div>
+                            `)
                         } else {
-                            t.parent().next().next().html('Error!')
+                            _ui_modal.html(`
+                                <div class="ui icon header">
+                                    <i class="smile outline icon"></i>
+                                    Too Bad...
+                                </div>
+                                <div class="content">
+                                    <p>${data['reason']}</p>
+                                </div>
+                            `)
                         }
+
+                        _ui_modal.modal('show')
                     },
                     error: function() {
-                        t.parent().next().next().html('Something is wrong with server');
+                        alert('Something is wrong with server');
                     }
                 });
             });
+            
+            
         })
     </script>
 {% endblock %}

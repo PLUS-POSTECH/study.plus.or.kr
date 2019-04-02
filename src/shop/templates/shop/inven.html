@@ -4,28 +4,28 @@
 {% block shop_inven_active %}active{% endblock %}
 
 {% block shop_content %}
-    <div class="ui divided list">
+    <div class="ui relaxed divided list">
         {% for log in purchase_logs %}
             {% if log.succeed %}
                 <div class="item">
                     {% if log.retrieved %}
-                        <i class="large red heart middle aligned icon"></i>
+                    
+                        <i class="huge red heart middle aligned icon"></i>
                     {% else %}
-                        <i class="large times middle aligned icon"></i>
+                        <i class="huge times middle aligned icon"></i>
                     {% endif %}
                         <div class="middle aligned content">
-                            <a class="header">{{ log.item.title }}</a>
+                            <h2 class="header">{{ log.item.title }}</h2>
                             <div class="meta">
-                                <a class="ui small green label">
+                                <a class="ui mini green label">
                                     <i class="dollar sign icon"></i>
                                     {{ log.item.price }}
                                 </a>
-                                <a class="ui small red label">
+                                <a class="ui mini red label">
                                     {{ log.item.chance }}
                                     <i class="percent icon"></i>
                                 </a>
                                 <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
-                                <button class="ui small right floated orange button">Check</button>
                             </div>
                         </div>
                         

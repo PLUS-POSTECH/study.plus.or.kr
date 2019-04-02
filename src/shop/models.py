@@ -11,7 +11,7 @@ from problem.models import ProblemList
 User = get_user_model()
 
 
-ShopImageStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'shop'))
+ShopImageStorage = FileSystemStorage(location=os.path.join(settings.STATIC_ROOT, 'shop'))
 
 
 class ShopItem(models.Model):

@@ -52,6 +52,7 @@
                     <div class="sub header">Score: {{ total_score }}</div>
                 </h2>
                 <a class="ui right floated button" href="{% url 'problem:rank' pk=problem_list.pk %}">View Rank</a>
+                <a class="ui right floated button red" href="{% url 'problem:rank' pk=problem_list.pk %}">Go to shop</a>
             </div>
             {% if announcement_message %}
                 <div class="ui attached segment">

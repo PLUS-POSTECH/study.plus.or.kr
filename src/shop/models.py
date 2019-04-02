@@ -32,8 +32,6 @@ class ShopItem(models.Model):
 
 
 class Shop(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
     last_modified = models.DateTimeField(auto_now=True)
     problem_list = models.OneToOneField(ProblemList, on_delete=models.PROTECT)
     shop_items = models.ManyToManyField(ShopItem)

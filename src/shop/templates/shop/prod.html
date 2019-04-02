@@ -13,23 +13,27 @@
             </h2>
         </div>
         <div class="ui bottom attached segment">
+            <div class="ui divided items">
             {% for item in info.shop_items %}
-                <div class="ui segment">
-                    <div class="ui grid">
-                        <div class="four wide column">
-                            <div class="ui fluid card">
-                                <div class="image">
-                                    <img src="{{ item.image.path }}">
-                                </div>
-                            </div>
+                <div class="item">
+                    <div class="image">
+                        <img src="{{ item.image.path }}">
+                    </div>
+                    <div class="middle aligned content">
+                        <a class="header">{{ item.title }}</a>
+                        <div class="meta">
+                            <span>Description</span>
                         </div>
-                        <div class="twelve wide column">
-                            <h4>{{ item.title }}</h4>
+                        <div class="description">
                             <p>{{ item.description }}</p>
+                        </div>
+                        <div class="extra">
+                            Additional Details
                         </div>
                     </div>
                 </div>
             {% endfor %}
+            </div>
         </div>
     {% endfor %}
 {% endblock %}

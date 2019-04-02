@@ -38,7 +38,7 @@ class ShopProdView(PlusMemberCheck, View):
             _, user_money = get_problem_list_info(shop.problem_list, request.user)
             purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
             if purchase_log:
-                user_money -= reduce(lambda x,y: x+y, purchase_log)
+                user_money -= reduce(lambda x, y: x+y, purchase_log)
 
             infos.append({
                 'shop': shop,
@@ -82,17 +82,17 @@ class ShopPurchaseView(PlusMemberCheck, View):
         _, user_money = get_problem_list_info(shop_point_source, request.user)
         purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit)))
         if purchase_log:
-            user_money -= reduce(lambda x,y: x+y, purchase_log)
+            user_money -= reduce(lambda x, y: x+y, purchase_log)
 
         enough_point = (True if user_money >= required_point else False)
         enough_luck = (True if SystemRandom().uniform(0, 100) > required_luck else False)
 
         if enough_point:
-            succeed_purchase = enough_point and enough_luck 
+            succeed_purchase = enough_point and enough_luck
 
             try:
-                ShopPurchaseLog.objects.create( \
-                    user=request.user, shop=shop_to_visit, \
+                ShopPurchaseLog.objects.create(
+                    user=request.user, shop=shop_to_visit,
                     item=item_to_buy, succeed=succeed_purchase, retrieved=False)
 
                 response['result'] = succeed_purchase
@@ -129,5 +129,5 @@ class ShopRetrieveView(PlusMemberCheck, View):
         except IntegrityError:
             response['result'] = False
             response['reason'] = 'Something is wrong!'
-        
+
         return JsonResponse(response)

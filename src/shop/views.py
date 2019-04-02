@@ -7,11 +7,9 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from django.views import View
 
 from website.views import PlusMemberCheck
-from problem.models import ProblemAuthLog
 from .models import Shop, ShopItem, ShopPurchaseLog
 from problem.helpers.problem_info import get_problem_list_info
 
@@ -33,11 +31,11 @@ class ShopProdView(PlusMemberCheck, View):
             shops = Shop.objects.filter(pk=int(pk))
             if not shops.exists():
                 raise Http404
-        
+
         infos = []
         for shop in shops:
             shop_items = shop.shop_items.filter(hidden=False)
-            _ , user_money = get_problem_list_info(shop.problem_list, request.user)
+            _, user_money = get_problem_list_info(shop.problem_list, request.user)
             purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
             if purchase_log:
                 user_money -= reduce(lambda x,y: x+y, purchase_log)
@@ -74,24 +72,20 @@ class ShopPurchaseView(PlusMemberCheck, View):
         shop_items = shop_to_visit.shop_items.all()
         shop_point_source = shop_to_visit.problem_list
 
-        if not item_to_buy in shop_items:
+        if item_to_buy not in shop_items:
             return HttpResponseBadRequest()
 
         response = {}
         required_point = item_to_buy.price
         required_luck = Decimal(100) - item_to_buy.chance
 
-        _ , user_money = get_problem_list_info(shop_point_source, request.user)
+        _, user_money = get_problem_list_info(shop_point_source, request.user)
         purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit)))
         if purchase_log:
             user_money -= reduce(lambda x,y: x+y, purchase_log)
 
-        enough_point = \
-            (True if user_money >= required_point \
-            else False)
-        enough_luck = \
-            (True if SystemRandom().uniform(0, 100) > required_luck \
-            else False)
+        enough_point = (True if user_money >= required_point else False)
+        enough_luck = (True if SystemRandom().uniform(0, 100) > required_luck else False)
 
         if enough_point:
             succeed_purchase = enough_point and enough_luck 
@@ -113,20 +107,20 @@ class ShopPurchaseView(PlusMemberCheck, View):
             response['result'] = False
             if not enough_point:
                 response['reason'] = 'Not enough points!'
-        
+
         return JsonResponse(response)
 
-        
+
 class ShopRetrieveView(PlusMemberCheck, View):
     def post(self, request, pk):
         try:
             log = ShopPurchaseLog.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
             raise Http404
-        
+
         if log.user != request.user or log.retrieved or not log.succeed:
             return HttpResponseBadRequest()
-        
+
         response = {}
         try:
             log.retrieved = True
@@ -137,4 +131,3 @@ class ShopRetrieveView(PlusMemberCheck, View):
             response['reason'] = 'Something is wrong!'
         
         return JsonResponse(response)
-

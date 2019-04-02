@@ -20,7 +20,7 @@
                         <img src="{{ item.image.path }}">
                     </div>
                     <div class="middle aligned content">
-                        <div class="header">{{ item.title }}</div>
+                        <a class="header">{{ item.title }}</a>
                         <div class="meta">
                             <a class="ui large green label">
                                 <i class="dollar sign icon"></i>
@@ -43,8 +43,6 @@
                             <p>{{ item.description }}</p>
                         </div>
                         <div class="extra">
-                            
-                            
                         </div>
                     </div>
                 </div>
@@ -55,7 +53,8 @@
 
     <script>
         $(document).ready(function () {
-            $_buy_form = $(".ui.form")
+            let _buy_form = $(".ui.form")
+            let _buy_field = $(".extra")
 
             _buy_form.submit(function (e) {
                 e.preventDefault();
@@ -65,24 +64,17 @@
                     data: _buy_form.serialize(),
                     dataType: 'json',
                     beforeSend: function() {
-                        _auth_field.removeClass('error');
+                        _buy_field.html('')
                     },
                     success: function(data) {
                         if (data['result'] === true) {
-                            _action_field.html('' +
-                                '<p>Accepted!</p>' +
-                                '<div class="ui positive button">OK</div>' +
-                                '');
+                            _buy_field.html('Success!');
                         } else {
-                            _auth_field.addClass('error');
-                            _auth_input.val('NO~!');
+                            _buy_field.html('Error!')
                         }
                     },
                     error: function() {
-                        _action_field.html('' +
-                            '<p>Something is wrong with server</p>' +
-                            '<div class="ui negative button">Close</div>' +
-                            '');
+                        _buy_field.html('Something is wrong with server');
                     }
                 });
             });

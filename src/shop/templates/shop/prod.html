@@ -60,7 +60,6 @@
             let _buy_form = $(".ui.form")
 
             _ui_modal.modal({
-                centered: true,
                 allowMultiple: false,
                 onHide: function () {
                     location.reload();
@@ -80,9 +79,7 @@
                             _ui_modal.html(`
                                 <div class="ui icon header">
                                     <i class="smile outline icon"></i>
-                                    Congratulations
-                                </div>
-                                <div class="content">
+                                    Congratulations!
                                     <p>You won the prize!!</p>
                                 </div>
                             `)
@@ -91,9 +88,6 @@
                                 <div class="ui icon header">
                                     <i class="frown outline icon"></i>
                                     Too Bad...
-                                </div>
-                                <div class="content">
-
                                     <p>${data['reason']}</p>
                                 </div>
                             `)

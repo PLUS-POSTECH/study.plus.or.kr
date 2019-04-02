@@ -14,7 +14,7 @@ from .models import Shop, ShopItem, ShopPurchaseLog
 
 class ShopInvenView(PlusMemberCheck, View):
     def get(self, request):
-        purchase_logs = ShopPurchaseLog.objects.filter(user=request.user).order_by('-datetime')
+        purchase_logs = ShopPurchaseLog.objects.filter(user=request.user).order_by('-purchase_time')
 
         return render(request, 'shop/inven.html', {
             'purchase_logs': purchase_logs

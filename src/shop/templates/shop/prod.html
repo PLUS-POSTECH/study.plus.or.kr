@@ -57,23 +57,24 @@
 
             _buy_form.submit(function (e) {
                 e.preventDefault();
+                let t = jQuery(this)
                 $.ajax({
-                    url: jQuery(this).attr('action'),
-                    type: jQuery(this).attr('method'),
-                    data: jQuery(this).serialize(),
+                    url: t.attr('action'),
+                    type: t.attr('method'),
+                    data: t.serialize(),
                     dataType: 'json',
                     beforeSend: function() {
-                        jQuery(this).parent().next().next().html('')
+                        t.parent().next().next().html('')
                     },
                     success: function(data) {
                         if (data['result'] === true) {
-                            jQuery(this).parent().next().next().html('Success!');
+                            t.parent().next().next().html('Success!');
                         } else {
-                            jQuery(this).parent().next().next().html('Error!')
+                            t.parent().next().next().html('Error!')
                         }
                     },
                     error: function() {
-                        jQuery(this).parent().next().next().html('Something is wrong with server');
+                        t.parent().next().next().html('Something is wrong with server');
                     }
                 });
             });

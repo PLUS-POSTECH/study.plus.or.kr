@@ -99,7 +99,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
             try:
                 ShopPurchaseLog.objects.create( \
                     user=request.user, shop=shop_to_visit, \
-                    item=item_to_buy, succeed=succeed_purchase)
+                    item=item_to_buy, succeed=succeed_purchase, retrieved=False)
 
                 response['result'] = succeed_purchase
                 if not enough_luck:

@@ -20,13 +20,13 @@
                         <img src="{{ item.image.path }}">
                     </div>
                     <div class="middle aligned content">
-                        <div class="header">{{ item.title }}</div>
+                        <a class="header">{{ item.title }}</a>
                         <div class="meta">
-                            <a class="ui label">
+                            <a class="ui large green label">
                                 <i class="dollar sign icon"></i>
                                 {{ item.price }}
                             </a>
-                            <a class="ui label">
+                            <a class="ui large red label">
                                 <i class="percent icon"></i>
                                 {{ item.chance }}
                             </a>
@@ -35,10 +35,15 @@
                             <p>{{ item.description }}</p>
                         </div>
                         <div class="extra">
-                            <div class="ui right floated primary button">
-                                Buy
-                                <i class="right chevron icon"></i>
-                            </div>
+                            <form class="ui form" action="{% url 'shop:buy' pk=info.shop.pk %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="item" value="{{ item.pk }}">
+                                <div class="ui right floated primary submit button">
+                                    Buy
+                                    <i class="right chevron icon"></i>
+                                </div>
+                            </form>
+                            
                         </div>
                     </div>
                 </div>

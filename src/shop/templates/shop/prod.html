@@ -20,15 +20,25 @@
                         <img src="{{ item.image.path }}">
                     </div>
                     <div class="middle aligned content">
-                        <a class="header">{{ item.title }}</a>
+                        <div class="header">{{ item.title }}</div>
                         <div class="meta">
-                            <span>Description</span>
+                            <a class="ui label">
+                                <i class="dollar sign icon"></i>
+                                {{ item.price }}
+                            </a>
+                            <a class="ui label">
+                                <i class="percent icon"></i>
+                                {{ item.chance }}
+                            </a>
                         </div>
                         <div class="description">
                             <p>{{ item.description }}</p>
                         </div>
                         <div class="extra">
-                            Additional Details
+                            <div class="ui right floated primary button">
+                                Buy
+                                <i class="right chevron icon"></i>
+                            </div>
                         </div>
                     </div>
                 </div>

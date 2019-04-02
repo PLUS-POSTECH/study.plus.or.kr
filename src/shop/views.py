@@ -89,22 +89,32 @@ class ShopPurchaseView(PlusMemberCheck, View):
             (True if SystemRandom().uniform(0, 100) > required_luck \
             else False)
 
-        succeed_purchase = enough_point and enough_luck
+        
 
-        try:
-            ShopPurchaseLog.objects.create( \
-                user=request.user, shop=shop_to_visit, \
-                item=item_to_buy, succeed=succeed_purchase)
+        if enough_point:
+            succeed_purchase = enough_point and enough_luck 
 
-            response['result'] = succeed_purchase
+            try:
+                ShopPurchaseLog.objects.create( \
+                    user=request.user, shop=shop_to_visit, \
+                    item=item_to_buy, succeed=succeed_purchase)
+
+                response['result'] = succeed_purchase
+                if not enough_luck:
+                    response['reason'] = 'Not enough luck!'
+
+            except IntegrityError:
+                response['result'] = False
+                response['reason'] = 'Something is wrong!'
+
+        else:
+            response['result'] = False
             if not enough_point:
                 response['reason'] = 'Not enough point!'
-            elif not enough_luck:
-                response['reason'] = 'Not enough luck!'
+        
+        return JsonResponse(response)
 
-        except IntegrityError:
-            response['result'] = False
-            response['reason'] = 'Something is wrong!'
 
-        finally:
-            return JsonResponse(response)
+        
+
+        

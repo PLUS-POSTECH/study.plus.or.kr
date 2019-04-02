@@ -8,7 +8,7 @@
         <div class="ui horizontal divider"></div>
         <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
-                {{ problem_list.session.title }}: {{ problem_list.title }}
+                {{ info.shop.problem_list.session.title }}: {{ info.shop.problem_list.title }}
                 <div class="sub header">Money: {{ info.user_money }}</div>
             </h2>
         </div>
@@ -16,7 +16,7 @@
             {% for item in info.shop_items %}
                 <div class="ui segment">
                     <h4>{{ item.title }}</h4>
-                    <img src="{{ item.image.path }}"
+                    <img src="{{ item.image.path }}">
                 </div>
             {% endfor %}
         </div>

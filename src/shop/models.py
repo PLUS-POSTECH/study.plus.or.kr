@@ -41,7 +41,7 @@ class Shop(models.Model):
         verbose_name_plural = '상점들'
 
     def __str__(self):
-        return '%s' % self.title
+        return '%s' % self.problem_list.title
 
 
 class ShopPurchaseLog(models.Model):

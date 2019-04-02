@@ -30,7 +30,9 @@ class ShopProdView(PlusMemberCheck, View):
         if pk is None:
             shops = Shop.objects.all()
         else:
-            shops = Shop.objects.get(pk=int(pk))
+            shops = Shop.objects.filter(pk=int(pk))
+            if not shops.exists():
+                raise Http404
         
         infos = []
         for shop in shops:

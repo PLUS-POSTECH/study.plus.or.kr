@@ -36,7 +36,7 @@ class ShopProdView(PlusMemberCheck, View):
         for shop in shops:
             shop_items = shop.shop_items.filter(hidden=False)
             _ , user_money = get_problem_list_info(shop.problem_list, request.user)
-            user_money -= reduce(lambda x,y: x+y, map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user)))
+            user_money -= reduce(lambda x,y: x+y, map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
 
             infos.append({
                 'shop': shop,

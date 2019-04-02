@@ -54,27 +54,26 @@
     <script>
         $(document).ready(function () {
             let _buy_form = $(".ui.form")
-            let _buy_field = $(".extra")
 
             _buy_form.submit(function (e) {
                 e.preventDefault();
                 $.ajax({
-                    url: _buy_form.attr('action'),
-                    type: _buy_form.attr('method'),
-                    data: _buy_form.serialize(),
+                    url: jQuery(this).attr('action'),
+                    type: jQuery(this).attr('method'),
+                    data: jQuery(this).serialize(),
                     dataType: 'json',
                     beforeSend: function() {
-                        _buy_field.html('')
+                        jQuery(this).parent().next().next().html('')
                     },
                     success: function(data) {
                         if (data['result'] === true) {
-                            _buy_field.html('Success!');
+                            jQuery(this).parent().next().next().html('Success!');
                         } else {
-                            _buy_field.html('Error!')
+                            jQuery(this).parent().next().next().html('Error!')
                         }
                     },
                     error: function() {
-                        _buy_field.html('Something is wrong with server');
+                        jQuery(this).parent().next().next().html('Something is wrong with server');
                     }
                 });
             });

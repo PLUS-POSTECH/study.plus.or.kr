@@ -20,7 +20,16 @@
                         <img src="{{ item.image.path }}">
                     </div>
                     <div class="middle aligned content">
-                        <a class="header">{{ item.title }}</a>
+                        <div class="header">{{ item.title }}
+                            <form class="ui form" action="{% url 'shop:buy' pk=info.shop.pk %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="item" value="{{ item.pk }}">
+                                <button class="ui right floated primary button" type="submit">
+                                    Buy
+                                    <i class="right chevron icon"></i>
+                                </button>
+                            </form>
+                        </div>
                         <div class="meta">
                             <a class="ui large green label">
                                 <i class="dollar sign icon"></i>
@@ -35,14 +44,7 @@
                             <p>{{ item.description }}</p>
                         </div>
                         <div class="extra">
-                            <form class="ui form" action="{% url 'shop:buy' pk=info.shop.pk %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="item" value="{{ item.pk }}">
-                                <button class="ui right floated primary button" type="submit">
-                                    Buy
-                                    <i class="right chevron icon"></i>
-                                </button>
-                            </form>
+                            
                             
                         </div>
                     </div>
@@ -51,4 +53,40 @@
             </div>
         </div>
     {% endfor %}
+
+    <script>
+        $(document).ready(function () {
+            $_buy_form = $(".ui.form")
+
+            _buy_form.submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: _buy_form.attr('action'),
+                    type: _buy_form.attr('method'),
+                    data: _buy_form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function() {
+                        _auth_field.removeClass('error');
+                    },
+                    success: function(data) {
+                        if (data['result'] === true) {
+                            _action_field.html('' +
+                                '<p>Accepted!</p>' +
+                                '<div class="ui positive button">OK</div>' +
+                                '');
+                        } else {
+                            _auth_field.addClass('error');
+                            _auth_input.val('NO~!');
+                        }
+                    },
+                    error: function() {
+                        _action_field.html('' +
+                            '<p>Something is wrong with server</p>' +
+                            '<div class="ui negative button">Close</div>' +
+                            '');
+                    }
+                });
+            });
+        }
+    </script>
 {% endblock %}

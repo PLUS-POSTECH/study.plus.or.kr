@@ -82,7 +82,9 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_luck = Decimal(100) - item_to_buy.chance
 
         _ , user_money = get_problem_list_info(shop.problem_list, request.user)
-        user_money -= reduce(lambda x,y: x+y, map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user)))
+        purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
+        if purchase_log:
+            user_money -= reduce(lambda x,y: x+y, purchase_log)
 
         enough_point = \
             (True if user_money >= required_point \
@@ -90,8 +92,6 @@ class ShopPurchaseView(PlusMemberCheck, View):
         enough_luck = \
             (True if SystemRandom().uniform(0, 100) > required_luck \
             else False)
-
-        
 
         if enough_point:
             succeed_purchase = enough_point and enough_luck 

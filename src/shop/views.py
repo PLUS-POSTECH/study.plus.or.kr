@@ -71,7 +71,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         except ObjectDoesNotExist:
             raise Http404
 
-        shop_items = shop_to_visit.shop_items
+        shop_items = shop_to_visit.shop_items.all()
         shop_point_source = shop_to_visit.problem_list
 
         if not item_to_buy in shop_items:
@@ -81,7 +81,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_point = item_to_buy.price
         required_luck = Decimal(100) - item_to_buy.chance
 
-        _ , user_money = get_problem_list_info(shop.problem_list, request.user)
+        _ , user_money = get_problem_list_info(shop_point_source, request.user)
         purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
         if purchase_log:
             user_money -= reduce(lambda x,y: x+y, purchase_log)

@@ -53,7 +53,7 @@ class ShopProdView(PlusMemberCheck, View):
         })
 
 
-class ShopBuyForm(PlusMemberCheck, View):
+class ShopBuyForm(forms.Form):
     item = forms.IntegerField()
 
 

@@ -78,16 +78,16 @@
                         if (data['result'] === true) {
                             _ui_modal.html(`
                                 <div class="ui icon header">
-                                    <i class="smile outline icon"></i>
-                                    Congratulations!
+                                    <i class="pink smile outline icon"></i>
+                                    <h1>Congratulations!</h1>
                                     <p>You won the prize!!</p>
                                 </div>
                             `)
                         } else {
                             _ui_modal.html(`
                                 <div class="ui icon header">
-                                    <i class="frown outline icon"></i>
-                                    Too Bad...
+                                    <i class="purple frown outline icon"></i>
+                                    <h1>Too Bad...</h1>
                                     <p>${data['reason']}</p>
                                 </div>
                             `)

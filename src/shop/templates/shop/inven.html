@@ -6,27 +6,19 @@
 {% block shop_content %}
     {% for log in purchase_logs %}
         {% if log.succeed %}
-            <div class="ui icon message">
+            <div class="ui icon floating mini message">
                 {% if log.retrieved %}
                     <button class="ui basic icon button">
-                        <i class="huge grey envelope open outline middle aligned icon"></i>
+                        <i class="grey envelope open outline icon"></i>
                     </button>
                 {% else %}
                     <button class="ui basic icon button">
-                        <i class="huge teal envelope outline middle aligned icon"></i>
+                        <i class="teal envelope outline icon"></i>
                     </button>
                 {% endif %}
-                    <div class="middle aligned content">
-                        <h2 class="header">{{ log.item.title }}</h2>
-                        <a class="ui mini green label">
-                            <i class="dollar sign icon"></i>
-                            {{ log.item.price }}
-                        </a>
-                        <a class="ui mini red label">
-                            {{ log.item.chance }}
-                            <i class="percent icon"></i>
-                        </a>
-                        <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
+                    <div class="content">
+                        <div class="header">{{ log.item.title }}</div>
+                        <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
                         <p>{{ log.purchase_time }}</p>
                     </div>
             </div>

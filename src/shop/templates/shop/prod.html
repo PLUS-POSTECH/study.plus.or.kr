@@ -4,16 +4,16 @@
 {% block shop_product_active %}active{% endblock %}
 
 {% block shop_content %}
-    {% for shop_info in shop_infos %}
+    {% for info in shop_infos %}
         <div class="ui horizontal divider"></div>
         <div class="ui top attached clearing segment">
             <h2 class="ui left floated header">
-                {{ shop_info.shop.title }}: {{ shop_info.shop.problem_list }}
-                <div class="sub header">Your Money: {{ shop_info.user_money }}</div>
+                {{ info.shop.title }}: {{ info.shop.problem_list }}
+                <div class="sub header">Your Money: {{ info.user_money }}</div>
             </h2>
         </div>
         <div class="ui bottom attached segment">
-            {% for item in shop_info.shop.shop_items %}
+            {% for item in info.shop_items %}
                 <div class="ui segment">
                     {{ item }}
                     {{ item.image }}

@@ -4,35 +4,33 @@
 {% block shop_inven_active %}active{% endblock %}
 
 {% block shop_content %}
-    <div class="ui relaxed divided list">
-        {% for log in purchase_logs %}
-            {% if log.succeed %}
-                <div class="item">
-                    {% if log.retrieved %}
-                        <button class="ui icon button">
-                            <i class="huge grey envelope open outline middle aligned icon"></i>
-                        </button>
-                    {% else %}
+    {% for log in purchase_logs %}
+        {% if log.succeed %}
+            <div class="ui icon message">
+                {% if log.retrieved %}
+                    <button class="ui basic icon button">
+                        <i class="huge grey envelope open outline middle aligned icon"></i>
+                    </button>
+                {% else %}
+                    <button class="ui basic icon button">
                         <i class="huge teal envelope outline middle aligned icon"></i>
-                    {% endif %}
-                        <div class="middle aligned content">
-                            <h2 class="header">{{ log.item.title }}</h2>
-                            <div class="meta">
-                                <a class="ui mini green label">
-                                    <i class="dollar sign icon"></i>
-                                    {{ log.item.price }}
-                                </a>
-                                <a class="ui mini red label">
-                                    {{ log.item.chance }}
-                                    <i class="percent icon"></i>
-                                </a>
-                                <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
-                            </div>
-                            <div class="extra">{{ log.purchase_time }}</div>
-                        </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+                    </button>
+                {% endif %}
+                    <div class="middle aligned content">
+                        <h2 class="header">{{ log.item.title }}</h2>
+                        <a class="ui mini green label">
+                            <i class="dollar sign icon"></i>
+                            {{ log.item.price }}
+                        </a>
+                        <a class="ui mini red label">
+                            {{ log.item.chance }}
+                            <i class="percent icon"></i>
+                        </a>
+                        <small>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</small>
+                        <p>{{ log.purchase_time }}</p>
+                    </div>
+            </div>
+        {% endif %}
+    {% endfor %}
     
 {% endblock %}

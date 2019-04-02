@@ -12,14 +12,27 @@ from django.views import View
 from website.views import PlusMemberCheck
 from .models import Shop, ShopItem, ShopPurchaseLog
 
-class ShopListView(PlusMemberCheck, View):
-    def get(self, request, pk):
-        shop = Shop.objects.get(pk=int(pk))
-        item_list = shop.item_list
+class ShopInvenView(PlusMemberCheck, View):
+    def get(self, request):
+        purchase_logs = ShopPurchaseLog.objects.filter(user=request.user).order_by('-datetime')
 
-        available_points = 0
+        return render(request, 'shop/inven.html', {
+            'purchase_logs': purchase_logs
+        })
 
-        return render(request, 'shop/list.html', {
+
+class ShopProdView(PlusMemberCheck, View):
+    def get(self, request, pk=None):
+        if pk is None:
+            shop = Shop.objects.all()
+        else:
+            shop = Shop.objects.get(pk=int(pk))
+        
+        item_list = shop.shop_items
+
+        available_points = 999
+
+        return render(request, 'shop/prod.html', {
             'item_list': item_list,
             'available_points': available_points
         })

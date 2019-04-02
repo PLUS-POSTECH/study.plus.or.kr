@@ -1,0 +1,10 @@
+{% extends 'shop_menu.html' %}
+
+{% block title %}Inventory{% endblock %}
+{% block shop_inven_active %}active{% endblock %}
+
+{% block problem_content %}
+    {% for log in purchase_logs %}
+        {{ log }}
+    {% endfor %}
+{% endblock %}

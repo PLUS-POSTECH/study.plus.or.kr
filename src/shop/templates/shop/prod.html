@@ -56,10 +56,12 @@
         $(document).ready(function () {
             let _result_modal = $("#result_modal")
             let _buy_form = $(".ui.form")
+            let _button = $(".button")
 
             _result_modal.modal({
                 allowMultiple: false,
                 onHide: function () {
+                    _button.addClass("disabled")
                     location.reload();
                 }
             });
@@ -99,7 +101,7 @@
                 });
             });
             
-            
+            _button.removeClass("disabled")
         })
     </script>
 {% endblock %}

@@ -21,6 +21,7 @@ class ShopItem(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     price = models.IntegerField()
     chance = models.DecimalField(max_digits=4, decimal_places=2)
+    stock = models.IntegerField()
     hidden = models.BooleanField()
 
     class Meta:

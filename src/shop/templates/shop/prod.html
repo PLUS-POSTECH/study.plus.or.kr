@@ -61,13 +61,13 @@
             _result_modal.modal({
                 allowMultiple: false,
                 onHide: function () {
-                    _button.addClass("disabled")
                     location.reload();
                 }
             });
 
             _buy_form.submit(function (e) {
                 e.preventDefault();
+                _button.addClass("disabled")
                 let t = jQuery(this)
                 $.ajax({
                     url: t.attr('action'),

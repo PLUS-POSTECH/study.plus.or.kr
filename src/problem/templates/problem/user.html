@@ -1,0 +1,29 @@
+{% extends 'problem_menu.html' %}
+
+{% block title %}Big Brother{% endblock %}
+
+{% block problem_content %}
+    <table class="ui celled table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                {% for problem_list in problem_lists %}
+                    <th>{{ problem_list.title }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for data in user_data %}
+                <tr>
+                    <td>{{ data.user.username }}</td>
+                    {% for score in data.scores %}
+                    <td>{{ score }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    
+    
+    </table>
+{% endblock %}

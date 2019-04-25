@@ -227,7 +227,7 @@ class ProblemUserView(PlusMemberCheck, View):
         problem_instances = ProblemInstance.objects.all()
         for problem_instance in problem_instances:
             correct_auth_key = problem_instance.problem.auth_key
-            solve_logs = logs.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
+            solve_logs = ProblemAuthLog.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
             solved_log_queries.append(solve_logs)
         
         solve_logs = \

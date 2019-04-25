@@ -4,33 +4,70 @@
 {% block shop_inven_active %}active{% endblock %}
 
 {% block shop_content %}
-    {% for log in purchase_logs %}
-        {% if log.succeed %}
-            {% if log.retrieved %}
-            <div class="ui icon floating mini message">
-                <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
-                    {% csrf_token %}
-                    <button class="ui basic icon massive button disabled" type="submit">
-                        <i class="grey envelope open outline icon"></i>
-                    </button>
-                </form>
-            {% else %}
-            <div class="ui icon floating mini message teal">
-                <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
-                    {% csrf_token %}
-                    <button class="ui basic icon massive button" type="submit">
-                        <i class="teal envelope outline icon"></i>
-                    </button>
-                </form>
-            {% endif %}
-                    <div class="content">
-                        <div class="header">{{ log.item.title }}</div>
-                        <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
-                        <p>{{ log.purchase_time }}</p>
+    <div class="ui two column very relaxed grid" style="position:relative; margin:0; padding:0;">
+        <div class="column">
+            <h2 class="ui dividing header">Purchased</h2>
+            {% for log in purchase_logs %}
+                {% if log.succeed %}
+                    {% if log.retrieved %}
+                    <div class="ui icon floating mini message">
+                        <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="ui basic icon massive button disabled" type="submit">
+                                <i class="grey envelope open outline icon"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                    <div class="ui icon floating mini message teal">
+                        <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="ui basic icon massive button disabled" type="submit">
+                                <i class="teal envelope outline icon"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                            <div class="content">
+                                <div class="header">{{ log.item.title }}</div>
+                                <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
+                                <p>{{ log.purchase_time }}</p>
+                            </div>
                     </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="ui vertical divider" style="position:relative; width:1; "></div>
+        <div class="column">
+            <h2 class="ui dividing header">Sold</h2>
+            {% for log in sell_logs %}
+                {% if log.succeed %}
+                    {% if log.retrieved %}
+                    <div class="ui icon floating mini message">
+                        <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="ui basic icon massive button disabled" type="submit">
+                                <i class="grey envelope open outline icon"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                    <div class="ui icon floating mini message teal">
+                        <form class="ui form" action="{% url 'shop:retrieve' pk=log.pk %}" method="post">
+                            {% csrf_token %}
+                            <button class="ui basic icon massive button" type="submit">
+                                <i class="teal envelope outline icon"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                            <div class="content">
+                                <div class="header">{{ log.item.title }}</div>
+                                <p>{{ log.shop.problem_list.session.title }}: {{ log.shop.problem_list.title }}</p>
+                                <p>{{ log.purchase_time }}</p>
+                            </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
 
     <div class="ui mini basic modal" id="retrieve_modal"></div>
     
@@ -72,8 +109,7 @@
                     <div class="ui icon header">
                         <i class="red hand paper outline icon"></i>
                         <h1>WARNING</h1>
-                        <p>Only say yes if you actually got your prize</p>
-                        <p>This action cannot be undone</p>
+                        <p>Have you awarded the prize?</p>
                     </div>
                     <div class="actions">
                         <div class="ui red basic cancel inverted button">

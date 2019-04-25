@@ -23,6 +23,7 @@ class ShopItem(models.Model):
     chance = models.DecimalField(max_digits=4, decimal_places=2)
     stock = models.IntegerField()
     hidden = models.BooleanField()
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = '상점 아이템'

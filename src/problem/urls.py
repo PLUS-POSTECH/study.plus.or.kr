@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^rank/$', views.ProblemRankView.as_view(), name='rank'),
     url(r'^question/(?P<pk>\d+)$', views.ProblemQuestionAskView.as_view(), name='question'),
     url(r'^question/$', views.ProblemQuestionView.as_view(), name='question'),
+    url(r'^user/$', views.Problem, name='user'),
     url(r'^$', views.ProblemListView.as_view(), name='list')
 ]

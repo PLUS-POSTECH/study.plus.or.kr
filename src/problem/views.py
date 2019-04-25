@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import render
 from django.utils.http import urlquote
 from django.views import View
+from django.contrib.auth import get_user_model
 
 from website.views import PlusMemberCheck
 from website.models import Session, Category
@@ -16,6 +17,7 @@ from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuth
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_info, get_user_problem_info
 
+User = get_user_model()
 
 class ProblemListForm(forms.Form):
     q = forms.CharField(required=False)
@@ -215,3 +217,36 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
                 return HttpResponseServerError()
 
         return JsonResponse(question_response)
+
+class ProblemUserView(PlusMemberCheck, View):
+    def get(self, request):
+        problem_lists = ProblemList.objects.filter(session__isActive=True)
+
+        solved_log_queries = []
+        problem_instances = ProblemInstance.objects.all()
+        for problem_instance in problem_instances:
+            correct_auth_key = problem_instance.problem.auth_key
+            solve_logs = logs.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
+            solved_log_queries.append(solve_logs)
+        
+        solve_logs = \
+            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+            .order_by('datetime')
+        user_pks_with_logs = solve_logs.values_list('user', flat=True)
+        users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
+
+
+        user_data = []
+        for user in users_with_logs:
+            scores = []
+            for problem_list in problem_lists:
+                _, score = get_problem_list_info(problem_list)
+                scores.append(score)
+            user_data.append({"user": user, "scores": scores})
+
+        
+        return render(request, 'problem/user.html', {
+            "user_data": user_data,
+            "problem_lists": problem_lists
+        })
+

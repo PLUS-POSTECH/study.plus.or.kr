@@ -241,7 +241,7 @@ class ProblemUserView(PlusMemberCheck, View):
         for user in users_with_logs:
             scores = []
             for problem_list in problem_lists:
-                _, score = get_problem_list_info(problem_list)
+                _, score = get_problem_list_info(problem_list, user)
                 scores.append(score)
             user_data.append({"user": user, "scores": scores})
 

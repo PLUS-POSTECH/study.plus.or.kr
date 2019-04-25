@@ -20,6 +20,7 @@ from .helpers.problem_info import get_problem_list_info, get_user_problem_info
 
 User = get_user_model()
 
+
 class ProblemListForm(forms.Form):
     q = forms.CharField(required=False)
     search_by = forms.ChoiceField(required=False, choices=[
@@ -219,6 +220,7 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
 
         return JsonResponse(question_response)
 
+
 class ProblemUserView(PlusMemberCheck, View):
     def get(self, request):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
@@ -229,13 +231,12 @@ class ProblemUserView(PlusMemberCheck, View):
             correct_auth_key = problem_instance.problem.auth_key
             solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
             solved_log_queries.append(solve_logs)
-        
+
         solve_logs = \
             reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
             .order_by('datetime')
         user_pks_with_logs = solve_logs.values_list('user', flat=True)
         users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
-
 
         user_data = []
         for user in users_with_logs:
@@ -245,9 +246,7 @@ class ProblemUserView(PlusMemberCheck, View):
                 scores.append(score)
             user_data.append({"user": user, "scores": scores})
 
-        
         return render(request, 'problem/user.html', {
             "user_data": user_data,
             "problem_lists": problem_lists
         })
-

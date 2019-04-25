@@ -14,14 +14,14 @@
         </thead>
 
         <tbody>
-            <tr>
-                {% for data in user_data %}
+            {% for data in user_data %}
+                <tr>
                     <td>{{ data.user.username }}</td>
                     {% for score in data.scores %}
                     <td>{{ score }}</td>
                     {% endfor %}
-                {% endfor %}
-            </tr>
+                </tr>
+            {% endfor %}
         </tbody>
     
     

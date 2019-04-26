@@ -228,6 +228,7 @@ class ProblemUserView(PlusMemberCheck, View):
             total = get_problem_list_total_score(problem_list)
             problem_lists_with_total.append({"problem_list": problem_list, "total": total})
         
+        solved_log_queries = []
         for problem_instance in ProblemInstance.objects.all():
             correct_auth_key = problem_instance.problem.auth_key
             solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key)

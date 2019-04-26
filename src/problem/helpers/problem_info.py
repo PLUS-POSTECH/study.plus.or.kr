@@ -61,6 +61,17 @@ def get_problem_instance_score(problem_instance, fixed=False):  # no first blood
     return calculate_problem_score(problem_instance, solve_count, False)
 
 
+def get_problem_list_user_score(problem_list, user, fixed=False):
+    problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
+    user_score = 0
+    for problem_instance in problem_instances:
+        solved = problem_instance.problemauthlog_set.filter(user=user, auth_key=problem_instance.problem.auth_key).exists()
+        if solved:
+            user_score += get_problem_instance_score(problem_instance, fixed)
+
+    return user_score
+
+
 def get_problem_list_total_score(problem_list, fixed=False):  # no first blood points in account
     problem_instances = problem_list.probleminstance_set.all()
     total = 0

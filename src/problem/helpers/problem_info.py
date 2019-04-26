@@ -37,15 +37,12 @@ def get_user_problem_info(user, problem_instance):
     return UserProblemInfo(user, problem_instance, solved, first_solver, solve_count, solve_user_list, points)
 
 
-def get_problem_list_user_info(problem_list, user, fixed=False):
+def get_problem_list_user_info(problem_list, user):
     problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
     problem_info = []
     user_score = 0
     for problem_instance in problem_instances:
-        if fixed:
-            info = problem_instance.points
-        else:
-            info = get_user_problem_info(user, problem_instance)
+        info = get_user_problem_info(user, problem_instance)
         if info.solved:
             user_score += info.effective_points
         problem_info.append(info)
@@ -63,6 +60,16 @@ def get_problem_instance_score(problem_instance, fixed=False):  # no first blood
     solve_count = solved_log.count()
     return calculate_problem_score(problem_instance, solve_count, False)
 
+
+def get_problem_list_user_score(problem_list, user, fixed=False):
+    problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
+    user_score = 0
+    for problem_instance in problem_instances:
+        solved = problem_instance.problemauthlog_set.filter(user=user, auth_key=problem_instance.problem.auth_key).exists()
+        if solved:
+            user_score += get_problem_instance_score(problem_instance, fixed)
+
+    return user_score
 
 def get_problem_list_total_score(problem_list, fixed=False):  # no first blood points in account
     problem_instances = problem_list.probleminstance_set.all()

@@ -12,7 +12,8 @@ User = get_user_model()
 
 def calculate_problem_score(problem_instance, effective_solve_count, is_first_solve):
     points = problem_instance.points
-    points += problem_instance.distributed_points // effective_solve_count
+    if effective_solve_count != 0:
+        points += problem_instance.distributed_points // effective_solve_count
     points += problem_instance.breakthrough_points if is_first_solve else 0
     return points
 

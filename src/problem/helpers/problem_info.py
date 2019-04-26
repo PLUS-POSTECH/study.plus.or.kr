@@ -37,7 +37,7 @@ def get_user_problem_info(user, problem_instance):
     return UserProblemInfo(user, problem_instance, solved, first_solver, solve_count, solve_user_list, points)
 
 
-def get_problem_list_info(problem_list, user):
+def get_problem_list_user_info(problem_list, user):
     problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
     problem_info = []
     user_score = 0
@@ -48,3 +48,20 @@ def get_problem_list_info(problem_list, user):
         problem_info.append(info)
 
     return problem_info, user_score
+
+
+def get_problem_instance_score(problem_instance):  # no first blood points in account
+    solved_log = problem_instance.problemauthlog_set \
+        .filter(auth_key=problem_instance.problem.auth_key) \
+        .order_by('datetime')
+    solve_count = solved_log.count()
+    return calculate_problem_score(problem_instance, solve_count, False)
+
+
+def get_problem_list_total_score(problem_list):  # no first blood points in account
+    problem_instances = problem_list.probleminstance_set.all()
+    total = 0
+    for problem_instance in problem_instances: 
+        total += get_problem_instance_score(problem_instance)
+    return total
+

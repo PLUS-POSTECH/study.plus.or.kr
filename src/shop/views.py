@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.views import View
 
 from website.views import PlusMemberCheck
-from problem.helpers.problem_info import get_problem_list_info
+from problem.helpers.problem_info import get_problem_list_user_info
 from .models import Shop, ShopItem, ShopPurchaseLog
 
 
@@ -37,7 +37,7 @@ class ShopProdView(PlusMemberCheck, View):
         infos = []
         for shop in shops:
             shop_items = shop.shop_items.filter(hidden=False)
-            _, user_money = get_problem_list_info(shop.problem_list, request.user)
+            _, user_money = get_problem_list_user_info(shop.problem_list, request.user)
             purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
             if purchase_log:
                 user_money -= reduce(lambda x, y: x+y, purchase_log)
@@ -81,7 +81,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_point = item_to_buy.price
         required_luck = Decimal(100) - item_to_buy.chance
 
-        _, user_money = get_problem_list_info(shop_point_source, request.user)
+        _, user_money = get_problem_list_user_info(shop_point_source, request.user)
         purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit)))
         if purchase_log:
             user_money -= reduce(lambda x, y: x+y, purchase_log)

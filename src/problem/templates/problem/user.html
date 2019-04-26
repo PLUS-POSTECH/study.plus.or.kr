@@ -17,8 +17,8 @@
             {% for data in user_data %}
                 <tr>
                     <td>{{ data.user.username }}</td>
-                    {% for score in data.scores %}
-                    <td>{{ score }}</td>
+                    {% for score_and_total in data.scores %}
+                    <td>{{ score_and_total.score }} / {{ score_and_total.total }}</td>
                     {% endfor %}
                 </tr>
             {% endfor %}

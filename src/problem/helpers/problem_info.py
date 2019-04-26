@@ -37,12 +37,15 @@ def get_user_problem_info(user, problem_instance):
     return UserProblemInfo(user, problem_instance, solved, first_solver, solve_count, solve_user_list, points)
 
 
-def get_problem_list_user_info(problem_list, user):
+def get_problem_list_user_info(problem_list, user, fixed=False):
     problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
     problem_info = []
     user_score = 0
     for problem_instance in problem_instances:
-        info = get_user_problem_info(user, problem_instance)
+        if fixed:
+            info = problem_instance.points
+        else:
+            info = get_user_problem_info(user, problem_instance)
         if info.solved:
             user_score += info.effective_points
         problem_info.append(info)

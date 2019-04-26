@@ -226,7 +226,7 @@ class ProblemUserView(PlusMemberCheck, View):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
         problem_lists_with_total = []
         for problem_list in problem_lists:
-            total = get_problem_list_total_score(problem_list)
+            total = get_problem_list_total_score(problem_list, fixed=True)
             problem_lists_with_total.append({"problem_list": problem_list, "total": total})
 
         solved_log_queries = []
@@ -246,7 +246,7 @@ class ProblemUserView(PlusMemberCheck, View):
             scores = []
             for problem_list_with_total in problem_lists_with_total:
                 problem_list = problem_list_with_total["problem_list"]
-                _, score = get_problem_list_user_info(problem_list, user)
+                _, score = get_problem_list_user_info(problem_list, user, fixed=True)
                 scores.append({"score": score, "total": problem_list_with_total["total"]})
 
             user_data.append({"user": user, "scores": scores})

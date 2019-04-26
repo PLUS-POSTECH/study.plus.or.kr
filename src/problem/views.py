@@ -1,7 +1,6 @@
 import os
 import mimetypes
 from datetime import timedelta
-from functools import reduce
 
 from django import forms
 from django.db import IntegrityError
@@ -16,7 +15,7 @@ from website.views import PlusMemberCheck
 from website.models import Session, Category
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
-from .helpers.problem_info import get_problem_list_info, get_user_problem_info
+from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info, get_problem_list_total_score
 
 User = get_user_model()
 
@@ -57,7 +56,7 @@ class ProblemListView(PlusMemberCheck, View):
 
         def construct_response():
             for problem_list in problem_lists:
-                problem_info, user_score = get_problem_list_info(problem_list, request.user)
+                problem_info, user_score = get_problem_list_user_info(problem_list, request.user)
                 announcement_message = problem_list.announcement
                 yield problem_list, problem_info, announcement_message, user_score
 
@@ -225,26 +224,16 @@ class ProblemUserView(PlusMemberCheck, View):
     def get(self, request):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
 
-        solved_log_queries = []
-        problem_instances = ProblemInstance.objects.all()
-        for problem_instance in problem_instances:
-            correct_auth_key = problem_instance.problem.auth_key
-            solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
-            solved_log_queries.append(solve_logs)
-
-        solve_logs = \
-            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-            .order_by('datetime')
-        user_pks_with_logs = solve_logs.values_list('user', flat=True)
-        users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
-
         user_data = []
-        for user in users_with_logs:
+        for user in User.objects.all():
             scores = []
             for problem_list in problem_lists:
-                _, score = get_problem_list_info(problem_list, user)
-                scores.append(score)
-            user_data.append({"user": user, "scores": scores})
+                _, score = get_problem_list_user_info(problem_list, user)
+                total = get_problem_list_total_score(problem_list)  # redundant calculation
+                scores.append({"score": score, "total": total})
+
+            if not all(v == 0 for v in scores):
+                user_data.append({"user": user, "scores": scores})
 
         return render(request, 'problem/user.html', {
             "user_data": user_data,

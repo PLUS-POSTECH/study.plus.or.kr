@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views import View
 from problem.models import ProblemAuthLog, ProblemInstance, ProblemList
-from problem.helpers.problem_info import get_problem_list_info
+from problem.helpers.problem_info import get_problem_list_user_info
 from .models import User, Notification
 
 
@@ -43,7 +43,7 @@ class HomeView(PlusMemberCheck, View):
         problem_lists = ProblemList.objects.all()
         user_total_score = 0
         for problem_list in problem_lists:
-            _, user_problemlist_score = get_problem_list_info(problem_list, request.user)
+            _, user_problemlist_score = get_problem_list_user_info(problem_list, request.user)
             user_total_score += user_problemlist_score
 
         return render(request, 'index.html', {

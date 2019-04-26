@@ -223,14 +223,18 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
 class ProblemUserView(PlusMemberCheck, View):
     def get(self, request):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
+        problem_lists_with_total = []
+        for problem_list in problem_lists:
+            total = get_problem_list_total_score(problem_list)
+            problem_lists_with_total.append({"problem_list": problem_list, "total": total})
 
         user_data = []
         for user in User.objects.all():
             scores = []
-            for problem_list in problem_lists:
+            for problem_list_with_total in problem_lists_with_total:
+                problem_list = problem_list_with_total["problem_list"]
                 _, score = get_problem_list_user_info(problem_list, user)
-                total = get_problem_list_total_score(problem_list)  # redundant calculation
-                scores.append({"score": score, "total": total})
+                scores.append({"score": score, "total": problem_list_with_total["total"]})
 
             if not all(v["score"] == 0 for v in scores):
                 user_data.append({"user": user, "scores": scores})

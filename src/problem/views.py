@@ -232,7 +232,7 @@ class ProblemUserView(PlusMemberCheck, View):
                 total = get_problem_list_total_score(problem_list)  # redundant calculation
                 scores.append({"score": score, "total": total})
 
-            if not all(v == 0 for v in scores):
+            if not all(v.score == 0 for v in scores):
                 user_data.append({"user": user, "scores": scores})
 
         return render(request, 'problem/user.html', {

@@ -1,6 +1,7 @@
 import os
 import mimetypes
 from datetime import timedelta
+from functools import reduce
 
 from django import forms
 from django.db import IntegrityError

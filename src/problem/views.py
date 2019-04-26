@@ -15,7 +15,7 @@ from website.views import PlusMemberCheck
 from website.models import Session, Category
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
-from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info
+from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info, get_problem_list_total_score
 
 User = get_user_model()
 

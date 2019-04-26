@@ -1,6 +1,7 @@
 import os
 import mimetypes
 from datetime import timedelta
+from functools import reduce
 
 from django import forms
 from django.db import IntegrityError
@@ -223,17 +224,32 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
 class ProblemUserView(PlusMemberCheck, View):
     def get(self, request):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
+        problem_lists_with_total = []
+        for problem_list in problem_lists:
+            total = get_problem_list_total_score(problem_list)
+            problem_lists_with_total.append({"problem_list": problem_list, "total": total})
+
+        solved_log_queries = []
+        for problem_instance in ProblemInstance.objects.all():
+            correct_auth_key = problem_instance.problem.auth_key
+            solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
+            solved_log_queries.append(solve_logs)
+
+        solve_logs = \
+            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
+            .order_by('datetime')
+        user_pks_with_logs = solve_logs.values_list('user', flat=True)
+        users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
 
         user_data = []
-        for user in User.objects.all():
+        for user in users_with_logs:
             scores = []
-            for problem_list in problem_lists:
+            for problem_list_with_total in problem_lists_with_total:
+                problem_list = problem_list_with_total["problem_list"]
                 _, score = get_problem_list_user_info(problem_list, user)
-                total = get_problem_list_total_score(problem_list)  # redundant calculation
-                scores.append({"score": score, "total": total})
+                scores.append({"score": score, "total": problem_list_with_total["total"]})
 
-            if not all(v == 0 for v in scores):
-                user_data.append({"user": user, "scores": scores})
+            user_data.append({"user": user, "scores": scores})
 
         return render(request, 'problem/user.html', {
             "user_data": user_data,

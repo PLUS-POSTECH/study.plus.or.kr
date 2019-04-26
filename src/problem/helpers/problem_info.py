@@ -50,7 +50,10 @@ def get_problem_list_user_info(problem_list, user):
     return problem_info, user_score
 
 
-def get_problem_instance_score(problem_instance):  # no first blood points in account
+def get_problem_instance_score(problem_instance, fixed=False):  # no first blood points in account
+    if fixed:
+        return problem_instance.points
+
     solved_log = problem_instance.problemauthlog_set \
         .filter(auth_key=problem_instance.problem.auth_key) \
         .order_by('datetime')
@@ -58,9 +61,9 @@ def get_problem_instance_score(problem_instance):  # no first blood points in ac
     return calculate_problem_score(problem_instance, solve_count, False)
 
 
-def get_problem_list_total_score(problem_list):  # no first blood points in account
+def get_problem_list_total_score(problem_list, fixed=False):  # no first blood points in account
     problem_instances = problem_list.probleminstance_set.all()
     total = 0
     for problem_instance in problem_instances:
-        total += get_problem_instance_score(problem_instance)
+        total += get_problem_instance_score(problem_instance, fixed)
     return total

@@ -71,6 +71,7 @@ def get_problem_list_user_score(problem_list, user, fixed=False):
 
     return user_score
 
+
 def get_problem_list_total_score(problem_list, fixed=False):  # no first blood points in account
     problem_instances = problem_list.probleminstance_set.all()
     total = 0

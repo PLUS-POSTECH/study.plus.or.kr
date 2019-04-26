@@ -225,7 +225,7 @@ class ProblemUserView(PlusMemberCheck, View):
         problem_lists = ProblemList.objects.filter(session__isActive=True)
 
         user_data = []
-        for user in users_with_logs:
+        for user in User.objects.all():
             scores = []
             for problem_list in problem_lists:
                 _, score = get_problem_list_user_info(problem_list, user)

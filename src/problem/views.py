@@ -229,7 +229,7 @@ class ProblemUserView(PlusMemberCheck, View):
             scores = []
             for problem_list in problem_lists:
                 _, score = get_problem_list_user_info(problem_list, user)
-                total = get_problem_list_total_score(problem_list) #redundant calculation
+                total = get_problem_list_total_score(problem_list)  # redundant calculation
                 scores.append({"score": score, "total": total})
 
             if not all(v == 0 for v in scores):

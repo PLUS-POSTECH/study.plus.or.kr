@@ -61,7 +61,6 @@ def get_problem_instance_score(problem_instance):  # no first blood points in ac
 def get_problem_list_total_score(problem_list):  # no first blood points in account
     problem_instances = problem_list.probleminstance_set.all()
     total = 0
-    for problem_instance in problem_instances: 
+    for problem_instance in problem_instances:
         total += get_problem_instance_score(problem_instance)
     return total
-

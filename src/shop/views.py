@@ -126,7 +126,7 @@ class ShopRetrieveView(PlusMemberCheck, View):
         except ObjectDoesNotExist:
             raise Http404
 
-        if log.user != request.user or log.retrieved or not log.succeed:
+        if log.item.author != request.user or log.retrieved or not log.succeed:
             return HttpResponseBadRequest()
 
         response = {}

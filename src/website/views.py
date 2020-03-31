@@ -66,7 +66,7 @@ class RegisterForm(forms.Form):
     username = forms.CharField(validators=[validate_unique_username])
     password = forms.CharField(min_length=8)
     email = forms.EmailField()
-    povis_id = forms.CharField(required=False)
+    povis_id = forms.CharField(max_length=20, required=False)
 
 
 class RegisterView(View):

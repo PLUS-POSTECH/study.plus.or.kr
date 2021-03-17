@@ -208,15 +208,14 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
             question_response['ok'] = False
             return JsonResponse(question_response)
 
-        else:
-            question_response['ok'] = True
+        question_response['ok'] = True
 
-            try:
-                ProblemQuestion.objects.create(
-                    user=request.user, problem_instance=problem_instance, question=question_text)
+        try:
+            ProblemQuestion.objects.create(
+                user=request.user, problem_instance=problem_instance, question=question_text)
 
-            except BaseException:
-                return HttpResponseServerError()
+        except BaseException:
+            return HttpResponseServerError()
 
         return JsonResponse(question_response)
 

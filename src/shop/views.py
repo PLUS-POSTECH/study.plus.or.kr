@@ -69,7 +69,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
             shop_to_visit = Shop.objects.get(pk=int(pk))
             item_to_buy = ShopItem.objects.get(pk=int(shop_item_id))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         shop_items = shop_to_visit.shop_items.all()
         shop_point_source = shop_to_visit.problem_list
@@ -124,7 +124,7 @@ class ShopRetrieveView(PlusMemberCheck, View):
         try:
             log = ShopPurchaseLog.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         if log.item.author != request.user or log.retrieved or not log.succeed:
             return HttpResponseBadRequest()

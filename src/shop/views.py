@@ -86,9 +86,9 @@ class ShopPurchaseView(PlusMemberCheck, View):
         if purchase_log:
             user_money -= reduce(lambda x, y: x+y, purchase_log)
 
-        enough_point = (True if user_money >= required_point else False)
-        enough_luck = (True if SystemRandom().uniform(0, 100) > required_luck else False)
-        enough_stock = (True if item_to_buy.stock > 0 else False)
+        enough_point = (user_money >= required_point)
+        enough_luck = (SystemRandom().uniform(0, 100) > required_luck)
+        enough_stock = (item_to_buy.stock > 0)
 
         if enough_point and enough_stock:
             succeed_purchase = enough_luck

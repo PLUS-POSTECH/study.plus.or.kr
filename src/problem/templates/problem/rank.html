@@ -20,12 +20,12 @@
         <h2 class="ui top attached header">{{ problem_list.session }}: {{ problem_list }}</h2>
         <div class="ui bottom attached segment">
             <canvas id="chart_{{ problem_list.pk }}"></canvas>
-            <table class="ui celled padded table">
+            <table class="ui celled table single line unstackable">
                 <thead>
                 <tr><th class="right aligned">#</th>
                     <th>User</th>
                     <th>Score</th>
-                    <th>Last Auth</th>
+                    <th class="large screen only">Last Auth</th>
                 </tr></thead>
                 <tbody>
                 {% for user, score, last_auth in top_ranking %}
@@ -33,7 +33,7 @@
                         <td><h4 class="ui right aligned header">{{ forloop.counter }}</h4></td>
                         <td class="single line">{{ user }}</td>
                         <td>{{ score }}</td>
-                        <td>{{ last_auth }}</td>
+                        <td class="large screen only">{{ last_auth }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

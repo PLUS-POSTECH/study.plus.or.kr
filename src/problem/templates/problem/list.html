@@ -5,41 +5,40 @@
 
 {% block problem_content %}
     <form class="ui form" method="get" action="/problem">
-        <div class="inline fields">
-            <div class="field">
-                Search by
-                <div class="ui inline dropdown">
-                    <input name="search_by" value="{{ search_by }}" type="hidden">
-                    <div class="text">{{ search_by }}</div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="header">Select search field</div>
-                        <div class="item" data-text="list_title">List Title</div>
-                        <div class="item" data-text="session">Session</div>
-                    </div>
+        <div class="ui field">
+            Search by
+            <div class="ui inline dropdown">
+                <input name="search_by" value="{{ search_by }}" type="hidden">
+                <div class="text">{{ search_by }}</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="header">Select search field</div>
+                    <div class="item" data-text="list_title">List Title</div>
+                    <div class="item" data-text="session">Session</div>
                 </div>
             </div>
-            <div class="field">
-                <div class="ui search">
-                    <div class="ui icon input">
-                        <input name="q" class="prompt" placeholder="Search..." value="{{ q }}" type="text">
-                        <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
+        </div>
+        <div class="ui field twelve column">
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input name="q" class="prompt" placeholder="Search..." value="{{ q }}" type="text">
+                    <i class="search icon"></i>
                 </div>
+                <div class="results"></div>
+            </div>
+        </div>
+        <div class="ui field fluid multiple search normal selection dropdown" id="sort_by_category">
+            <input type="hidden" name="country">
+            <i class="dropdown icon"></i>
+            <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
+            <div class="menu" tabindex="-1">
+                {% for category in categories %}
+                    <div class="item" data-value="{{ category }}">{{ category }}</div>
+                {% endfor %}
             </div>
         </div>
     </form>
-    <div class="ui fluid multiple search normal selection dropdown" id="sort_by_category">
-        <input type="hidden" name="country">
-        <i class="dropdown icon"></i>
-        <input class="search" autocomplete="off" tabindex="0"><span class="sizer"></span><div class="default text">Select Categories</div>
-        <div class="menu" tabindex="-1">
-        {% for category in categories %}
-            <div class="item" data-value="{{ category }}">{{ category }}</div>
-        {% endfor %}
-        </div>
-    </div>
+
     {% if not queried_problem_lists %}
         <h2 class="ui header">No active session or queried problem list exists.</h2>
     {% endif %}

@@ -65,7 +65,7 @@
                 </div>
             {% endif %}
             <div class="ui bottom attached segment">
-                <div class="ui stackable four column grid">
+                <div class="ui four column doubling ui grid">
                     {% for info in problem_infos %}
                         {% if not info.problem_instance.hidden or info.user.is_staff %}
                             <a data-ui-class="problem_instance" class="center aligned column" href="#" onclick="request_problem('{% url 'problem:get' pk=info.problem_instance.pk %}'); return false;">

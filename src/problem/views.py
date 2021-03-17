@@ -78,7 +78,7 @@ class ProblemGetView(PlusMemberCheck, View):
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         return render(request, 'problem/get.html', {
             'info': get_user_problem_info(request.user, problem_instance)
@@ -101,7 +101,7 @@ class ProblemAuthView(PlusMemberCheck, View):
         try:
             problem_instance = ProblemInstance.objects.get(pk=prob_id)
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         try:
             ProblemAuthLog.objects.create(
@@ -120,7 +120,7 @@ class ProblemDownloadView(PlusMemberCheck, View):
         try:
             file_obj = ProblemAttachment.objects.get(pk=int(pk)).file
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         file_name = os.path.basename(file_obj.path)
         file_size = file_obj.size
@@ -193,7 +193,7 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         if not problem_instance.problem_list.allow_question:
             return HttpResponseBadRequest()
@@ -208,15 +208,14 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
             question_response['ok'] = False
             return JsonResponse(question_response)
 
-        else:
-            question_response['ok'] = True
+        question_response['ok'] = True
 
-            try:
-                ProblemQuestion.objects.create(
-                    user=request.user, problem_instance=problem_instance, question=question_text)
+        try:
+            ProblemQuestion.objects.create(
+                user=request.user, problem_instance=problem_instance, question=question_text)
 
-            except BaseException:
-                return HttpResponseServerError()
+        except BaseException:
+            return HttpResponseServerError()
 
         return JsonResponse(question_response)
 

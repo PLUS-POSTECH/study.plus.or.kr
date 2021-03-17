@@ -69,7 +69,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
             shop_to_visit = Shop.objects.get(pk=int(pk))
             item_to_buy = ShopItem.objects.get(pk=int(shop_item_id))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         shop_items = shop_to_visit.shop_items.all()
         shop_point_source = shop_to_visit.problem_list
@@ -86,9 +86,9 @@ class ShopPurchaseView(PlusMemberCheck, View):
         if purchase_log:
             user_money -= reduce(lambda x, y: x+y, purchase_log)
 
-        enough_point = (True if user_money >= required_point else False)
-        enough_luck = (True if SystemRandom().uniform(0, 100) > required_luck else False)
-        enough_stock = (True if item_to_buy.stock > 0 else False)
+        enough_point = (user_money >= required_point)
+        enough_luck = (SystemRandom().uniform(0, 100) > required_luck)
+        enough_stock = (item_to_buy.stock > 0)
 
         if enough_point and enough_stock:
             succeed_purchase = enough_luck
@@ -124,7 +124,7 @@ class ShopRetrieveView(PlusMemberCheck, View):
         try:
             log = ShopPurchaseLog.objects.get(pk=int(pk))
         except ObjectDoesNotExist:
-            raise Http404
+            raise Http404 from ObjectDoesNotExist
 
         if log.item.author != request.user or log.retrieved or not log.succeed:
             return HttpResponseBadRequest()

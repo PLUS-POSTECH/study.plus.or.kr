@@ -5,7 +5,7 @@ from functools import reduce
 
 from django import forms
 from django.db import IntegrityError
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import Http404, HttpResponseBadRequest, HttpResponseServerError, FileResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.http import urlquote
@@ -77,6 +77,8 @@ class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
+            if problem_instance.hidden and (not request.user.is_superuser):
+                raise PermissionDenied("This problem is not available.")
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist
 

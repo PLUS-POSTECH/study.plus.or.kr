@@ -77,7 +77,7 @@ class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
-            if problem_instance.hidden and (not request.user.is_superuser):
+            if problem_instance.hidden and (not request.user.is_staff):
                 raise PermissionDenied("This problem is not available.")
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist

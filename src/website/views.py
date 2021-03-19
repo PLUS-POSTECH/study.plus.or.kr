@@ -15,6 +15,8 @@ class PlusMemberCheck(UserPassesTestMixin):
     # pylint: disable=no-member
     def test_func(self):
         return not self.request.user.is_anonymous and self.request.user.is_plus_member
+
+    permission_denied_message = "Please wait until the administrator approves your registration."
     login_url = '/login'
 
 

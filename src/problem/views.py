@@ -109,6 +109,7 @@ class ProblemAuthView(PlusMemberCheck, View):
         auth_key = form.cleaned_data['auth_key']
         try:
             problem_instance = ProblemInstance.objects.get(pk=prob_id)
+            permission_validator(request, problem_instance)
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist
 

@@ -45,6 +45,11 @@ class ProblemListView(PlusMemberCheck, View):
 
         all_sessions = Session.objects.order_by('title')
         all_problem_lists = ProblemList.objects.order_by('title')
+
+        if not request.user.is_staff:
+            all_sessions = all_sessions.filter(isActive=True)
+            all_problem_lists = all_problem_lists.filter(session__isActive=True)
+
         sessions = all_sessions.filter(isActive=True)
         categories = Category.objects.order_by('title')
         problem_lists = all_problem_lists

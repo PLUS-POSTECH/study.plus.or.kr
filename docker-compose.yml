@@ -2,8 +2,13 @@ version: '3'
 services:
   db:
     image: postgres:latest
+    volumes:
+      - studyplusorkr_db:/var/lib/postgresql/data
   web:
     build: .
     depends_on:
       - db
     command: ["/entry/wait-for-it.sh", "db:5432", "--", "/entry/entrypoint.sh"]
+
+volumes:
+  studyplusorkr_db:

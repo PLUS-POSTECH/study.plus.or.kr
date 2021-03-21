@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.8
 
 LABEL Name="study.plus.or.kr"
 LABEL Version="0.1"

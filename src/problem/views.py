@@ -21,6 +21,14 @@ from .helpers.problem_info import get_problem_list_user_info, get_user_problem_i
 User = get_user_model()
 
 
+def permission_validator(request, problem_instance: ProblemInstance):
+    if not request.user.is_staff:
+        if not problem_instance.problem_list.session.isActive:
+            raise PermissionDenied("This problem is not currently available.")
+        if problem_instance.hidden:
+            raise PermissionDenied("This problem is not available.")
+
+
 class ProblemListForm(forms.Form):
     q = forms.CharField(required=False)
     search_by = forms.ChoiceField(required=False, choices=[
@@ -77,13 +85,7 @@ class ProblemGetView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
-
-            if not request.user.is_staff:
-                if not problem_instance.problem_list.session.isActive:
-                    raise PermissionDenied("This problem is not currently available.")
-                if problem_instance.hidden:
-                    raise PermissionDenied("This problem is not available.")
-
+            permission_validator(request, problem_instance)
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist
 

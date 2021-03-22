@@ -18,6 +18,8 @@ from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuth
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info, get_problem_list_total_score, get_problem_list_user_score
 
+from integration.helpers import discord
+
 User = get_user_model()
 
 
@@ -123,9 +125,18 @@ class ProblemAuthView(PlusMemberCheck, View):
                 user=request.user, problem_instance=problem_instance, auth_key=auth_key)
             is_correct = problem_instance.problem.auth_key == auth_key
             return_obj['result'] = is_correct
+            if is_correct:
+                if ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=auth_key).count() == 1:
+                    discord.on_first_blood(_problem=problem_instance, _user=request.user)
+                else:
+                    discord.on_solved(_problem=problem_instance, _user=request.user)
+            else:
+                discord.on_auth_tried(_problem=problem_instance, _user=request.user, _trial=auth_key)
 
         except IntegrityError:
+            print("www")
             return_obj['result'] = False
+            discord.on_auth_tried(_problem=problem_instance, _user=request.user, _trial=auth_key)
 
         return JsonResponse(return_obj)
 

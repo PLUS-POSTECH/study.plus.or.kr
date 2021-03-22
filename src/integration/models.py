@@ -32,7 +32,7 @@ class Discord(models.Model):
     color_on_question = models.CharField("Color of Question Message", max_length=50)
 
     on_answer = models.BooleanField("Send at Answer")
-    color_on_answer = models.CharField("Color of Answer Message")
+    color_on_answer = models.CharField("Color of Answer Message", max_length=50)
     subscribe = models.ManyToManyField(ProblemList)
 
     class Meta:
@@ -87,7 +87,8 @@ class Discord(models.Model):
             _problem=_problem,
             _user=_user,
             _fields=[{
-                "Trial": _trial
+                "name": "Trial",
+                "value": _trial
             }]
         ))
 

@@ -4,7 +4,7 @@ services:
     volumes:
       - studyplusorkr_db:/var/lib/postgresql/data
     environment: 
-      POSTGRES_PASSWORD: (Replace with your password)
+      POSTGRES_PASSWORD: (Replace with your db password)
   web:
     environment:
       DJANGO_SECRET_KEY: (Replace with your secret key)

@@ -25,6 +25,7 @@ $ docker-compose up -d
 ```
 
 The server is running at `localhost:8000`. Use nginx or other proxy to your server.
+You need to set 'PASSWORD' in `src/plus_study/settings.py` as your postgres db password
 
 ## Production Installation (reverse proxy)
 ```
@@ -37,6 +38,7 @@ $ docker-compose up -d
 ```
 
 `docker-compose.override.production.reverse-proxy.yml` is an example configuration for reverse proxy.
+You need to set 'PASSWORD' in `src/plus_study/settings.py` as your postgres db password
 
 ## Update
 ```

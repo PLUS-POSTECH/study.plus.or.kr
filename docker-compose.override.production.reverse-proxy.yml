@@ -7,7 +7,7 @@ services:
     networks: 
       - back
     environment: 
-      POSTGRES_PASSWORD: (Replace with your password)
+      POSTGRES_PASSWORD: (Replace with your db password)
   web:
     networks:
       - reverse-proxy

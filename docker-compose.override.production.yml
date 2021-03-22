@@ -1,5 +1,10 @@
 version: '3'
 services:
+  db:
+    volumes:
+      - studyplusorkr_db:/var/lib/postgresql/data
+    environment: 
+      POSTGRES_PASSWORD: (Replace with your db password)
   web:
     environment:
       DJANGO_SECRET_KEY: (Replace with your secret key)
@@ -10,3 +15,13 @@ services:
       - ../upload:/upload
     ports:
       - "127.0.0.1:8000:8000"
+
+volumes:
+  studyplusorkr_db:
+
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24

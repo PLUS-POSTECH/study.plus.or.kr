@@ -50,7 +50,7 @@ class ProblemListView(PlusMemberCheck, View):
             all_sessions = all_sessions.filter(isActive=True)
             all_problem_lists = all_problem_lists.filter(session__isActive=True)
 
-        sessions = all_sessions.filter(isActive=True)
+        sessions = all_sessions
         categories = Category.objects.order_by('title')
         problem_lists = all_problem_lists
         q = ''
@@ -133,9 +133,15 @@ class ProblemAuthView(PlusMemberCheck, View):
 class ProblemDownloadView(PlusMemberCheck, View):
     def get(self, request, pk):
         try:
-            file_obj = ProblemAttachment.objects.get(pk=int(pk)).file
+            problem_attachment = ProblemAttachment.objects.get(pk=int(pk))
+            file_obj = problem_attachment.file
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist
+
+        if not request.user.is_staff:
+            probleminstance = problem_attachment.problem.probleminstance_set
+            if not probleminstance.filter(problem_list__session__isActive=True).filter(hidden=False).exists():
+                raise PermissionDenied
 
         file_name = os.path.basename(file_obj.path)
         file_size = file_obj.size

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from problem.models import ProblemList, Problem
+from problem.models import ProblemList, ProblemInstance
 
 import requests
 
@@ -42,7 +42,7 @@ class Discord(models.Model):
     def __str__(self):
         return self.title
 
-    def message(self, _title: str, _color: str, _problem: Problem, _user: User, _description: str = "", _fields=None):
+    def message(self, _title: str, _color: str, _problem: ProblemInstance, _user: User, _description: str = "", _fields=None):
         if _fields is None or type(_fields) != list:
             _fields = []
 
@@ -54,7 +54,7 @@ class Discord(models.Model):
                 "color": _color,
                 "fields": [{
                     "name": "Problem",
-                    "value": _problem.title
+                    "value": _problem.problem.title
                 }, {
                     "name": "User",
                     "value": _user.username
@@ -64,7 +64,7 @@ class Discord(models.Model):
             }]
         }
 
-    def send_on_first_blood(self, _problem: Problem, _user: User):
+    def send_on_first_blood(self, _problem: ProblemInstance, _user: User):
         requests.post(self.url_webhook, json=self.message(
             _title=":drop_of_blood: First Blood!",
             _color=self.color_first_blood,
@@ -72,7 +72,7 @@ class Discord(models.Model):
             _user=_user
         ))
 
-    def send_on_solved(self, _problem: Problem, _user: User):
+    def send_on_solved(self, _problem: ProblemInstance, _user: User):
         requests.post(self.url_webhook, json=self.message(
             _title=":triangular_flag_on_post: Solved!",
             _color=self.color_solved,
@@ -80,7 +80,7 @@ class Discord(models.Model):
             _user=_user
         ))
 
-    def send_on_auth_tried(self, _problem: Problem, _user: User, _trial: str):
+    def send_on_auth_tried(self, _problem: ProblemInstance, _user: User, _trial: str):
         requests.post(self.url_webhook, json=self.message(
             _title=":x: Wrong!",
             _color=self.color_auth_tried,
@@ -91,7 +91,7 @@ class Discord(models.Model):
             }]
         ))
 
-    def send_on_problem_registered(self, _problem: Problem, _user: User, _point: int):
+    def send_on_problem_registered(self, _problem: ProblemInstance, _user: User, _point: int):
         requests.post(self.url_webhook, json=self.message(
             _title=":pushpin: Problem Registered!",
             _color=self.color_on_problem_registered,
@@ -102,7 +102,7 @@ class Discord(models.Model):
             }]
         ))
 
-    def send_on_question(self, _problem: Problem, _user: User, _question: str):
+    def send_on_question(self, _problem: ProblemInstance, _user: User, _question: str):
         requests.post(self.url_webhook, json=self.message(
             _title=":question: Question!",
             _color=self.color_on_problem_registered,
@@ -113,7 +113,7 @@ class Discord(models.Model):
             }]
         ))
 
-    def send_on_answer(self, _problem: Problem, _user: User, _question: str, _answer: str):
+    def send_on_answer(self, _problem: ProblemInstance, _user: User, _question: str, _answer: str):
         requests.post(self.url_webhook, json=self.message(
             _title=":exclamation: Answered!",
             _color=self.color_on_problem_registered,

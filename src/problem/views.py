@@ -50,7 +50,7 @@ class ProblemListView(PlusMemberCheck, View):
             all_sessions = all_sessions.filter(isActive=True)
             all_problem_lists = all_problem_lists.filter(session__isActive=True)
 
-        sessions = all_sessions.filter(isActive=True)
+        sessions = all_sessions
         categories = Category.objects.order_by('title')
         problem_lists = all_problem_lists
         q = ''

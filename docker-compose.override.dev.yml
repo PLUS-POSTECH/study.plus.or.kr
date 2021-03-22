@@ -1,5 +1,12 @@
 version: '3'
 services:
+  db:
+    volumes:
+      - studyplusorkr_db_dev:/var/lib/postgresql/data
+    ports:
+      - "8001:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
   web:
     environment:
       DJANGO_SECRET_KEY: (Replace with your secret key)
@@ -9,3 +16,12 @@ services:
       - ./src:/code
     ports:
       - "8000:8000"
+
+volumes:
+  studyplusorkr_db_dev:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24

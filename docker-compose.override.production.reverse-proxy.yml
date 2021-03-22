@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    volumes:
+      - studyplusorkr_db:/var/lib/postgresql/data
+    networks: 
+      - back
+    environment: 
+      POSTGRES_PASSWORD: (Replace with your password)
+  web:
+    networks:
+      - reverse-proxy
+      - back
+    environment:
+      DJANGO_SECRET_KEY: (Replace with your secret key)
+      DJANGO_DEBUG: 'False'
+      DJANGO_ALLOWED_HOSTS: study.plus.or.kr
+      VIRTUAL_HOST: study.plus.or.kr
+      VIRTUAL_PORT: 8000
+      LETSENCRYPT_HOST: study.plus.or.kr
+    volumes:
+      - ../static/study.plus.or.kr-static:/static
+      - ../static/study.plus.or.kr-upload:/upload
+
+volumes:
+  studyplusorkr_db:
+
+networks: 
+  reverse-proxy:
+    external: 
+      name: reverse-proxy
+  back:
+    driver: bridge

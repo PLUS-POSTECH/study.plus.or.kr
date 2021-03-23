@@ -16,7 +16,6 @@ def on_solved(_problem: ProblemInstance, _user: User):
 
 
 def on_auth_tried(_problem: ProblemInstance, _user: User, _trial: str):
-    print("www")
     for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_auth_tried=True):
         print(bot.title)
         bot.send_on_auth_tried(_problem, _user, _trial)

@@ -5,4 +5,4 @@ class ProblemConfig(AppConfig):
     name = 'problem'
 
     def ready(self):
-        import problem.signals
+        import problem.signals  # pylint: disable=F401

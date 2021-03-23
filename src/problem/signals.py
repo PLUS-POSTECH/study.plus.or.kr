@@ -12,6 +12,7 @@ def on_register_problem_handler(sender, instance, **kwargs):
 
 @receiver(post_save, sender=ProblemQuestion)
 def on_question_handler(sender, instance: ProblemQuestion, **kwargs):
+    print("wow")
     if instance.answer == "":
         discord.on_question(instance)
     else:

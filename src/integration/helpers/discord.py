@@ -1,5 +1,5 @@
 from integration.models import Discord
-from problem.models import ProblemInstance
+from problem.models import ProblemInstance, ProblemQuestion
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -26,11 +26,11 @@ def on_problem_registered(_problem: ProblemInstance):
         bot.send_on_problem_registered(_problem, _problem.problem.author, _problem.points)
 
 
-def on_question(_problem: ProblemInstance, _user: User, _question: str):
-    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_question=True):
-        bot.send_on_question(_problem, _user, _question)
+def on_question(_question: ProblemQuestion):
+    for bot in Discord.objects.filter(is_active=True, subscribe=_question.problem_instance.problem_list, on_question=True):
+        bot.send_on_question(_question.problem_instance, _question.user, _question.question)
 
 
-def on_answer(_problem: ProblemInstance, _user: User, _question: str, _answer: str):
-    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_answer=True):
-        bot.send_on_answer(_problem, _user, _question, _answer)
+def on_answer(_question: ProblemQuestion):
+    for bot in Discord.objects.filter(is_active=True, subscribe=_question.problem_instance.problem_list, on_answer=True):
+        bot.send_on_answer(_question.problem_instance, _question.user, _question.question, _question.answer)

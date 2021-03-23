@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import ProblemInstance, ProblemQuestion, ProblemAuthLog
 from integration.helpers import discord
+from .models import ProblemInstance, ProblemQuestion, ProblemAuthLog
 
 
 @receiver(post_save, sender=ProblemInstance)

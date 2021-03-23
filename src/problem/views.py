@@ -18,8 +18,6 @@ from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuth
 from .helpers.score import AuthReplay
 from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info, get_problem_list_total_score, get_problem_list_user_score
 
-from integration.helpers import discord
-
 User = get_user_model()
 
 

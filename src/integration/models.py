@@ -99,7 +99,8 @@ class Discord(models.Model):
             _problem=_problem,
             _user=_user,
             _fields=[{
-                "Points": _point
+                "name": "Points",
+                "value": _point
             }]
         ))
 

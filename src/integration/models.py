@@ -110,7 +110,8 @@ class Discord(models.Model):
             _problem=_problem,
             _user=_user,
             _fields=[{
-                "Question": _question
+                "name": "Question",
+                "value": _question
             }]
         ))
 
@@ -121,7 +122,10 @@ class Discord(models.Model):
             _problem=_problem,
             _user=_user,
             _fields=[{
-                "Question": _question,
-                "Answer": _answer
+                "name": "Question",
+                "value": _question
+            }, {
+                "name": "Answer",
+                "value": _answer
             }]
         ))

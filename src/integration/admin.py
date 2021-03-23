@@ -9,6 +9,9 @@ class DiscordAdmin(admin.ModelAdmin):
         (None, {
             'fields': ['title', 'url_webhook', 'url_avatar', 'is_active']
         }),
+        ('Subscribe Problem List', {
+            'fields': ['subscribe']
+        }),
         ('On First Blood', {
             'fields': ['on_first_blood', 'color_first_blood']
         }),

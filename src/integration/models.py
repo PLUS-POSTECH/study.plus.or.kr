@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from problem.models import ProblemList, ProblemInstance
+from problem.models import ProblemList, ProblemInstance, ProblemAuthLog
 
 import requests
 
@@ -64,31 +64,31 @@ class Discord(models.Model):
             }]
         }
 
-    def send_on_first_blood(self, _problem: ProblemInstance, _user: User):
+    def send_on_first_blood(self, _problem: ProblemAuthLog):
         requests.post(self.url_webhook, json=self.message(
             _title=":drop_of_blood: First Blood!",
             _color=self.color_first_blood,
-            _problem=_problem,
-            _user=_user
+            _problem=_problem.problem_instance,
+            _user=_problem.user
         ))
 
-    def send_on_solved(self, _problem: ProblemInstance, _user: User):
+    def send_on_solved(self, _problem: ProblemAuthLog):
         requests.post(self.url_webhook, json=self.message(
             _title=":triangular_flag_on_post: Solved!",
             _color=self.color_solved,
-            _problem=_problem,
-            _user=_user
+            _problem=_problem.problem_instance,
+            _user=_problem.user
         ))
 
-    def send_on_auth_tried(self, _problem: ProblemInstance, _user: User, _trial: str):
+    def send_on_auth_tried(self, _problem: ProblemAuthLog):
         requests.post(self.url_webhook, json=self.message(
             _title=":x: Wrong!",
             _color=self.color_auth_tried,
-            _problem=_problem,
-            _user=_user,
+            _problem=_problem.problem_instance,
+            _user=_problem.user,
             _fields=[{
                 "name": "Trial",
-                "value": _trial
+                "value": _problem.auth_key
             }]
         ))
 

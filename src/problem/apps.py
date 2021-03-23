@@ -6,4 +6,4 @@ class ProblemConfig(AppConfig):
 
     def ready(self):
         # pylint: disable=F401
-        import problem.signals
+        import problem.signals  # noqa: F401

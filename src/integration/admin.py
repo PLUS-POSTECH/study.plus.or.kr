@@ -18,6 +18,9 @@ class DiscordAdmin(admin.ModelAdmin):
         ('On Solved', {
             'fields': ['on_solved', 'color_solved']
         }),
+        ('On Trial', {
+            'fields': ['on_auth_tried', 'color_auth_tried']
+        }),
         ('On Problem Registered', {
             'fields': ['on_problem_registered', 'color_on_problem_registered']
         }),

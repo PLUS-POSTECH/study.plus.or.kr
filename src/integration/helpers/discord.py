@@ -1,24 +1,24 @@
 from integration.models import Discord
-from problem.models import ProblemInstance, ProblemQuestion
+from problem.models import ProblemInstance, ProblemQuestion, ProblemAuthLog
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 
-def on_first_blood(_problem: ProblemInstance, _user: User):
-    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_first_blood=True):
-        bot.send_on_first_blood(_problem, _user)
+def on_first_blood(_problem: ProblemAuthLog):
+    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_instance.problem_list, on_first_blood=True):
+        bot.send_on_first_blood(_problem)
 
 
-def on_solved(_problem: ProblemInstance, _user: User):
-    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_solved=True):
-        bot.send_on_solved(_problem, _user)
+def on_solved(_problem: ProblemAuthLog):
+    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_instance.problem_list, on_solved=True):
+        bot.send_on_solved(_problem)
 
 
-def on_auth_tried(_problem: ProblemInstance, _user: User, _trial: str):
-    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_auth_tried=True):
+def on_auth_tried(_problem: ProblemAuthLog):
+    for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_instance.problem_list, on_auth_tried=True):
         print(bot.title)
-        bot.send_on_auth_tried(_problem, _user, _trial)
+        bot.send_on_auth_tried(_problem)
 
 
 def on_problem_registered(_problem: ProblemInstance):

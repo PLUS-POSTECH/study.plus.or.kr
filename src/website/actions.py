@@ -19,4 +19,4 @@ class ExportCsvMixin:
 
         return response
 
-    export_as_csv.short_description = f"선택된 항목 을/를 CSV 로 내보냅니다."
+    export_as_csv.short_description = "선택된 항목 을/를 CSV 로 내보냅니다."

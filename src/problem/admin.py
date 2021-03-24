@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from website.actions import ExportCsvMixin
 from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 
 
@@ -25,8 +26,9 @@ class ProblemListAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProblemAuthLog)
-class ProblemAuthLogAdmin(admin.ModelAdmin):
+class ProblemAuthLogAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ('user', 'problem_instance', 'auth_key', 'datetime')
+    actions = ['export_as_csv']
 
 
 @admin.register(ProblemQuestion)

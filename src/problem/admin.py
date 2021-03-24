@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 from website.actions import ExportCsvMixin
 
+
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
     list_display = ('title', 'categories_title', 'author', 'description')

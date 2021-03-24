@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 from website.actions import ExportCsvMixin
+from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 
 
 @admin.register(Problem)

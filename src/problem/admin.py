@@ -5,9 +5,10 @@ from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, Pr
 
 
 @admin.register(Problem)
-class ProblemAdmin(admin.ModelAdmin):
+class ProblemAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = ('title', 'categories_title', 'author', 'description')
     readonly_fields = ('last_modified', )
+    actions = ['export_as_csv']
 
 
 @admin.register(ProblemAttachment)

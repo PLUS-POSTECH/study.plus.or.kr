@@ -1,4 +1,4 @@
-Django==3.1.7
+Django==3.1.9
 django-cleanup
 psycopg2-binary
 gunicorn

@@ -1,5 +1,5 @@
 Django==3.2.6
 django-cleanup
-psycopg2-binary
+psycopg2-binary==2.8.6
 gunicorn
 requests

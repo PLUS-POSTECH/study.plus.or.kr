@@ -20,4 +20,4 @@ jobs:
       - name: flake8 Lint
         uses: py-actions/flake8@v2
         with:
-          path: ${{ env.GITHUB_WORKSPACE }}
+          path: ${{ github.workspace }}

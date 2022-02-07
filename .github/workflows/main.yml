@@ -32,5 +32,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: docker-compose up -d
+        script: |
+          cd ${{ secrets.WORKDIR }}
+          docker-compose up -d
           

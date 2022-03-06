@@ -21,9 +21,9 @@ def on_auth_tried(_problem: ProblemAuthLog):
         bot.send_on_auth_tried(_problem)
 
 
-def on_problem_registered(_problem: ProblemInstance):
+def on_problem_updated(_problem: ProblemInstance):
     for bot in Discord.objects.filter(is_active=True, subscribe=_problem.problem_list, on_problem_registered=True):
-        bot.send_on_problem_registered(_problem, _problem.problem.author, _problem.points)
+        bot.send_on_problem_updated(_problem, _problem.problem.author, _problem.points)
 
 
 def on_question(_question: ProblemQuestion):

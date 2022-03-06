@@ -92,9 +92,9 @@ class Discord(models.Model):
             }]
         ))
 
-    def send_on_problem_registered(self, _problem: ProblemInstance, _user: User, _point: int):
+    def send_on_problem_updated(self, _problem: ProblemInstance, _user: User, _point: int):
         requests.post(self.url_webhook, json=self.message(
-            _title=":pushpin: Problem Registered!",
+            _title=":pushpin: Problem Updated!",
             _color=self.color_on_problem_registered,
             _problem=_problem,
             _user=_user,

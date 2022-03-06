@@ -101,6 +101,9 @@ class Discord(models.Model):
             _fields=[{
                 "name": "Points",
                 "value": _point
+            }, {
+                "name": "Hidden",
+                "value": ":o:" if _problem.hidden else ":x:"
             }]
         ))
 

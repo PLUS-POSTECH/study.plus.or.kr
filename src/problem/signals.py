@@ -7,8 +7,8 @@ from .models import ProblemInstance, ProblemQuestion, ProblemAuthLog
 
 # pylint: disable=W0613
 @receiver(post_save, sender=ProblemInstance)
-def on_register_problem_handler(sender, instance, **kwargs):
-    discord.on_problem_registered(instance)
+def on_update_problem_handler(sender, instance, **kwargs):
+    discord.on_problem_updated(instance)
 
 
 @receiver(post_save, sender=ProblemQuestion)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from website.actions import ExportCsvMixin
+from website.actions import ExportCsvMixin, ProblemInstanceVisibilityMixin
 from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, ProblemAuthLog, ProblemQuestion
 
 
@@ -17,8 +17,9 @@ class ProblemAttachmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProblemInstance)
-class ProblemInstanceAdmin(admin.ModelAdmin):
+class ProblemInstanceAdmin(admin.ModelAdmin, ProblemInstanceVisibilityMixin):
     list_display = ('pk', 'problem')
+    actions = ['hide_problem_instance', 'show_problem_instance']
 
 
 @admin.register(ProblemList)

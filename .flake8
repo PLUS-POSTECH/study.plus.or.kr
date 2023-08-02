@@ -1,7 +1,0 @@
-[flake8]
-max-line-length = 150
-exclude = src/manage.py,
-          */migrations/*_auto_*.py,
-          */migrations/0001_initial.py,
-          tests.py
-

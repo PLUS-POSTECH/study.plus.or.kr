@@ -82,13 +82,17 @@ WSGI_APPLICATION = 'plus_study.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'study.db'
+    },
+    'production': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
         'USER': 'postgres',
         'HOST': 'db',
         'PORT': 5432,
         # 'PASSWORD': (Replace with your db password)
-    }
+    },
 }
 
 
@@ -132,7 +136,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static'
 
 MEDIA_URL = ''
-MEDIA_ROOT = '/upload'
+MEDIA_ROOT = os.getenv('MEDIAROOT', './upload')
 
 AUTH_USER_MODEL = 'website.User'
 

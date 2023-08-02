@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "server"
+version = "0.1.0"
+description = ""
+authors = ["Minjae Gwon <beta.underalpha@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "server", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "3.2.12"
+requests = "^2.31.0"
+psycopg2-binary = "^2.9.6"
+django-cleanup = "^8.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

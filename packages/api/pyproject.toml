@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = ["Minjae Gwon <beta.underalpha@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "server", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.2.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

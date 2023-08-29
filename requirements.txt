@@ -1,5 +1,0 @@
-Django==3.2.12
-django-cleanup
-psycopg2-binary==2.8.6
-gunicorn
-requests

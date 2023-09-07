@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx nx affected -t run format:write --parallel=4
+npx nx affected -t lint --parallel=4

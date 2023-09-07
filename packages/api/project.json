@@ -1,0 +1,112 @@
+{
+    "name": "api",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "sourceRoot": "packages/api/src",
+    "targets": {
+        "lock": {
+            "executor": "@nrwl/workspace:run-commands",
+            "options": {
+                "command": "poetry lock --no-update",
+                "cwd": "packages/api"
+            }
+        },
+        "add": {
+            "executor": "@nxlv/python:add",
+            "options": {}
+        },
+        "update": {
+            "executor": "@nxlv/python:update",
+            "options": {}
+        },
+        "remove": {
+            "executor": "@nxlv/python:remove",
+            "options": {}
+        },
+        "build": {
+            "executor": "@nxlv/python:build",
+            "outputs": [
+                "packages/api/dist"
+            ],
+            "options": {
+                "outputPath": "packages/api/dist",
+                "publish": true
+            }
+        },
+        "install": {
+            "executor": "@nxlv/python:install",
+            "options": {
+                "silent": false,
+                "args": "",
+                "cacheDir": ".cache/pypoetry",
+                "verbose": false,
+                "debug": false
+            }
+        },
+        "format:check": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    {
+                        "command": "poetry run isort --check-only --diff ."
+                    },
+                    {
+                        "command": "poetry run black --check --diff ."
+                    }
+                ],
+                "cwd": "packages/api"
+            }
+        },
+        "format:write": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    {
+                        "command": "poetry run isort ."
+                    },
+                    {
+                        "command": "poetry run black ."
+                    }
+                ],
+                "cwd": "packages/api"
+            }
+        },
+        "lint": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    {
+                        "command": "poetry run pyright ."
+                    },
+                    {
+                        "command": "poetry run flake8 ."
+                    }
+                ],
+                "cwd": "packages/api"
+            }
+        },
+        "test": {
+            "executor": "@nrwl/workspace:run-commands",
+            "outputs": [
+                "reports/packages/api/unittests",
+                "coverage/packages/api"
+            ],
+            "options": {
+                "command": "poetry run pytest tests/",
+                "cwd": "packages/api"
+            }
+        },
+        "tox": {
+            "executor": "@nxlv/python:tox",
+            "outputs": [
+                "reports/packages/api/unittests",
+                "coverage/packages/api"
+            ],
+            "options": {
+                "silent": false,
+                "args": ""
+            }
+        }
+    },
+    "tags": []
+}

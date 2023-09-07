@@ -34,4 +34,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm nx affected -t run install
       - run: pnpm nx affected -t run format:check
-      - run: pnpm nx affected -t lint --parallel=3
+      - run: pnpm nx affected -t run lint --parallel=3

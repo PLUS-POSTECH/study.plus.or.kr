@@ -22,9 +22,9 @@ class UserProblemInfo(NamedTuple):
 
 
 def get_user_problem_info(user, problem_instance):
-    solved_log = problem_instance.problemauthlog_set \
-        .filter(auth_key=problem_instance.problem.auth_key) \
-        .order_by('datetime')
+    solved_log = problem_instance.problemauthlog_set.filter(
+        auth_key=problem_instance.problem.auth_key
+    ).order_by("datetime")
 
     first_solver = solved_log.first().user if solved_log.exists() else None
     solved = solved_log.filter(user=user).exists()
@@ -38,7 +38,7 @@ def get_user_problem_info(user, problem_instance):
 
 
 def get_problem_list_user_info(problem_list, user):
-    problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
+    problem_instances = problem_list.probleminstance_set.order_by("points", "problem__title")
     problem_info = []
     user_score = 0
     for problem_instance in problem_instances:
@@ -54,18 +54,20 @@ def get_problem_instance_score(problem_instance, fixed=False):  # no first blood
     if fixed:
         return problem_instance.points
 
-    solved_log = problem_instance.problemauthlog_set \
-        .filter(auth_key=problem_instance.problem.auth_key) \
-        .order_by('datetime')
+    solved_log = problem_instance.problemauthlog_set.filter(
+        auth_key=problem_instance.problem.auth_key
+    ).order_by("datetime")
     solve_count = solved_log.count()
     return calculate_problem_score(problem_instance, solve_count, False)
 
 
 def get_problem_list_user_score(problem_list, user, fixed=False):
-    problem_instances = problem_list.probleminstance_set.order_by('points', 'problem__title')
+    problem_instances = problem_list.probleminstance_set.order_by("points", "problem__title")
     user_score = 0
     for problem_instance in problem_instances:
-        solved = problem_instance.problemauthlog_set.filter(user=user, auth_key=problem_instance.problem.auth_key).exists()
+        solved = problem_instance.problemauthlog_set.filter(
+            user=user, auth_key=problem_instance.problem.auth_key
+        ).exists()
         if solved:
             user_score += get_problem_instance_score(problem_instance, fixed)
 

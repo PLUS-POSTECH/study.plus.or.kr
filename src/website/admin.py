@@ -4,19 +4,19 @@ from .models import User, Category, Session, Notification
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email')
+    list_display = ("username", "email")
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description')
+    list_display = ("title", "description")
 
 
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description')
+    list_display = ("title", "description")
 
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description')
+    list_display = ("title", "description")

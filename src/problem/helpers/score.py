@@ -38,11 +38,7 @@ class AuthReplay:
     def __init__(self, problem_list, crunch_timedelta):
         self.problem_list = problem_list
         self.problem_instances = problem_list.probleminstance_set
-        self.state = ReplayState(
-            datetime=None,
-            user_states={},
-            problem_states={}
-        )
+        self.state = ReplayState(datetime=None, user_states={}, problem_states={})
         self.crunch_timedelta = crunch_timedelta
 
     def process_preparation(self, logs, datetime):
@@ -62,44 +58,40 @@ class AuthReplay:
             first_solve_user = first_solve_log.user if first_solve_log is not None else None
 
             previous_state = problem_states.get(problem_instance, ProblemState(0, None))
-            new_state = \
-                ProblemState(
-                    solve_count=previous_state.solve_count + solve_count,
-                    first_solve=first_solve_user if previous_state.first_solve is None else previous_state.first_solve
-                )
+            new_state = ProblemState(
+                solve_count=previous_state.solve_count + solve_count,
+                first_solve=(
+                    first_solve_user if previous_state.first_solve is None else previous_state.first_solve
+                ),
+            )
 
             problem_states[problem_instance] = new_state
 
-        solve_logs = \
-            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-            .order_by('datetime')
-        user_pks_with_logs = solve_logs.values_list('user', flat=True)
+        solve_logs = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()).order_by(
+            "datetime"
+        )
+        user_pks_with_logs = solve_logs.values_list("user", flat=True)
         users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
 
         # Update user state per user who has a correct auth logs for problem list
         for user in users_with_logs:
             previous_state = user_states.get(user, UserState([], None))
             user_solve_logs = solve_logs.filter(user=user)
-            solved_problem_pks = user_solve_logs.values_list('problem_instance', flat=True)
+            solved_problem_pks = user_solve_logs.values_list("problem_instance", flat=True)
             solved_problems = ProblemInstance.objects.filter(pk__in=solved_problem_pks)
             last_auth = user_solve_logs.last().datetime
 
             user_states[user] = UserState(
-                solved_problems=previous_state.solved_problems + list(solved_problems),
-                last_auth=last_auth
+                solved_problems=previous_state.solved_problems + list(solved_problems), last_auth=last_auth
             )
 
-        self.state = ReplayState(
-            datetime=datetime,
-            user_states=user_states,
-            problem_states=problem_states
-        )
+        self.state = ReplayState(datetime=datetime, user_states=user_states, problem_states=problem_states)
 
     def prepare(self):
         datetime_pivot = timezone.now() - self.crunch_timedelta
-        logs = ProblemAuthLog.objects \
-            .filter(problem_instance__in=self.problem_instances.all(), datetime__lte=datetime_pivot) \
-            .order_by('datetime')
+        logs = ProblemAuthLog.objects.filter(
+            problem_instance__in=self.problem_instances.all(), datetime__lte=datetime_pivot
+        ).order_by("datetime")
 
         if self.state.datetime is not None:
             logs = logs.filter(datetime__gt=self.state.datetime)
@@ -120,8 +112,9 @@ class AuthReplay:
         if solve_count == 0:
             return
 
-        points_functions[problem_instance] = \
-            lambda user: calculate_problem_score(problem_instance, solve_count, user == first_solver)
+        points_functions[problem_instance] = lambda user: calculate_problem_score(
+            problem_instance, solve_count, user == first_solver
+        )
 
     def calc_user_points(self, user, problem_instance, points_functions, state_diffs):
         user_state = self.state.user_states.get(user, UserState([], None))
@@ -148,31 +141,32 @@ class AuthReplay:
 
         for user, state in self.state.user_states.items():
             # pylint: disable=cell-var-from-loop
-            user_points[user] = \
-                sum(map(
+            user_points[user] = sum(
+                map(
                     lambda x: self.calc_user_points(user, x, points_functions, user_state_diffs),
-                    state.solved_problems))
+                    state.solved_problems,
+                )
+            )
 
         datetime_pivot = self.state.datetime
 
-        logs = ProblemAuthLog.objects \
-            .filter(
-                problem_instance__in=self.problem_instances.all(),
-                datetime__gt=datetime_pivot)
+        logs = ProblemAuthLog.objects.filter(
+            problem_instance__in=self.problem_instances.all(), datetime__gt=datetime_pivot
+        )
         solved_log_queries = []
         for problem_instance in self.problem_instances.all():
             correct_auth_key = problem_instance.problem.auth_key
             solve_logs = logs.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
             solved_log_queries.append(solve_logs)
 
-        logs_to_replay = \
-            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-            .order_by('datetime')
+        logs_to_replay = reduce(
+            lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()
+        ).order_by("datetime")
 
         def append_chart(timestamp):
             for chart_user, points in user_points.items():
                 entry = chart_data.get(chart_user.username, [])
-                entry.append({'x': timestamp.isoformat(), 'y': points})
+                entry.append({"x": timestamp.isoformat(), "y": points})
                 chart_data[chart_user.username] = entry
 
         chart_data = {}
@@ -181,31 +175,32 @@ class AuthReplay:
         for log in logs_to_replay:
             for user in user_points:
                 user_points[user] -= self.calc_user_points(
-                    user, log.problem_instance, points_functions, user_state_diffs)
+                    user, log.problem_instance, points_functions, user_state_diffs
+                )
 
             prev_problem_state = problem_state_diffs.get(log.problem_instance, ProblemState(0, None))
-            problem_state_diffs[log.problem_instance] = \
-                ProblemState(
-                    solve_count=prev_problem_state.solve_count + 1,
-                    first_solve=prev_problem_state.first_solve
-                    if prev_problem_state.first_solve is not None else
-                    log.user
-                )
+            problem_state_diffs[log.problem_instance] = ProblemState(
+                solve_count=prev_problem_state.solve_count + 1,
+                first_solve=(
+                    prev_problem_state.first_solve if prev_problem_state.first_solve is not None else log.user
+                ),
+            )
             self.update_points_function(points_functions, log.problem_instance, problem_state_diffs)
 
             for user in user_points:
                 user_points[user] += self.calc_user_points(
-                    user, log.problem_instance, points_functions, user_state_diffs)
+                    user, log.problem_instance, points_functions, user_state_diffs
+                )
 
             prev_user_state = user_state_diffs.get(log.user, UserState([], None))
-            user_state_diffs[log.user] = \
-                UserState(
-                    solved_problems=prev_user_state.solved_problems + [log.problem_instance],
-                    last_auth=log.datetime
-                )
+            user_state_diffs[log.user] = UserState(
+                solved_problems=prev_user_state.solved_problems + [log.problem_instance],
+                last_auth=log.datetime,
+            )
             prev_point = user_points.get(log.user, 0)
             user_points[log.user] = prev_point + self.calc_user_points(
-                log.user, log.problem_instance, points_functions, user_state_diffs)
+                log.user, log.problem_instance, points_functions, user_state_diffs
+            )
 
             append_chart(log.datetime)
 
@@ -213,15 +208,17 @@ class AuthReplay:
 
         def get_user_last_auth(rank_user):
             user_state_diff = user_state_diffs.get(rank_user, None)
-            return self.state.user_states[rank_user].last_auth \
-                if user_state_diff is None else \
-                user_state_diff.last_auth
+            return (
+                self.state.user_states[rank_user].last_auth
+                if user_state_diff is None
+                else user_state_diff.last_auth
+            )
 
         rank_raw = list(map(lambda x: (x[0].username, x[1], get_user_last_auth(x[0])), user_points.items()))
         top10_rank = sorted(rank_raw, key=lambda x: (-x[1], x[2]))[:10]
         top10_users = list(map(lambda x: x[0], top10_rank))
-        top10_chart_data = \
-            map(lambda x: (x[0], json.dumps(x[1])),
-                filter(lambda x: x[0] in top10_users, chart_data.items()))
+        top10_chart_data = map(
+            lambda x: (x[0], json.dumps(x[1])), filter(lambda x: x[0] in top10_users, chart_data.items())
+        )
 
         return top10_chart_data, top10_rank

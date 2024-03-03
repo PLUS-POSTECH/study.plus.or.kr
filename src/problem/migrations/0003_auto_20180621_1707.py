@@ -10,69 +10,78 @@ import problem.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('problem', '0002_auto_20170719_1931'),
+        ("problem", "0002_auto_20170719_1931"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='problemattachment',
-            name='problem',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='problem.Problem'),
+            model_name="problemattachment",
+            name="problem",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.PROTECT, to="problem.Problem"
+            ),
         ),
         migrations.AddField(
-            model_name='problemlist',
-            name='allow_question',
+            model_name="problemlist",
+            name="allow_question",
             field=models.BooleanField(default=False),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='problem',
-            name='attachments',
-            field=models.ManyToManyField(blank=True, related_name='old_problems', to='problem.ProblemAttachment'),
+            model_name="problem",
+            name="attachments",
+            field=models.ManyToManyField(
+                blank=True, related_name="old_problems", to="problem.ProblemAttachment"
+            ),
         ),
         migrations.AlterField(
-            model_name='problem',
-            name='author',
+            model_name="problem",
+            name="author",
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
-            model_name='problem',
-            name='last_modified',
+            model_name="problem",
+            name="last_modified",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AlterField(
-            model_name='problem',
-            name='title',
+            model_name="problem",
+            name="title",
             field=models.CharField(max_length=50),
         ),
         migrations.AlterField(
-            model_name='problemattachment',
-            name='file',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(location='/upload/attachments/problem'), upload_to=problem.models.upload_target),
+            model_name="problemattachment",
+            name="file",
+            field=models.FileField(
+                storage=django.core.files.storage.FileSystemStorage(location="/upload/attachments/problem"),
+                upload_to=problem.models.upload_target,
+            ),
         ),
         migrations.AlterField(
-            model_name='problemauthlog',
-            name='problem_instance',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='problem.ProblemInstance'),
+            model_name="problemauthlog",
+            name="problem_instance",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="problem.ProblemInstance"
+            ),
         ),
         migrations.AlterField(
-            model_name='problemauthlog',
-            name='user',
+            model_name="problemauthlog",
+            name="user",
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
-            model_name='probleminstance',
-            name='problem',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='problem.Problem'),
+            model_name="probleminstance",
+            name="problem",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="problem.Problem"),
         ),
         migrations.AlterField(
-            model_name='probleminstance',
-            name='problem_list',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='problem.ProblemList'),
+            model_name="probleminstance",
+            name="problem_list",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="problem.ProblemList"),
         ),
         migrations.AlterField(
-            model_name='problemlist',
-            name='session',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='website.Session'),
+            model_name="problemlist",
+            name="session",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="website.Session"),
         ),
     ]

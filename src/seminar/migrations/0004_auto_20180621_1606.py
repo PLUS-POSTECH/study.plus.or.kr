@@ -7,18 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('seminar', '0003_populate_attachment_field'),
+        ("seminar", "0003_populate_attachment_field"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='seminar',
-            name='attachments',
+            model_name="seminar",
+            name="attachments",
         ),
         migrations.AlterField(
-            model_name='seminarattachment',
-            name='seminar',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.PROTECT, to='seminar.Seminar'),
+            model_name="seminarattachment",
+            name="seminar",
+            field=models.ForeignKey(
+                default=None, on_delete=django.db.models.deletion.PROTECT, to="seminar.Seminar"
+            ),
             preserve_default=False,
         ),
     ]

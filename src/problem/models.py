@@ -11,7 +11,9 @@ from website.models import Category, Session
 User = get_user_model()
 
 
-ProblemAttachmentStorage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem'))
+ProblemAttachmentStorage = FileSystemStorage(
+    location=os.path.join(settings.MEDIA_ROOT, "attachments", "problem")
+)
 
 
 class Problem(models.Model):
@@ -23,14 +25,14 @@ class Problem(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = '문제'
-        verbose_name_plural = '문제들'
+        verbose_name = "문제"
+        verbose_name_plural = "문제들"
 
     def categories_title(self):
-        return ', '.join(map(lambda x: x.title, self.categories.all()))
+        return ", ".join(map(lambda x: x.title, self.categories.all()))
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title
 
 
 class ProblemList(models.Model):
@@ -41,11 +43,11 @@ class ProblemList(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = '문제 리스트'
-        verbose_name_plural = '문제 리스트들'
+        verbose_name = "문제 리스트"
+        verbose_name_plural = "문제 리스트들"
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title
 
 
 def upload_target(problem_attachment, filename):
@@ -54,17 +56,17 @@ def upload_target(problem_attachment, filename):
 
 class ProblemAttachment(models.Model):
     file = models.FileField(storage=ProblemAttachmentStorage, upload_to=upload_target)
-    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, related_name='problem_attachments')
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, related_name="problem_attachments")
 
     class Meta:
-        verbose_name = '문제 첨부파일'
-        verbose_name_plural = '문제 첨부파일들'
+        verbose_name = "문제 첨부파일"
+        verbose_name_plural = "문제 첨부파일들"
 
     def filename(self):
         return os.path.basename(self.file.name)
 
     def __str__(self):
-        return '%s' % self.filename()
+        return "%s" % self.filename()
 
 
 class ProblemInstance(models.Model):
@@ -76,11 +78,11 @@ class ProblemInstance(models.Model):
     hidden = models.BooleanField()
 
     class Meta:
-        verbose_name = '문제 인스턴스'
-        verbose_name_plural = '문제 인스턴스들'
+        verbose_name = "문제 인스턴스"
+        verbose_name_plural = "문제 인스턴스들"
 
     def __str__(self):
-        return '%s' % self.problem.title
+        return "%s" % self.problem.title
 
 
 class ProblemAuthLog(models.Model):
@@ -90,9 +92,9 @@ class ProblemAuthLog(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (('user', 'problem_instance', 'auth_key'),)
-        verbose_name = '문제 인증 로그'
-        verbose_name_plural = '문제 인증 로그들'
+        unique_together = (("user", "problem_instance", "auth_key"),)
+        verbose_name = "문제 인증 로그"
+        verbose_name_plural = "문제 인증 로그들"
 
 
 class ProblemQuestion(models.Model):
@@ -103,5 +105,5 @@ class ProblemQuestion(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = '문제 Q&A'
-        verbose_name_plural = '문제 Q&A들'
+        verbose_name = "문제 Q&A"
+        verbose_name_plural = "문제 Q&A들"

@@ -6,33 +6,33 @@ from .models import Problem, ProblemAttachment, ProblemInstance, ProblemList, Pr
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin, ExportCsvMixin):
-    list_display = ('title', 'categories_title', 'author', 'description')
-    readonly_fields = ('last_modified', )
-    actions = ['export_as_csv']
+    list_display = ("title", "categories_title", "author", "description")
+    readonly_fields = ("last_modified",)
+    actions = ["export_as_csv"]
 
 
 @admin.register(ProblemAttachment)
 class ProblemAttachmentAdmin(admin.ModelAdmin):
-    list_display = ('filename', )
+    list_display = ("filename",)
 
 
 @admin.register(ProblemInstance)
 class ProblemInstanceAdmin(admin.ModelAdmin, ProblemInstanceVisibilityMixin):
-    list_display = ('pk', 'problem')
-    actions = ['hide_problem_instance', 'show_problem_instance']
+    list_display = ("pk", "problem")
+    actions = ["hide_problem_instance", "show_problem_instance"]
 
 
 @admin.register(ProblemList)
 class ProblemListAdmin(admin.ModelAdmin):
-    list_display = ('title', 'session', 'description')
+    list_display = ("title", "session", "description")
 
 
 @admin.register(ProblemAuthLog)
 class ProblemAuthLogAdmin(admin.ModelAdmin, ExportCsvMixin):
-    list_display = ('user', 'problem_instance', 'auth_key', 'datetime')
-    actions = ['export_as_csv']
+    list_display = ("user", "problem_instance", "auth_key", "datetime")
+    actions = ["export_as_csv"]
 
 
 @admin.register(ProblemQuestion)
 class ProblemQuestionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'problem_instance', 'question', 'answer', 'datetime')
+    list_display = ("user", "problem_instance", "question", "answer", "datetime")

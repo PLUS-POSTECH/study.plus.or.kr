@@ -11,7 +11,7 @@ from problem.models import ProblemList
 User = get_user_model()
 
 
-ShopImageStorage = FileSystemStorage(location=os.path.join(settings.STATIC_ROOT, 'shop'))
+ShopImageStorage = FileSystemStorage(location=os.path.join(settings.STATIC_ROOT, "shop"))
 
 
 class ShopItem(models.Model):
@@ -26,11 +26,11 @@ class ShopItem(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = '상점 아이템'
-        verbose_name_plural = '상점 아이템들'
+        verbose_name = "상점 아이템"
+        verbose_name_plural = "상점 아이템들"
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title
 
 
 class Shop(models.Model):
@@ -39,11 +39,11 @@ class Shop(models.Model):
     shop_items = models.ManyToManyField(ShopItem)
 
     class Meta:
-        verbose_name = '상점'
-        verbose_name_plural = '상점들'
+        verbose_name = "상점"
+        verbose_name_plural = "상점들"
 
     def __str__(self):
-        return '%s' % self.problem_list.title
+        return "%s" % self.problem_list.title
 
 
 class ShopPurchaseLog(models.Model):
@@ -55,9 +55,8 @@ class ShopPurchaseLog(models.Model):
     purchase_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = '상점 구매 로그'
-        verbose_name_plural = '상점 구매 로그들'
+        verbose_name = "상점 구매 로그"
+        verbose_name_plural = "상점 구매 로그들"
 
     def __str__(self):
-        return '[%s] %s: %s, %s' % \
-            ("성공" if self.succeed else "실패", self.user, self.shop, self.item)
+        return "[%s] %s: %s, %s" % ("성공" if self.succeed else "실패", self.user, self.shop, self.item)

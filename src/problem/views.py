@@ -16,7 +16,12 @@ from website.views import PlusMemberCheck
 from website.models import Session, Category
 from .models import ProblemList, ProblemInstance, ProblemAttachment, ProblemAuthLog, ProblemQuestion
 from .helpers.score import AuthReplay
-from .helpers.problem_info import get_problem_list_user_info, get_user_problem_info, get_problem_list_total_score, get_problem_list_user_score
+from .helpers.problem_info import (
+    get_problem_list_user_info,
+    get_user_problem_info,
+    get_problem_list_total_score,
+    get_problem_list_user_score,
+)
 
 User = get_user_model()
 
@@ -31,10 +36,9 @@ def permission_validator(request, problem_instance: ProblemInstance):
 
 class ProblemListForm(forms.Form):
     q = forms.CharField(required=False)
-    search_by = forms.ChoiceField(required=False, choices=[
-        ('list_title', 'list title'),
-        ('session', 'session')
-    ])
+    search_by = forms.ChoiceField(
+        required=False, choices=[("list_title", "list title"), ("session", "session")]
+    )
 
 
 class ProblemListView(PlusMemberCheck, View):
@@ -43,22 +47,22 @@ class ProblemListView(PlusMemberCheck, View):
         if not form.is_valid():
             return HttpResponseBadRequest()
 
-        all_sessions = Session.objects.order_by('title')
-        all_problem_lists = ProblemList.objects.order_by('title')
+        all_sessions = Session.objects.order_by("title")
+        all_problem_lists = ProblemList.objects.order_by("title")
 
         if not request.user.is_staff:
             all_sessions = all_sessions.filter(isActive=True)
             all_problem_lists = all_problem_lists.filter(session__isActive=True)
 
         sessions = all_sessions
-        categories = Category.objects.order_by('title')
+        categories = Category.objects.order_by("title")
         problem_lists = all_problem_lists
-        q = ''
-        search_by = 'list_title'
-        if form.cleaned_data['q']:
-            if form.cleaned_data['search_by']:
-                search_by = form.cleaned_data['search_by']
-            q = form.cleaned_data['q']
+        q = ""
+        search_by = "list_title"
+        if form.cleaned_data["q"]:
+            if form.cleaned_data["search_by"]:
+                search_by = form.cleaned_data["search_by"]
+            q = form.cleaned_data["q"]
 
             if search_by == "list_title":
                 problem_lists = problem_lists.filter(title__search=q)
@@ -76,14 +80,18 @@ class ProblemListView(PlusMemberCheck, View):
 
         queried_problem_lists = list(construct_response())
 
-        return render(request, 'problem/list.html', {
-            'sessions': all_sessions,
-            'categories': categories,
-            'problem_lists': all_problem_lists,
-            'queried_problem_lists': queried_problem_lists,
-            'search_by': search_by,
-            'q': q
-        })
+        return render(
+            request,
+            "problem/list.html",
+            {
+                "sessions": all_sessions,
+                "categories": categories,
+                "problem_lists": all_problem_lists,
+                "queried_problem_lists": queried_problem_lists,
+                "search_by": search_by,
+                "q": q,
+            },
+        )
 
 
 class ProblemGetView(PlusMemberCheck, View):
@@ -94,9 +102,9 @@ class ProblemGetView(PlusMemberCheck, View):
         except ObjectDoesNotExist:
             raise Http404 from ObjectDoesNotExist
 
-        return render(request, 'problem/get.html', {
-            'info': get_user_problem_info(request.user, problem_instance)
-        })
+        return render(
+            request, "problem/get.html", {"info": get_user_problem_info(request.user, problem_instance)}
+        )
 
 
 class ProblemAuthForm(forms.Form):
@@ -111,7 +119,7 @@ class ProblemAuthView(PlusMemberCheck, View):
 
         return_obj = {}
         prob_id = int(pk)
-        auth_key = form.cleaned_data['auth_key']
+        auth_key = form.cleaned_data["auth_key"]
         try:
             problem_instance = ProblemInstance.objects.get(pk=prob_id)
             permission_validator(request, problem_instance)
@@ -120,12 +128,13 @@ class ProblemAuthView(PlusMemberCheck, View):
 
         try:
             ProblemAuthLog.objects.create(
-                user=request.user, problem_instance=problem_instance, auth_key=auth_key)
+                user=request.user, problem_instance=problem_instance, auth_key=auth_key
+            )
             is_correct = problem_instance.problem.auth_key == auth_key
-            return_obj['result'] = is_correct
+            return_obj["result"] = is_correct
 
         except IntegrityError:
-            return_obj['result'] = False
+            return_obj["result"] = False
 
         return JsonResponse(return_obj)
 
@@ -149,12 +158,12 @@ class ProblemDownloadView(PlusMemberCheck, View):
         response = FileResponse(file_obj)
         content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None:
-            content_type = 'application/octet-stream'
+            content_type = "application/octet-stream"
         if encoding is not None:
-            response['Content-Encoding'] = encoding
-        response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'%s' % urlquote(file_name)
-        response['Content-Length'] = str(file_size)
+            response["Content-Encoding"] = encoding
+        response["Content-Type"] = content_type
+        response["Content-Disposition"] = "attachment; filename*=UTF-8''%s" % urlquote(file_name)
+        response["Content-Length"] = str(file_size)
         return response
 
 
@@ -162,7 +171,7 @@ class ProblemRankView(PlusMemberCheck, View):
     def get(self, request, pk=None):
         problem_lists = ProblemList.objects
         if pk is None:
-            sessions = Session.objects.filter(isActive=True).order_by('title')
+            sessions = Session.objects.filter(isActive=True).order_by("title")
             problem_lists = problem_lists.filter(session__in=sessions)
         else:
             problem_list_pk = int(pk)
@@ -179,24 +188,20 @@ class ProblemRankView(PlusMemberCheck, View):
             rank_info.append((problem_list, top10_rank))
             chart_info.append((problem_list, top10_chart_data))
 
-        return render(request, 'problem/rank.html', {
-            'rank_info': rank_info,
-            'chart_info': chart_info
-        })
+        return render(request, "problem/rank.html", {"rank_info": rank_info, "chart_info": chart_info})
 
 
 class ProblemQuestionView(PlusMemberCheck, View):
     def get(self, request):
-        questions = request.user.problemquestion_set.order_by('-datetime')
+        questions = request.user.problemquestion_set.order_by("-datetime")
         if self.request.user.is_staff:
-            answers = ProblemQuestion.objects.all().order_by('-datetime')
+            answers = ProblemQuestion.objects.all().order_by("-datetime")
         else:
             answers = {}
 
-        return render(request, 'problem/question.html', {
-            'queried_questions': questions,
-            'queried_answers': answers
-        })
+        return render(
+            request, "problem/question.html", {"queried_questions": questions, "queried_answers": answers}
+        )
 
 
 class ProblemQuestionAskForm(forms.Form):
@@ -209,7 +214,7 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
         if not form.is_valid():
             return HttpResponseBadRequest()
 
-        question_text = form.cleaned_data['question']
+        question_text = form.cleaned_data["question"]
 
         try:
             problem_instance = ProblemInstance.objects.get(pk=int(pk))
@@ -222,18 +227,19 @@ class ProblemQuestionAskView(PlusMemberCheck, View):
         question_response = {
             "name": problem_instance.problem.title,
             "list": problem_instance.problem_list.title,
-            "question": question_text
+            "question": question_text,
         }
 
         if not question_text:
-            question_response['ok'] = False
+            question_response["ok"] = False
             return JsonResponse(question_response)
 
-        question_response['ok'] = True
+        question_response["ok"] = True
 
         try:
             ProblemQuestion.objects.create(
-                user=request.user, problem_instance=problem_instance, question=question_text)
+                user=request.user, problem_instance=problem_instance, question=question_text
+            )
         except BaseException:
             return HttpResponseServerError()
 
@@ -251,13 +257,15 @@ class ProblemUserView(PlusMemberCheck, View):
         solved_log_queries = []
         for problem_instance in ProblemInstance.objects.all():
             correct_auth_key = problem_instance.problem.auth_key
-            solve_logs = ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=correct_auth_key)
+            solve_logs = ProblemAuthLog.objects.filter(
+                problem_instance=problem_instance, auth_key=correct_auth_key
+            )
             solved_log_queries.append(solve_logs)
 
-        solve_logs = \
-            reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()) \
-            .order_by('datetime')
-        user_pks_with_logs = solve_logs.values_list('user', flat=True)
+        solve_logs = reduce(lambda x, y: x | y, solved_log_queries, ProblemAuthLog.objects.none()).order_by(
+            "datetime"
+        )
+        user_pks_with_logs = solve_logs.values_list("user", flat=True)
         users_with_logs = User.objects.filter(pk__in=user_pks_with_logs)
 
         user_data = []
@@ -270,7 +278,4 @@ class ProblemUserView(PlusMemberCheck, View):
 
             user_data.append({"user": user, "scores": scores})
 
-        return render(request, 'problem/user.html', {
-            "user_data": user_data,
-            "problem_lists": problem_lists
-        })
+        return render(request, "problem/user.html", {"user_data": user_data, "problem_lists": problem_lists})

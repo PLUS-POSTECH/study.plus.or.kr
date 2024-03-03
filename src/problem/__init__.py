@@ -1,1 +1,1 @@
-default_app_config = 'problem.apps.ProblemConfig'
+default_app_config = "problem.apps.ProblemConfig"

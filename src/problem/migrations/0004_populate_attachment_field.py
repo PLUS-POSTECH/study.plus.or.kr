@@ -10,7 +10,7 @@ from django.db import migrations
 
 def populate_attachment_field(apps, _):
     # noinspection PyPep8Naming
-    ProblemAttachment = apps.get_model('problem', 'ProblemAttachment')
+    ProblemAttachment = apps.get_model("problem", "ProblemAttachment")
 
     delete_list = []
 
@@ -23,8 +23,8 @@ def populate_attachment_field(apps, _):
         problem_attachment.problem = reverse_relation.first()
         problem_attachment.save()
 
-    attachments_path = os.path.join(settings.MEDIA_ROOT, 'attachments')
-    previous_path = os.path.join(settings.MEDIA_ROOT, 'problem')
+    attachments_path = os.path.join(settings.MEDIA_ROOT, "attachments")
+    previous_path = os.path.join(settings.MEDIA_ROOT, "problem")
     pathlib.Path(attachments_path).mkdir(parents=True, exist_ok=True)
     if pathlib.Path(previous_path).exists():
         shutil.move(previous_path, attachments_path)
@@ -35,12 +35,12 @@ def populate_attachment_field(apps, _):
 
 def reverse_populate_attachment_field(apps, _):
     # noinspection PyPep8Naming
-    ProblemAttachment = apps.get_model('problem', 'ProblemAttachment')
+    ProblemAttachment = apps.get_model("problem", "ProblemAttachment")
 
     for problem_attachment in ProblemAttachment.objects.all():
         problem_attachment.problem.attachments.add(problem_attachment)
 
-    previous_path = os.path.join(settings.MEDIA_ROOT, 'attachments', 'problem')
+    previous_path = os.path.join(settings.MEDIA_ROOT, "attachments", "problem")
     if pathlib.Path(previous_path).exists():
         shutil.move(previous_path, settings.MEDIA_ROOT)
 
@@ -48,7 +48,7 @@ def reverse_populate_attachment_field(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('problem', '0003_auto_20180621_1707'),
+        ("problem", "0003_auto_20180621_1707"),
     ]
 
     operations = [

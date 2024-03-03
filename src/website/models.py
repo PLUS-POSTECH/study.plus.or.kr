@@ -7,8 +7,8 @@ class User(AbstractUser):
     is_plus_member = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = '사용자'
-        verbose_name_plural = '사용자들'
+        verbose_name = "사용자"
+        verbose_name_plural = "사용자들"
 
 
 class Category(models.Model):
@@ -16,11 +16,11 @@ class Category(models.Model):
     description = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = '카테고리'
-        verbose_name_plural = '카테고리들'
+        verbose_name = "카테고리"
+        verbose_name_plural = "카테고리들"
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title
 
 
 class Session(models.Model):
@@ -29,11 +29,11 @@ class Session(models.Model):
     isActive = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = '분기'
-        verbose_name_plural = '분기들'
+        verbose_name = "분기"
+        verbose_name_plural = "분기들"
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title
 
 
 class Notification(models.Model):
@@ -43,8 +43,8 @@ class Notification(models.Model):
     datetime = models.DateTimeField()
 
     class Meta:
-        verbose_name = '공지사항'
-        verbose_name_plural = '공지사항들'
+        verbose_name = "공지사항"
+        verbose_name_plural = "공지사항들"
 
     def __str__(self):
-        return '%s' % self.title
+        return "%s" % self.title

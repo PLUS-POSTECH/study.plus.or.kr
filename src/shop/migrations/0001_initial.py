@@ -12,58 +12,83 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('problem', '0008_problemlist_announcement'),
+        ("problem", "0008_problemlist_announcement"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Shop',
+            name="Shop",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('problem_list', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, to='problem.ProblemList')),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "problem_list",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.PROTECT, to="problem.ProblemList"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '상점',
-                'verbose_name_plural': '상점들',
+                "verbose_name": "상점",
+                "verbose_name_plural": "상점들",
             },
         ),
         migrations.CreateModel(
-            name='ShopItem',
+            name="ShopItem",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50, unique=True)),
-                ('description', models.TextField(blank=True)),
-                ('image', models.FileField(storage=django.core.files.storage.FileSystemStorage(location='/upload/shop'), upload_to='')),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('price', models.IntegerField()),
-                ('chance', models.DecimalField(decimal_places=2, max_digits=4)),
-                ('hidden', models.BooleanField()),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("title", models.CharField(max_length=50, unique=True)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "image",
+                    models.FileField(
+                        storage=django.core.files.storage.FileSystemStorage(location="/upload/shop"),
+                        upload_to="",
+                    ),
+                ),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                ("price", models.IntegerField()),
+                ("chance", models.DecimalField(decimal_places=2, max_digits=4)),
+                ("hidden", models.BooleanField()),
             ],
             options={
-                'verbose_name': '상점 아이템',
-                'verbose_name_plural': '상점 아이템들',
+                "verbose_name": "상점 아이템",
+                "verbose_name_plural": "상점 아이템들",
             },
         ),
         migrations.CreateModel(
-            name='ShopPurchaseLog',
+            name="ShopPurchaseLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('succeed', models.BooleanField()),
-                ('retrieved', models.BooleanField()),
-                ('purchase_time', models.DateTimeField(auto_now_add=True)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='shop.ShopItem')),
-                ('shop', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='shop.Shop')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("succeed", models.BooleanField()),
+                ("retrieved", models.BooleanField()),
+                ("purchase_time", models.DateTimeField(auto_now_add=True)),
+                ("item", models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="shop.ShopItem")),
+                ("shop", models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="shop.Shop")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '상점 구매 로그',
-                'verbose_name_plural': '상점 구매 로그들',
+                "verbose_name": "상점 구매 로그",
+                "verbose_name_plural": "상점 구매 로그들",
             },
         ),
         migrations.AddField(
-            model_name='shop',
-            name='shop_items',
-            field=models.ManyToManyField(to='shop.ShopItem'),
+            model_name="shop",
+            name="shop_items",
+            field=models.ManyToManyField(to="shop.ShopItem"),
         ),
     ]

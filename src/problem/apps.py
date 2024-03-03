@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class ProblemConfig(AppConfig):
-    name = 'problem'
+    name = "problem"
 
     def ready(self):
         # pylint: disable=C0415, W0611

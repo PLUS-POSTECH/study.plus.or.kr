@@ -1,16 +1,17 @@
 from decimal import Decimal
-from random import SystemRandom
 from functools import reduce
+from random import SystemRandom
 
 from django import forms
-from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.http import Http404, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.views import View
 
-from website.views import PlusMemberCheck
 from problem.helpers.problem_info import get_problem_list_user_info
+from website.views import PlusMemberCheck
+
 from .models import Shop, ShopItem, ShopPurchaseLog
 
 
@@ -36,7 +37,10 @@ class ShopProdView(PlusMemberCheck, View):
             shop_items = shop.shop_items.filter(hidden=False)
             _, user_money = get_problem_list_user_info(shop.problem_list, request.user)
             purchase_log = list(
-                map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop))
+                map(
+                    lambda x: x.purchased_price,
+                    ShopPurchaseLog.objects.filter(user=request.user, shop=shop),
+                )
             )
             if purchase_log:
                 user_money -= reduce(lambda x, y: x + y, purchase_log)
@@ -75,11 +79,14 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_luck = Decimal(100) - item_to_buy.chance
 
         _, user_money = get_problem_list_user_info(shop_point_source, request.user)
-        purchase_log = list(
-            map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit))
+        purchased_prices = list(
+            map(
+                lambda x: x.purchased_price,
+                ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit),
+            )
         )
-        if purchase_log:
-            user_money -= reduce(lambda x, y: x + y, purchase_log)
+        if purchased_prices:
+            user_money -= reduce(lambda x, y: x + y, purchased_prices)
 
         enough_point = user_money >= required_point
         enough_luck = SystemRandom().uniform(0, 100) > required_luck
@@ -95,6 +102,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
                     item=item_to_buy,
                     succeed=succeed_purchase,
                     retrieved=False,
+                    purchased_price=required_point,
                 )
 
                 response["result"] = succeed_purchase

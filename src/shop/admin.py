@@ -17,5 +17,5 @@ class ShopAdmin(admin.ModelAdmin):
 
 @admin.register(ShopPurchaseLog)
 class ShopPurchaseLogAdmin(admin.ModelAdmin):
-    list_display = ("user", "shop", "item", "succeed", "retrieved")
+    list_display = ("user", "shop", "item", "succeed", "retrieved", "purchase_time")
     readonly_fields = ("purchase_time",)

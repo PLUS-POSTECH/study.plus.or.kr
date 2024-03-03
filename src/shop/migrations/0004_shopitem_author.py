@@ -9,14 +9,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('shop', '0003_shopitem_stock'),
+        ("shop", "0003_shopitem_stock"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='shopitem',
-            name='author',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL),
+            model_name="shopitem",
+            name="author",
+            field=models.ForeignKey(
+                default=0, on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
+            ),
             preserve_default=False,
         ),
     ]

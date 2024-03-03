@@ -23,7 +23,12 @@ def on_question_handler(sender, instance: ProblemQuestion, **kwargs):
 def on_auth(sender, instance: ProblemAuthLog, **kwargs):
     if instance.auth_key == instance.problem_instance.problem.auth_key:
         problem_instance = instance.problem_instance
-        if ProblemAuthLog.objects.filter(problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key).count() == 1:
+        if (
+            ProblemAuthLog.objects.filter(
+                problem_instance=problem_instance, auth_key=problem_instance.problem.auth_key
+            ).count()
+            == 1
+        ):
             discord.on_first_blood(instance)
         else:
             discord.on_solved(instance)

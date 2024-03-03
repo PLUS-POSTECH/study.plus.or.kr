@@ -8,48 +8,48 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('website', '0003_auto_20170706_2144'),
+        ("website", "0003_auto_20170706_2144"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='problem',
-            name='attachments',
+            model_name="problem",
+            name="attachments",
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='author',
+            model_name="problem",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='categories',
+            model_name="problem",
+            name="categories",
         ),
         migrations.RemoveField(
-            model_name='seminar',
-            name='attachments',
+            model_name="seminar",
+            name="attachments",
         ),
         migrations.RemoveField(
-            model_name='seminar',
-            name='author',
+            model_name="seminar",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='seminar',
-            name='categories',
+            model_name="seminar",
+            name="categories",
         ),
         migrations.RemoveField(
-            model_name='seminar',
-            name='session',
+            model_name="seminar",
+            name="session",
         ),
         migrations.DeleteModel(
-            name='Problem',
+            name="Problem",
         ),
         migrations.DeleteModel(
-            name='ProblemAttachment',
+            name="ProblemAttachment",
         ),
         migrations.DeleteModel(
-            name='Seminar',
+            name="Seminar",
         ),
         migrations.DeleteModel(
-            name='SeminarAttachment',
+            name="SeminarAttachment",
         ),
     ]

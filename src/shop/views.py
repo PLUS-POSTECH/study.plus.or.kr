@@ -16,13 +16,10 @@ from .models import Shop, ShopItem, ShopPurchaseLog
 
 class ShopInvenView(PlusMemberCheck, View):
     def get(self, request):
-        purchase_logs = ShopPurchaseLog.objects.filter(user=request.user).order_by('-purchase_time')
-        sell_logs = ShopPurchaseLog.objects.filter(item__author=request.user).order_by('-purchase_time')
+        purchase_logs = ShopPurchaseLog.objects.filter(user=request.user).order_by("-purchase_time")
+        sell_logs = ShopPurchaseLog.objects.filter(item__author=request.user).order_by("-purchase_time")
 
-        return render(request, 'shop/inven.html', {
-            'purchase_logs': purchase_logs,
-            'sell_logs': sell_logs
-        })
+        return render(request, "shop/inven.html", {"purchase_logs": purchase_logs, "sell_logs": sell_logs})
 
 
 class ShopProdView(PlusMemberCheck, View):
@@ -38,19 +35,15 @@ class ShopProdView(PlusMemberCheck, View):
         for shop in shops:
             shop_items = shop.shop_items.filter(hidden=False)
             _, user_money = get_problem_list_user_info(shop.problem_list, request.user)
-            purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop)))
+            purchase_log = list(
+                map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop))
+            )
             if purchase_log:
-                user_money -= reduce(lambda x, y: x+y, purchase_log)
+                user_money -= reduce(lambda x, y: x + y, purchase_log)
 
-            infos.append({
-                'shop': shop,
-                'shop_items': shop_items,
-                'user_money': user_money
-            })
+            infos.append({"shop": shop, "shop_items": shop_items, "user_money": user_money})
 
-        return render(request, 'shop/prod.html', {
-            'shop_infos': infos
-        })
+        return render(request, "shop/prod.html", {"shop_infos": infos})
 
 
 class ShopBuyForm(forms.Form):
@@ -63,7 +56,7 @@ class ShopPurchaseView(PlusMemberCheck, View):
         if not form.is_valid():
             return HttpResponseBadRequest()
 
-        shop_item_id = form.cleaned_data['item']
+        shop_item_id = form.cleaned_data["item"]
 
         try:
             shop_to_visit = Shop.objects.get(pk=int(pk))
@@ -82,39 +75,45 @@ class ShopPurchaseView(PlusMemberCheck, View):
         required_luck = Decimal(100) - item_to_buy.chance
 
         _, user_money = get_problem_list_user_info(shop_point_source, request.user)
-        purchase_log = list(map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit)))
+        purchase_log = list(
+            map(lambda x: x.item.price, ShopPurchaseLog.objects.filter(user=request.user, shop=shop_to_visit))
+        )
         if purchase_log:
-            user_money -= reduce(lambda x, y: x+y, purchase_log)
+            user_money -= reduce(lambda x, y: x + y, purchase_log)
 
-        enough_point = (user_money >= required_point)
-        enough_luck = (SystemRandom().uniform(0, 100) > required_luck)
-        enough_stock = (item_to_buy.stock > 0)
+        enough_point = user_money >= required_point
+        enough_luck = SystemRandom().uniform(0, 100) > required_luck
+        enough_stock = item_to_buy.stock > 0
 
         if enough_point and enough_stock:
             succeed_purchase = enough_luck
 
             try:
                 ShopPurchaseLog.objects.create(
-                    user=request.user, shop=shop_to_visit,
-                    item=item_to_buy, succeed=succeed_purchase, retrieved=False)
+                    user=request.user,
+                    shop=shop_to_visit,
+                    item=item_to_buy,
+                    succeed=succeed_purchase,
+                    retrieved=False,
+                )
 
-                response['result'] = succeed_purchase
+                response["result"] = succeed_purchase
                 if enough_luck:
                     item_to_buy.stock -= 1
                     item_to_buy.save()
                 else:
-                    response['reason'] = 'Not enough luck!'
+                    response["reason"] = "Not enough luck!"
 
             except IntegrityError:
-                response['result'] = False
-                response['reason'] = 'Something is wrong!'
+                response["result"] = False
+                response["reason"] = "Something is wrong!"
 
         else:
-            response['result'] = False
+            response["result"] = False
             if not enough_point:
-                response['reason'] = 'Not enough points!'
+                response["reason"] = "Not enough points!"
             elif not enough_stock:
-                response['reason'] = 'Not enough stock!'
+                response["reason"] = "Not enough stock!"
 
         return JsonResponse(response)
 
@@ -133,9 +132,9 @@ class ShopRetrieveView(PlusMemberCheck, View):
         try:
             log.retrieved = True
             log.save()
-            response['result'] = True
+            response["result"] = True
         except IntegrityError:
-            response['result'] = False
-            response['reason'] = 'Something is wrong!'
+            response["result"] = False
+            response["reason"] = "Something is wrong!"
 
         return JsonResponse(response)

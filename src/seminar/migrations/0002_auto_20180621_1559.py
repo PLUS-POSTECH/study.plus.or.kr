@@ -10,33 +10,40 @@ import seminar.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('seminar', '0001_initial'),
+        ("seminar", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='seminarattachment',
-            name='seminar',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='seminar.Seminar'),
+            model_name="seminarattachment",
+            name="seminar",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.PROTECT, to="seminar.Seminar"
+            ),
         ),
         migrations.AlterField(
-            model_name='seminar',
-            name='attachments',
-            field=models.ManyToManyField(blank=True, related_name='old_seminars', to='seminar.SeminarAttachment'),
+            model_name="seminar",
+            name="attachments",
+            field=models.ManyToManyField(
+                blank=True, related_name="old_seminars", to="seminar.SeminarAttachment"
+            ),
         ),
         migrations.AlterField(
-            model_name='seminar',
-            name='author',
+            model_name="seminar",
+            name="author",
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
-            model_name='seminar',
-            name='session',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='website.Session'),
+            model_name="seminar",
+            name="session",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="website.Session"),
         ),
         migrations.AlterField(
-            model_name='seminarattachment',
-            name='file',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(location='/upload/attachments/seminar'), upload_to=seminar.models.upload_target),
+            model_name="seminarattachment",
+            name="file",
+            field=models.FileField(
+                storage=django.core.files.storage.FileSystemStorage(location="/upload/attachments/seminar"),
+                upload_to=seminar.models.upload_target,
+            ),
         ),
     ]

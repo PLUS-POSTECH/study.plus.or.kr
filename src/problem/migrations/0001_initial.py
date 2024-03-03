@@ -13,52 +13,58 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('website', '0004_auto_20170713_2346'),
+        ("website", "0004_auto_20170713_2346"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Problem',
+            name="Problem",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('description', models.TextField(blank=True)),
-                ('auth_key', models.TextField()),
-                ('last_modified', models.DateTimeField()),
-                ('points', models.IntegerField()),
-                ('distributed_points', models.IntegerField()),
-                ('breakthrough_points', models.IntegerField()),
-                ('hidden', models.BooleanField()),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("description", models.TextField(blank=True)),
+                ("auth_key", models.TextField()),
+                ("last_modified", models.DateTimeField()),
+                ("points", models.IntegerField()),
+                ("distributed_points", models.IntegerField()),
+                ("breakthrough_points", models.IntegerField()),
+                ("hidden", models.BooleanField()),
             ],
             options={
-                'verbose_name': '문제',
-                'verbose_name_plural': '문제들',
+                "verbose_name": "문제",
+                "verbose_name_plural": "문제들",
             },
         ),
         migrations.CreateModel(
-            name='ProblemAttachment',
+            name="ProblemAttachment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to='problem/attachment')),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("file", models.FileField(upload_to="problem/attachment")),
             ],
             options={
-                'verbose_name': '문제 첨부파일',
-                'verbose_name_plural': '문제 첨부파일들',
+                "verbose_name": "문제 첨부파일",
+                "verbose_name_plural": "문제 첨부파일들",
             },
         ),
         migrations.AddField(
-            model_name='problem',
-            name='attachments',
-            field=models.ManyToManyField(blank=True, to='problem.ProblemAttachment'),
+            model_name="problem",
+            name="attachments",
+            field=models.ManyToManyField(blank=True, to="problem.ProblemAttachment"),
         ),
         migrations.AddField(
-            model_name='problem',
-            name='author',
+            model_name="problem",
+            name="author",
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='problem',
-            name='categories',
-            field=models.ManyToManyField(to='website.Category'),
+            model_name="problem",
+            name="categories",
+            field=models.ManyToManyField(to="website.Category"),
         ),
     ]

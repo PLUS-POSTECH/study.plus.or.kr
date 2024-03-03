@@ -9,28 +9,41 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('problem', '0006_auto_20180703_1701'),
+        ("problem", "0006_auto_20180703_1701"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProblemQuestion',
+            name="ProblemQuestion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.TextField()),
-                ('answer', models.TextField(blank=True)),
-                ('datetime', models.DateTimeField(auto_now_add=True)),
-                ('problem_instance', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='problem.ProblemInstance')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("question", models.TextField()),
+                ("answer", models.TextField(blank=True)),
+                ("datetime", models.DateTimeField(auto_now_add=True)),
+                (
+                    "problem_instance",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="problem.ProblemInstance"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
             options={
-                'verbose_name': '문제 Q&A',
-                'verbose_name_plural': '문제 Q&A들',
+                "verbose_name": "문제 Q&A",
+                "verbose_name_plural": "문제 Q&A들",
             },
         ),
         migrations.AlterField(
-            model_name='problemauthlog',
-            name='datetime',
+            model_name="problemauthlog",
+            name="datetime",
             field=models.DateTimeField(auto_now_add=True),
         ),
     ]

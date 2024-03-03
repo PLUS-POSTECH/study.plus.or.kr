@@ -8,35 +8,53 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('problem', '0009_auto_20190401_0428'),
+        ("problem", "0009_auto_20190401_0428"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Discord',
+            name="Discord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('url_webhook', models.URLField(max_length=300, verbose_name='Discord Webhook URL')),
-                ('url_avatar', models.URLField(max_length=400, verbose_name='Discord Avatar Image URL')),
-                ('is_active', models.BooleanField(verbose_name='Activation')),
-                ('on_first_blood', models.BooleanField(verbose_name='Send at First Blood')),
-                ('color_first_blood', models.CharField(max_length=50, verbose_name='Color of First Blood Message')),
-                ('on_solved', models.BooleanField(verbose_name='Send when Solved')),
-                ('color_solved', models.CharField(max_length=50, verbose_name='Color of Solved Message')),
-                ('on_auth_tried', models.BooleanField(verbose_name='Send at Any Trial')),
-                ('color_auth_tried', models.CharField(max_length=50, verbose_name='Color of Auth Trial Message')),
-                ('on_problem_registered', models.BooleanField(verbose_name='Send at Problem Instance Registered')),
-                ('color_on_problem_registered', models.CharField(max_length=50, verbose_name='Color of Plm Register Message')),
-                ('on_question', models.BooleanField(verbose_name='Send at Question')),
-                ('color_on_question', models.CharField(max_length=50, verbose_name='Color of Question Message')),
-                ('on_answer', models.BooleanField(verbose_name='Send at Answer')),
-                ('color_on_answer', models.CharField(max_length=50, verbose_name='Color of Answer Message')),
-                ('subscribe', models.ManyToManyField(to='problem.ProblemList')),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("url_webhook", models.URLField(max_length=300, verbose_name="Discord Webhook URL")),
+                ("url_avatar", models.URLField(max_length=400, verbose_name="Discord Avatar Image URL")),
+                ("is_active", models.BooleanField(verbose_name="Activation")),
+                ("on_first_blood", models.BooleanField(verbose_name="Send at First Blood")),
+                (
+                    "color_first_blood",
+                    models.CharField(max_length=50, verbose_name="Color of First Blood Message"),
+                ),
+                ("on_solved", models.BooleanField(verbose_name="Send when Solved")),
+                ("color_solved", models.CharField(max_length=50, verbose_name="Color of Solved Message")),
+                ("on_auth_tried", models.BooleanField(verbose_name="Send at Any Trial")),
+                (
+                    "color_auth_tried",
+                    models.CharField(max_length=50, verbose_name="Color of Auth Trial Message"),
+                ),
+                (
+                    "on_problem_registered",
+                    models.BooleanField(verbose_name="Send at Problem Instance Registered"),
+                ),
+                (
+                    "color_on_problem_registered",
+                    models.CharField(max_length=50, verbose_name="Color of Plm Register Message"),
+                ),
+                ("on_question", models.BooleanField(verbose_name="Send at Question")),
+                (
+                    "color_on_question",
+                    models.CharField(max_length=50, verbose_name="Color of Question Message"),
+                ),
+                ("on_answer", models.BooleanField(verbose_name="Send at Answer")),
+                ("color_on_answer", models.CharField(max_length=50, verbose_name="Color of Answer Message")),
+                ("subscribe", models.ManyToManyField(to="problem.ProblemList")),
             ],
             options={
-                'verbose_name': 'Discord Webhook 인스턴스',
-                'verbose_name_plural': 'Discord Webhook 인스턴스들',
+                "verbose_name": "Discord Webhook 인스턴스",
+                "verbose_name_plural": "Discord Webhook 인스턴스들",
             },
         ),
     ]

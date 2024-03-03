@@ -13,52 +13,58 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('website', '0004_auto_20170713_2346'),
+        ("website", "0004_auto_20170713_2346"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Seminar',
+            name="Seminar",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('date', models.DateField()),
-                ('description', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("date", models.DateField()),
+                ("description", models.TextField(blank=True)),
             ],
             options={
-                'verbose_name': '세미나',
-                'verbose_name_plural': '세미나들',
+                "verbose_name": "세미나",
+                "verbose_name_plural": "세미나들",
             },
         ),
         migrations.CreateModel(
-            name='SeminarAttachment',
+            name="SeminarAttachment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to='seminar/attachments')),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("file", models.FileField(upload_to="seminar/attachments")),
             ],
             options={
-                'verbose_name': '세미나 첨부파일',
-                'verbose_name_plural': '세미나 첨부파일들',
+                "verbose_name": "세미나 첨부파일",
+                "verbose_name_plural": "세미나 첨부파일들",
             },
         ),
         migrations.AddField(
-            model_name='seminar',
-            name='attachments',
-            field=models.ManyToManyField(blank=True, to='seminar.SeminarAttachment'),
+            model_name="seminar",
+            name="attachments",
+            field=models.ManyToManyField(blank=True, to="seminar.SeminarAttachment"),
         ),
         migrations.AddField(
-            model_name='seminar',
-            name='author',
+            model_name="seminar",
+            name="author",
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='seminar',
-            name='categories',
-            field=models.ManyToManyField(to='website.Category'),
+            model_name="seminar",
+            name="categories",
+            field=models.ManyToManyField(to="website.Category"),
         ),
         migrations.AddField(
-            model_name='seminar',
-            name='session',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='website.Session'),
+            model_name="seminar",
+            name="session",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="website.Session"),
         ),
     ]

@@ -11,99 +11,116 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('website', '0004_auto_20170713_2346'),
+        ("website", "0004_auto_20170713_2346"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('problem', '0001_initial'),
+        ("problem", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProblemAuthLog',
+            name="ProblemAuthLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('auth_key', models.TextField()),
-                ('datetime', models.DateTimeField()),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("auth_key", models.TextField()),
+                ("datetime", models.DateTimeField()),
             ],
             options={
-                'verbose_name': '문제 인증 로그',
-                'verbose_name_plural': '문제 인증 로그들',
+                "verbose_name": "문제 인증 로그",
+                "verbose_name_plural": "문제 인증 로그들",
             },
         ),
         migrations.CreateModel(
-            name='ProblemInstance',
+            name="ProblemInstance",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('points', models.IntegerField()),
-                ('distributed_points', models.IntegerField()),
-                ('breakthrough_points', models.IntegerField()),
-                ('hidden', models.BooleanField()),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("points", models.IntegerField()),
+                ("distributed_points", models.IntegerField()),
+                ("breakthrough_points", models.IntegerField()),
+                ("hidden", models.BooleanField()),
             ],
             options={
-                'verbose_name': '문제 인스턴스',
-                'verbose_name_plural': '문제 인스턴스들',
+                "verbose_name": "문제 인스턴스",
+                "verbose_name_plural": "문제 인스턴스들",
             },
         ),
         migrations.CreateModel(
-            name='ProblemList',
+            name="ProblemList",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('description', models.TextField(blank=True)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='website.Session')),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "session",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="website.Session"),
+                ),
             ],
             options={
-                'verbose_name': '문제 리스트',
-                'verbose_name_plural': '문제 리스트들',
+                "verbose_name": "문제 리스트",
+                "verbose_name_plural": "문제 리스트들",
             },
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='breakthrough_points',
+            model_name="problem",
+            name="breakthrough_points",
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='distributed_points',
+            model_name="problem",
+            name="distributed_points",
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='hidden',
+            model_name="problem",
+            name="hidden",
         ),
         migrations.RemoveField(
-            model_name='problem',
-            name='points',
+            model_name="problem",
+            name="points",
         ),
         migrations.AlterField(
-            model_name='problem',
-            name='title',
+            model_name="problem",
+            name="title",
             field=models.CharField(max_length=50, unique=True),
         ),
         migrations.AlterField(
-            model_name='problemattachment',
-            name='file',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(location='problem/attachments'), upload_to=''),
+            model_name="problemattachment",
+            name="file",
+            field=models.FileField(
+                storage=django.core.files.storage.FileSystemStorage(location="problem/attachments"),
+                upload_to="",
+            ),
         ),
         migrations.AddField(
-            model_name='probleminstance',
-            name='problem',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='problem.Problem'),
+            model_name="probleminstance",
+            name="problem",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="problem.Problem"),
         ),
         migrations.AddField(
-            model_name='probleminstance',
-            name='problem_list',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='problem.ProblemList'),
+            model_name="probleminstance",
+            name="problem_list",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="problem.ProblemList"),
         ),
         migrations.AddField(
-            model_name='problemauthlog',
-            name='problem_instance',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='problem.ProblemInstance'),
+            model_name="problemauthlog",
+            name="problem_instance",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="problem.ProblemInstance"
+            ),
         ),
         migrations.AddField(
-            model_name='problemauthlog',
-            name='user',
+            model_name="problemauthlog",
+            name="user",
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterUniqueTogether(
-            name='problemauthlog',
-            unique_together=set([('user', 'problem_instance', 'auth_key')]),
+            name="problemauthlog",
+            unique_together=set([("user", "problem_instance", "auth_key")]),
         ),
     ]

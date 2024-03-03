@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shop', '0001_initial'),
+        ("shop", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shopitem',
-            name='image',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(location='/static/shop'), upload_to=''),
+            model_name="shopitem",
+            name="image",
+            field=models.FileField(
+                storage=django.core.files.storage.FileSystemStorage(location="/static/shop"), upload_to=""
+            ),
         ),
     ]

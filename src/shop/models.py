@@ -1,12 +1,11 @@
 import os
 
-from django.db import models
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
 from django.contrib.auth import get_user_model
+from django.core.files.storage import FileSystemStorage
+from django.db import models
 
 from problem.models import ProblemList
-
 
 User = get_user_model()
 
@@ -53,6 +52,7 @@ class ShopPurchaseLog(models.Model):
     succeed = models.BooleanField()
     retrieved = models.BooleanField()
     purchase_time = models.DateTimeField(auto_now_add=True)
+    purchased_price = models.PositiveIntegerField()
 
     class Meta:
         verbose_name = "상점 구매 로그"
